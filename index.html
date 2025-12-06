@@ -4,21 +4,29 @@
 <meta charset="UTF-8" />
 <title>Dashboard Phản Hồi Chấm Công</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
     body { font-family: Arial; margin: 20px; background: #fafafa; }
     h2 { margin-top: 30px; }
-    .container { display: flex; gap: 20px; }
-    .box { background: white; padding: 15px; border-radius: 10px; flex: 1; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .row-charts { display: flex; gap: 15px; margin-top: 25px; }
+    .chart-box { 
+        background: white; 
+        padding: 12px; 
+        border-radius: 10px; 
+        flex: 1; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        height: 260px;
+    }
     table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
     th, td { padding: 8px; border-bottom: 1px solid #ddd; font-size: 14px; }
     th { background: #f0f0f0; }
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
     .confirm-none { background: #ffe3e3; color: #c00; }
     .confirm-done { background: #d4ffe3; color: #007a2f; }
-    .small-box { flex: 0.5; }
     input { padding: 8px; width: 250px; margin-right: 10px; }
 </style>
 </head>
+
 <body>
 
 <h1>Dashboard Phản Hồi Chấm Công</h1>
@@ -29,32 +37,6 @@
     <input id="searchMSNV" placeholder="Tìm theo MSNV…" />
     <input id="searchName" placeholder="Tìm theo họ tên…" />
     <button onclick="applySearch()">Lọc</button>
-</div>
-
-<!-- Tổng quan + Top Feedback -->
-<div class="container">
-    <div class="box small-box">
-        <h3>Tổng quan</h3>
-        <canvas id="chartDays"></canvas>
-    </div>
-
-    <div class="box small-box">
-        <h3>Top nhân viên gửi nhiều phản hồi</h3>
-        <canvas id="chartTop"></canvas>
-    </div>
-</div>
-
-<!-- Thống kê BU + Team -->
-<div class="container">
-    <div class="box small-box">
-        <h3>Theo BU</h3>
-        <canvas id="chartBU"></canvas>
-    </div>
-
-    <div class="box small-box">
-        <h3>Theo Team</h3>
-        <canvas id="chartTeam"></canvas>
-    </div>
 </div>
 
 <!-- Danh sách chi tiết -->
@@ -76,8 +58,33 @@
     <tbody></tbody>
 </table>
 
+<!-- 4 biểu đồ nhỏ nằm hàng ngang -->
+<h2>Thống kê</h2>
+
+<div class="row-charts">
+    <div class="chart-box">
+        <h4>Tổng quan</h4>
+        <canvas id="chartDays"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <h4>Top phản hồi</h4>
+        <canvas id="chartTop"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <h4>Theo BU</h4>
+        <canvas id="chartBU"></canvas>
+    </div>
+
+    <div class="chart-box">
+        <h4>Theo Team</h4>
+        <canvas id="chartTeam"></canvas>
+    </div>
+</div>
+
 <script>
-// === URL JSON TRÊN ONEDRIVE (Flow cập nhật tự động) ===
+// === JSON URL ===
 const jsonUrl = "https://hoailuan0311-code.github.io/ChamCongDashboard/data.json";
 
 // --- Convert Excel serial date → dd-MMM-yyyy ---
@@ -88,9 +95,9 @@ function excelDateToString(v) {
     return d.toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" });
 }
 
-// ====== LOAD JSON ======
 let fullData = [];
 
+// ===== LOAD JSON =====
 async function loadData() {
     try {
         let res = await fetch(jsonUrl + "?cache=" + Date.now());
@@ -101,7 +108,7 @@ async function loadData() {
     }
 }
 
-// ====== RENDER TẤT CẢ DASHBOARD ======
+// ===== RENDER TẤT CẢ =====
 function renderAll(data) {
     renderTable(data);
     renderSummary(data);
@@ -110,7 +117,7 @@ function renderAll(data) {
     renderTeam(data);
 }
 
-// ====== BẢNG DỮ LIỆU ======
+// ===== TABLE =====
 function renderTable(data) {
     const tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
@@ -135,7 +142,7 @@ function renderTable(data) {
     });
 }
 
-// ====== TÌM KIẾM ======
+// ===== SEARCH =====
 function applySearch() {
     let msnv = document.getElementById("searchMSNV").value.trim().toLowerCase();
     let name = document.getElementById("searchName").value.trim().toLowerCase();
@@ -148,7 +155,7 @@ function applySearch() {
     renderAll(filtered);
 }
 
-// ====== BIỂU ĐỒ NGÀY ======
+// ===== BIỂU ĐỒ NGÀY =====
 function renderSummary(data) {
     const counts = {};
     data.forEach(r => {
@@ -165,11 +172,12 @@ function renderSummary(data) {
                 data: Object.values(counts),
                 backgroundColor: "#4C8BF5"
             }]
-        }
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// ====== TOP FEEDBACK ======
+// ===== TOP FEEDBACK =====
 function renderTopFeedback(data) {
     const counts = {};
     data.forEach(r => counts[r.FullName] = (counts[r.FullName] || 0) + 1);
@@ -185,11 +193,12 @@ function renderTopFeedback(data) {
                 data: sorted.map(x => x[1]),
                 backgroundColor: "#00AEEF"
             }]
-        }
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// ====== THEO BU ======
+// ===== BU =====
 function renderBU(data) {
     const counts = {};
     data.forEach(r => counts[r.BU] = (counts[r.BU] || 0) + 1);
@@ -202,11 +211,12 @@ function renderBU(data) {
                 data: Object.values(counts),
                 backgroundColor: ["#FF6384","#36A2EB","#FFCE56","#66BB6A","#BA68C8"]
             }]
-        }
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// ====== THEO TEAM ======
+// ===== TEAM =====
 function renderTeam(data) {
     const counts = {};
     data.forEach(r => counts[r.Team] = (counts[r.Team] || 0) + 1);
@@ -219,11 +229,11 @@ function renderTeam(data) {
                 data: Object.values(counts),
                 backgroundColor: ["#29B6F6","#FF7043","#9CCC65","#AB47BC","#FFD54F"]
             }]
-        }
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
-// === RUN ===
 loadData();
 </script>
 
