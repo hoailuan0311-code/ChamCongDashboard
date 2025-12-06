@@ -59,7 +59,21 @@
 </head>
 <body>
   <h1>Dashboard Phản Hồi Chấm Công</h1>
-  <p>Cập nhật tự động từ SharePoint List.</p>
+  <p>Cập nhật tự động từ SharePoint → OneDrive → Dashboard.</p>
+
+  <script>
+    // ⭐⭐ LINK JSON OneDrive của bạn ⭐⭐
+    const JSON_URL = "https://ttigroup-my.sharepoint.com/:u:/g/personal/hoailuan_nguyen01_ttigroup_com_vn/IQCPvIqJNqnfRJWphSuQFz4QAQ3e4D391kftXWxpD9lwLsM?download=1";
+
+    async function loadData() {
+      const res = await fetch(JSON_URL + "&_=" + Date.now());
+      const data = await res.json();
+
+      renderTable(data);
+      renderSummary(data);
+      renderCharts(data);
+    }
+  </script>
 
   <div class="layout">
     <div class="card">
@@ -86,7 +100,7 @@
             <th>Ngày cần điều chỉnh</th>
             <th>Nội dung</th>
             <th>Email người gửi</th>
-            <th>Confirm từ Cris</th>
+            <th>Confirm Admin</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -94,116 +108,81 @@
     </div>
   </div>
 
-  <script>
-    async function loadData() {
-      const res = await fetch('data.json?_=' + Date.now()); // chống cache
-      const data = await res.json(); // data là array các object
+<script>
+function renderTable(data) {
+  const tbody = document.querySelector('#dataTable tbody');
+  tbody.innerHTML = '';
 
-      renderTable(data);
-      renderSummary(data);
-      renderCharts(data);
-    }
+  data.forEach(item => {
+    const tr = document.createElement('tr');
 
-    function renderTable(data) {
-      const tbody = document.querySelector('#dataTable tbody');
-      tbody.innerHTML = '';
+    const cols = [
+      item.Date || '',
+      item.MSNV || '',
+      item.FullName || '',
+      item.NgayDieuChinh || '',
+      item.NoiDung || '',
+      item.Email || '',
+      item.ConfirmAdmin || ''
+    ];
 
-      data.forEach(item => {
-        const tr = document.createElement('tr');
+    cols.forEach(text => {
+      const td = document.createElement('td');
+      td.textContent = text;
+      tr.appendChild(td);
+    });
 
-        const cols = [
-          item.Date || '',
-          item.MSNV || '',
-          item.HoTen || '',
-          item.NgayCanDieuChinh || '',
-          item.NoiDung || '',
-          item.EmailNguoiGui || '',
-          item.ConfirmTuCris || ''
-        ];
+    tbody.appendChild(tr);
+  });
+}
 
-        cols.forEach(text => {
-          const td = document.createElement('td');
-          td.textContent = text;
-          tr.appendChild(td);
-        });
+function renderSummary(data) {
+  const total = data.length;
+  const uniqueMSNV = new Set(data.map(x => x.MSNV)).size;
+  const dates = new Set(data.map(x => x.Date));
 
-        tbody.appendChild(tr);
-      });
-    }
+  document.getElementById('summary').innerHTML =
+    `<span class="badge">Tổng feedback: ${total}</span> ` +
+    `<span class="badge">MSNV khác nhau: ${uniqueMSNV}</span> ` +
+    `<span class="badge">Số ngày có feedback: ${dates.size}</span>`;
+}
 
-    function renderSummary(data) {
-      const total = data.length;
-      const uniqueMSNV = new Set(data.map(x => x.MSNV)).size;
-      const dates = new Set(data.map(x => x.Date));
+function groupBy(arr, keyFn) {
+  const map = {};
+  arr.forEach(item => {
+    const key = keyFn(item);
+    if (!map[key]) map[key] = 0;
+    map[key]++;
+  });
+  return map;
+}
 
-      document.getElementById('summary').innerHTML =
-        `<span class="badge">Tổng feedback: ${total}</span> ` +
-        `<span class="badge">MSNV khác nhau: ${uniqueMSNV}</span> ` +
-        `<span class="badge">Số ngày có feedback: ${dates.size}</span>`;
-    }
+function renderCharts(data) {
+  // Theo ngày
+  const byDate = groupBy(data, x => x.Date || 'N/A');
+  const dateLabels = Object.keys(byDate).sort();
+  const dateValues = dateLabels.map(k => byDate[k]);
 
-    function groupBy(arr, keyFn) {
-      const map = {};
-      arr.forEach(item => {
-        const key = keyFn(item);
-        if (!map[key]) map[key] = 0;
-        map[key]++;
-      });
-      return map;
-    }
+  new Chart(document.getElementById('byDateChart'), {
+    type: 'bar',
+    data: { labels: dateLabels, datasets: [{ label: 'Số feedback', data: dateValues }] },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
 
-    function renderCharts(data) {
-      // Theo ngày
-      const byDate = groupBy(data, x => x.Date || 'N/A');
-      const dateLabels = Object.keys(byDate).sort();
-      const dateValues = dateLabels.map(k => byDate[k]);
+  // Theo nhân viên
+  const byEmp = groupBy(data, x => x.FullName || 'N/A');
+  const sortedEmp = Object.entries(byEmp).sort((a,b) => b[1] - a[1]).slice(0,10);
 
-      const ctx1 = document.getElementById('byDateChart').getContext('2d');
-      new Chart(ctx1, {
-        type: 'bar',
-        data: {
-          labels: dateLabels,
-          datasets: [{
-            label: 'Số feedback',
-            data: dateValues
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false } }
-        }
-      });
+  new Chart(document.getElementById('byEmployeeChart'), {
+    type: 'bar',
+    data: { labels: sortedEmp.map(x => x[0]), datasets: [{ label: 'Số feedback', data: sortedEmp.map(x => x[1]) }] },
+    options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } } }
+  });
+}
 
-      // Top nhân viên
-      const byEmp = groupBy(data, x => (x.HoTen || 'N/A'));
-      const sortedEmp = Object.entries(byEmp)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0, 10);
+loadData();
+setInterval(loadData, 60000);
+</script>
 
-      const empLabels = sortedEmp.map(x => x[0]);
-      const empValues = sortedEmp.map(x => x[1]);
-
-      const ctx2 = document.getElementById('byEmployeeChart').getContext('2d');
-      new Chart(ctx2, {
-        type: 'bar',
-        data: {
-          labels: empLabels,
-          datasets: [{
-            label: 'Số feedback',
-            data: empValues
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          plugins: { legend: { display: false } }
-        }
-      });
-    }
-
-    loadData();
-    // Tự refresh mỗi 1 phút
-    setInterval(loadData, 60000);
-  </script>
 </body>
 </html>
