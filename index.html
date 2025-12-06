@@ -85,14 +85,6 @@
     <button onclick="applySearch()">Lọc</button>
 </div>
 
-<h2>Thống kê</h2>
-
-<!-- MAIN SUMMARY CHART -->
-<div class="box">
-    <h3>Tổng quan</h3>
-    <canvas id="chartDays"></canvas>
-</div>
-
 <h3 style="margin-top:25px;">Danh sách chi tiết</h3>
 
 <table id="dataTable">
@@ -166,7 +158,6 @@ loadData();
 // ================== RENDER EVERYTHING ==================
 function renderAll(data) {
     renderTable(data);
-    renderSummary(data);
     renderTop(data);
     renderBU(data);
     renderTeam(data);
@@ -206,27 +197,6 @@ function applySearch() {
     );
 
     renderAll(filtered);
-}
-
-// ================== SUMMARY ==================
-function renderSummary(data) {
-    const counts = {};
-    data.forEach(r => {
-        let d = excelDate(r.Date);
-        counts[d] = (counts[d] || 0) + 1;
-    });
-
-    new Chart(chartDays, {
-        type: "bar",
-        data: {
-            labels: Object.keys(counts),
-            datasets:[{
-                label:"Số phản hồi",
-                data:Object.values(counts),
-                backgroundColor:"#4C8BF5"
-            }]
-        }
-    });
 }
 
 // ================== TOP ==================
