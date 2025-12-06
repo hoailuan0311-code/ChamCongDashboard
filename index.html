@@ -13,47 +13,45 @@
     h2 { margin-top: 40px; }
 
     .search { margin-bottom: 15px; }
-
     input { padding: 8px; width: 200px; margin-right: 8px; }
 
-    /* Phần ô thống kê */
+    /* Grid 4 chart nhỏ */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
         gap: 15px;
         margin-top: 20px;
     }
-
     .box {
         background: white;
         padding: 15px;
         border-radius: 10px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        height: 260px;
     }
+    .box canvas { width: 100% !important; height: 100% !important; }
 
-    table { 
-        width: 100%; 
-        border-collapse: collapse; 
-        margin-top: 20px; 
-        background: white; 
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: white;
         border-radius: 10px;
         overflow: hidden;
     }
-
-    th, td { 
-        padding: 8px; 
-        border-bottom: 1px solid #ddd; 
-        font-size: 14px; 
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
     }
-
     th { background: #f0f0f0; }
 
     .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; }
     .confirm-none { background: #ffe3e3; color: #c00; }
     .confirm-done { background: #d4ffe3; color: #007a2f; }
 
-    /* Autoplay iframe ẩn hoàn toàn */
-    .bg-music {
+    /* MP3 autoplay hidden */
+    audio {
         position: absolute;
         width: 0;
         height: 0;
@@ -65,17 +63,16 @@
 
 <body>
 
-<!-- 🎵 NHẠC TỰ PHÁT ẨN -->
-<iframe class="bg-music"
-src="https://www.youtube.com/embed/cTCAR86p5fM?autoplay=1&mute=1&loop=1&playlist=cTCAR86p5fM"
-frameborder="0"
-allow="autoplay">
-</iframe>
+<!-- 🎵 NHẠC TỰ PHÁT CÓ TIẾNG (MP3) -->
+<audio autoplay loop>
+    <!-- ❗ Thay link MP3 của bạn vào đây -->
+    <source src="https://filesamples.com/samples/audio/mp3/sample4.mp3" type="audio/mpeg">
+</audio>
 
 <h1>Dashboard Phản Hồi Chấm Công</h1>
 <p>📌 Dữ liệu auto update từ PHẢN HỒI CHẤM CÔNG.</p>
 
-<!-- Ô tìm kiếm -->
+<!-- Search -->
 <div class="search">
     <input id="searchMSNV" placeholder="Tìm theo MSNV…" />
     <input id="searchName" placeholder="Tìm theo họ tên…" />
@@ -84,32 +81,28 @@ allow="autoplay">
 
 <h2>Thống kê</h2>
 
-<!-- 4 ô thống kê nhỏ -->
+<!-- 4 charts -->
 <div class="stats-grid">
     <div class="box">
         <h3>Tổng quan</h3>
         <canvas id="chartDays"></canvas>
     </div>
-
     <div class="box">
         <h3>Top phản hồi</h3>
         <canvas id="chartTop"></canvas>
     </div>
-
     <div class="box">
         <h3>Theo BU</h3>
         <canvas id="chartBU"></canvas>
     </div>
-
     <div class="box">
         <h3>Theo Team</h3>
         <canvas id="chartTeam"></canvas>
     </div>
 </div>
 
-<!-- Danh sách -->
+<!-- Table -->
 <h2>Danh sách chi tiết</h2>
-
 <table id="dataTable">
     <thead>
         <tr>
@@ -170,8 +163,7 @@ function renderTable(data) {
             <td>${r.NoiDung || ""}</td>
             <td>${r.Email || ""}</td>
             <td><span class="badge ${r.ConfirmAdmin ? "confirm-done" : "confirm-none"}">
-                ${r.ConfirmAdmin || "Chưa phản hồi"}</span>
-            </td>
+                ${r.ConfirmAdmin || "Chưa phản hồi"}</span></td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
         </tr>`;
@@ -190,7 +182,10 @@ function applySearch() {
     renderAll(filtered);
 }
 
-/* BIỂU ĐỒ */
+function chartOptions() {
+    return { responsive: true, maintainAspectRatio: false };
+}
+
 function renderSummary(data) {
     const counts = {};
     data.forEach(r => {
@@ -201,8 +196,8 @@ function renderSummary(data) {
     new Chart(chartDays, {
         type: "bar",
         data: { labels: Object.keys(counts),
-            datasets: [{ data: Object.values(counts), label:"Số phản hồi", backgroundColor:"#4C8BF5" }]
-        }
+            datasets:[{ data:Object.values(counts), label:"Số phản hồi", backgroundColor:"#4C8BF5" }] },
+        options: chartOptions()
     });
 }
 
@@ -215,8 +210,8 @@ function renderTopFeedback(data) {
     new Chart(chartTop, {
         type: "bar",
         data: { labels: top.map(x=>x[0]),
-            datasets:[{ data: top.map(x=>x[1]), label:"Số phản hồi", backgroundColor:"#00AEEF" }]
-        }
+            datasets:[{ data: top.map(x=>x[1]), label:"Số phản hồi", backgroundColor:"#00AEEF" }] },
+        options: chartOptions()
     });
 }
 
@@ -228,9 +223,10 @@ function renderBU(data) {
         type: "pie",
         data: {
             labels: Object.keys(counts),
-            datasets: [{ data: Object.values(counts),
-                backgroundColor:["#FF6384","#36A2EB","#FFCE56","#66BB6A"] }]
-        }
+            datasets:[{ data:Object.values(counts),
+            backgroundColor:["#FF6384","#36A2EB","#FFCE56","#66BB6A","#BA68C8"] }]
+        },
+        options: chartOptions()
     });
 }
 
@@ -242,9 +238,10 @@ function renderTeam(data) {
         type: "pie",
         data: {
             labels: Object.keys(counts),
-            datasets: [{ data: Object.values(counts),
-                backgroundColor:["#29B6F6","#FF7043","#9CCC65","#AB47BC","#FFD54F"] }]
-        }
+            datasets:[{ data:Object.values(counts),
+            backgroundColor:["#29B6F6","#FF7043","#9CCC65","#AB47BC","#FFD54F"] }]
+        },
+        options: chartOptions()
     });
 }
 
