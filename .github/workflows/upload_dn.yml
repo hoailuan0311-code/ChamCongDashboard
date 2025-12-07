@@ -1,1 +1,68 @@
+name: Upload Delivery Note Worker
+
+on:
+  repository_dispatch:
+    types: [upload_dn]
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # cho phép workflow push file vào repo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install QR & Image tools
+        run: |
+          sudo apt update
+          sudo apt install -y zbar-tools imagemagick
+
+      - name: Process uploaded image
+        run: |
+          echo "${{ github.event.client_payload.filedata }}" | base64 -d > input.jpg
+
+          mkdir -p inbox/Done inbox/Failed logs
+
+          QR=$(zbarimg --raw input.jpg 2>/dev/null || echo "")
+
+          convert input.jpg -resize 1400x -quality 40 output.jpg
+
+          if [ -z "$QR" ]; then
+            DEST="inbox/Failed/${{ github.event.client_payload.filename }}"
+          else
+            SAFE=$(echo "$QR" | tr -cd '[:alnum:]_-')
+            DEST="inbox/Done/${SAFE}.jpg"
+          fi
+
+          cp output.jpg "$DEST"
+
+          LOG="logs/upload_log.json"
+          if [ ! -f "$LOG" ]; then echo "[]" > "$LOG"; fi
+
+          TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          node <<EOF
+const fs = require("fs");
+const log = JSON.parse(fs.readFileSync("logs/upload_log.json", "utf8"));
+
+log.push({
+  user: "${{ github.event.client_payload.user }}",
+  fileOriginal: "${{ github.event.client_payload.filename }}",
+  qr: "$QR",
+  savedAs: "$DEST",
+  time: "$TIME",
+  status: "$([ -z "$QR" ] && echo FAILED_QR || echo DONE)"
+});
+
+fs.writeFileSync("logs/upload_log.json", JSON.stringify(log, null, 2));
+EOF
+
+      - name: Commit updates
+        run: |
+          git config user.name "Upload-Bot"
+          git config user.email "bot@example.com"
+          git add inbox logs
+          git commit -m "Update uploaded DN" || echo "No changes"
+          git push
 
