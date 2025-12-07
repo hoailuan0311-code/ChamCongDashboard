@@ -11,7 +11,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout source
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install tools
@@ -19,70 +19,64 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y zbar-tools imagemagick
 
-      - name: Process DN Image
+      - name: Run processor
         env:
           TMP_PATH: ${{ github.event.client_payload.tmp_path }}
-          ORIGINAL_NAME: ${{ github.event.client_payload.original }}
+          ORIGINAL: ${{ github.event.client_payload.original }}
           USER_NAME: ${{ github.event.client_payload.user }}
         run: |
-          echo "TMP_PATH      = $TMP_PATH"
-          echo "ORIGINAL_NAME = $ORIGINAL_NAME"
-          echo "USER_NAME     = $USER_NAME"
+          echo "TMP_PATH=$TMP_PATH"
+          echo "ORIGINAL=$ORIGINAL"
+          echo "USER=$USER_NAME"
 
           mkdir -p inbox/Done inbox/Failed logs
 
-          # detect QR
           QR=$(zbarimg --raw "$TMP_PATH" 2>/dev/null || echo "")
-          echo "QR = '$QR'"
 
-          # compress to 1400px wide
-          convert "$TMP_PATH" -resize 1400x -quality 40 "compressed.jpg"
+          convert "$TMP_PATH" -resize 1400x -quality 40 compressed.jpg
 
           if [ -z "$QR" ]; then
-            DEST="inbox/Failed/${ORIGINAL_NAME}"
+            DEST="inbox/Failed/$ORIGINAL"
             STATUS="FAILED_QR"
           else
-            CLEAN_QR=$(echo "$QR" | tr -cd '[:alnum:]_-')
-            DEST="inbox/Done/${CLEAN_QR}.jpg"
+            CLEAN=$(echo "$QR" | tr -cd '[:alnum:]_-')
+            DEST="inbox/Done/${CLEAN}.jpg"
             STATUS="DONE"
           fi
 
           echo "Saving to: $DEST"
-          cp "compressed.jpg" "$DEST"
+          cp compressed.jpg "$DEST"
 
-          # remove tmp
           rm -f "$TMP_PATH"
 
-          # prepare log file
-          LOG="logs/upload_log.json"
+          LOG=logs/upload_log.json
           if [ ! -f "$LOG" ]; then echo "[]" > "$LOG"; fi
 
-          TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          # append log via node (syntax 100% valid)
-          node <<'EOF'
-          const fs = require("fs");
-
-          const logPath = "logs/upload_log.json";
-          const prev = JSON.parse(fs.readFileSync(logPath));
-
-          prev.push({
+          printf '%s\n' "
+          const fs=require('fs');
+          const logPath='logs/upload_log.json';
+          let log=JSON.parse(fs.readFileSync(logPath));
+          log.push({
             user: process.env.USER_NAME,
-            original: process.env.ORIGINAL_NAME,
-            tmp_path: process.env.TMP_PATH,
-            saved_as: process.env.DEST,
-            qr: process.env.QR,
-            status: process.env.STATUS,
-            time: process.env.TIME
+            original: process.env.ORIGINAL,
+            tmp: process.env.TMP_PATH,
+            saved_as: '$DEST',
+            status: '$STATUS',
+            qr: '$QR',
+            time: '$TS'
           });
+          fs.writeFileSync(logPath, JSON.stringify(log,null,2));
+          " > log.js
 
-          fs.writeFileSync(logPath, JSON.stringify(prev, null, 2));
-EOF
+          node log.js
+          rm log.js
 
-      - name: Commit changes
+      - name: Commit results
         run: |
-          git config --global user.name "Upload Bot"
           git config --global user.email "bot@example.com"
+          git config --global user.name "Upload Bot"
           git add inbox logs
-          git commit -m "Processed Delivery Note" || echo "No changes"
+          git commit -m "Processed DN image" || true
           git push
