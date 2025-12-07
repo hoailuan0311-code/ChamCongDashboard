@@ -10,7 +10,6 @@ async function decodeQRFromImage(file) {
             const w = img.width;
             const h = img.height;
 
-            // Lấy 25% trên + 25% phải
             canvas.width = w * 0.5;
             canvas.height = h * 0.4;
 
