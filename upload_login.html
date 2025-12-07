@@ -1,1 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Đăng nhập Upload Delivery Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #ffffff;
+      padding: 24px 24px 28px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      max-width: 360px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 6px;
+    }
+    p {
+      margin: 0 0 16px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #374151;
+    }
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: none;
+      background: #2563eb;
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 6px 16px rgba(37,99,235,0.4);
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(37,99,235,0.4);
+    }
+    .error {
+      margin-top: 8px;
+      color: #dc2626;
+      font-size: 12px;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Đăng nhập Upload DN</h1>
+    <p>Nhập tài khoản nội bộ để upload Delivery Note theo QR.</p>
+
+    <label for="username">Mã nhân viên / User</label>
+    <input id="username" autocomplete="off" />
+
+    <label for="password">Mật khẩu</label>
+    <input id="password" type="password" />
+
+    <button onclick="handleLogin()">Đăng nhập</button>
+
+    <div id="error" class="error"></div>
+  </div>
+
+  <script>
+    // Danh sách user nội bộ (ví dụ)
+    // Bạn chỉnh lại theo thực tế: thêm/bớt user, đổi pass.
+    const USERS = {
+      "linh":  { pass: "1234", displayName: "Linh" },
+      "duy":   { pass: "4321", displayName: "Duy" },
+      "cris":  { pass: "9999", displayName: "Cris" }
+    };
+
+    function handleLogin() {
+      const u = document.getElementById("username").value.trim().toLowerCase();
+      const p = document.getElementById("password").value.trim();
+      const err = document.getElementById("error");
+
+      if (!USERS[u]) {
+        err.textContent = "User không tồn tại.";
+        return;
+      }
+      if (USERS[u].pass !== p) {
+        err.textContent = "Sai mật khẩu.";
+        return;
+      }
+
+      // Lưu thông tin user vào sessionStorage
+      const userObj = { username: u, displayName: USERS[u].displayName || u };
+      sessionStorage.setItem("uploadUser", JSON.stringify(userObj));
+
+      // Chuyển sang trang upload
+      window.location.href = "upload.html";
+    }
+  </script>
+</body>
+</html>
 
