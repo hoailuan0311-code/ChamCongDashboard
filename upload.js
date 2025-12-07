@@ -2,7 +2,7 @@ const repoUser = "hoailuan0311-code";
 const repoName = "ChamCongDashboard";
 
 // Token frontend chỉ cần quyền `actions: write`, KHÔNG ghi file được
-const DISPATCH_TOKEN = "YOUR_FRONTEND_DISPATCH_TOKEN";
+const DISPATCH_TOKEN = "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";
 
 function logBox(msg) {
   logs.innerHTML += `<div>${msg}</div>`;
