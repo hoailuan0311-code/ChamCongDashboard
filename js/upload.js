@@ -1,13 +1,14 @@
 // upload.js
 
-// ===== CONFIG REPO =====
+// === CONFIG REPO ===
 const repoUser = "hoailuan0311-code";
 const repoName = "ChamCongDashboard";
 
-// ⚠️ KHÔNG commit token thật lên repo public
-const githubToken = "GITHUB_TOKEN_HERE"; 
+// ⚠ THAY BẰNG TOKEN SERVICE (FINE-GRAINED, CHỈ CHO REPO NÀY)
+// ĐỪNG commit token thật lên repo public.
+const SERVICE_TOKEN = "YOUR_SERVICE_TOKEN_HERE";
 
-// ===== HELPER UI =====
+// === UI helper ===
 function logGlobal(text, type = "info") {
   const box = document.getElementById("status");
   const color = type === "error" ? "#dc2626" : "#111827";
@@ -25,7 +26,6 @@ function addProcessItem(file, thumbURL) {
   const container = document.getElementById("processingList");
   const div = document.createElement("div");
   div.className = "process-item";
-
   div.innerHTML = `
     <img src="${thumbURL}" class="process-thumb">
     <div class="process-info">
@@ -34,15 +34,11 @@ function addProcessItem(file, thumbURL) {
       <div class="file-log">⏳ Đang chuẩn bị...</div>
     </div>
   `;
-
   container.appendChild(div);
   return div;
 }
 
-// ===== IMAGE UTILS =====
-
-// Nén ảnh mạnh như Zalo: resize + quality thấp.
-// file: File (ảnh gốc), maxSize: max width, quality: 0–1
+// === Image utils ===
 async function compressImage(file, maxSize = 1400, quality = 0.4) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -72,40 +68,36 @@ async function compressImage(file, maxSize = 1400, quality = 0.4) {
   });
 }
 
-// Tạo thumbnail nhỏ cho UI (không cần quality thấp quá)
 async function createThumb(file, maxSize = 300) {
   return compressImage(file, maxSize, 0.7);
 }
 
-// Chuyển Blob → base64
 async function blobToBase64(blob) {
   const arrayBuffer = await blob.arrayBuffer();
   let binary = "";
   const bytes = new Uint8Array(arrayBuffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
+  for (let i = 0; i < bytes.byteLength; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
   return btoa(binary);
 }
 
-// Encode/Decode base64 cho text (log JSON – tránh lỗi Unicode)
+// Base64 cho text (log JSON)
 function encodeBase64Text(str) {
   return btoa(unescape(encodeURIComponent(str)));
 }
-
 function decodeBase64Text(str) {
   return decodeURIComponent(escape(atob(str)));
 }
 
-// ===== GITHUB API =====
+// === GitHub API ===
 async function uploadToGitHub(path, base64Content, message) {
   const url = `https://api.github.com/repos/${repoUser}/${repoName}/contents/${encodeURIComponent(path)}`;
 
   const res = await fetch(url, {
     method: "PUT",
     headers: {
-      "Authorization": `Bearer ${githubToken}`,
+      "Authorization": `Bearer ${SERVICE_TOKEN}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
@@ -131,9 +123,8 @@ async function saveLogEntry(entry) {
   let existing = [];
   let sha = null;
 
-  // Đọc file log cũ (nếu có)
   const res = await fetch(url, {
-    headers: { "Authorization": `Bearer ${githubToken}` }
+    headers: { "Authorization": `Bearer ${SERVICE_TOKEN}` }
   });
 
   if (res.ok) {
@@ -142,13 +133,12 @@ async function saveLogEntry(entry) {
     try {
       const raw = decodeBase64Text(data.content.replace(/\n/g, ""));
       existing = JSON.parse(raw);
-    } catch (e) {
+    } catch {
       existing = [];
     }
   }
 
   existing.push(entry);
-
   const newContent = encodeBase64Text(JSON.stringify(existing, null, 2));
 
   const putBody = {
@@ -161,7 +151,7 @@ async function saveLogEntry(entry) {
   const putRes = await fetch(url, {
     method: "PUT",
     headers: {
-      "Authorization": `Bearer ${githubToken}`,
+      "Authorization": `Bearer ${SERVICE_TOKEN}`,
       "Content-Type": "application/json"
     },
     body: JSON.stringify(putBody)
@@ -172,7 +162,7 @@ async function saveLogEntry(entry) {
   }
 }
 
-// ===== MAIN FLOW =====
+// === MAIN FLOW ===
 async function startUpload() {
   const input = document.getElementById("fileInput");
   const files = Array.from(input.files || []);
@@ -181,18 +171,18 @@ async function startUpload() {
     return;
   }
 
-  logGlobal(`Bắt đầu xử lý ${files.length} hình...`);
+  const user = window.currentUploadUser || { username: "unknown", displayName: "Unknown" };
+  logGlobal(`User ${user.username} bắt đầu xử lý ${files.length} hình...`);
+
   let doneCount = 0;
 
   for (const file of files) {
-    // 1. Tạo thumbnail
+    // thumbnail
     const thumbBlob = await createThumb(file, 260);
     const thumbURL = URL.createObjectURL(thumbBlob || file);
     const item = addProcessItem(file, thumbURL);
-
     const bar = item.querySelector(".progress-mini-bar");
     const fileLog = item.querySelector(".file-log");
-
     const setProgress = (pct) => (bar.style.width = `${pct}%`);
     const setLog = (html, isError = false) => {
       fileLog.innerHTML = html;
@@ -202,10 +192,8 @@ async function startUpload() {
     setProgress(10);
     setLog("🔍 Đang đọc QR từ ảnh gốc...");
 
-    // 2. Đọc QR từ file gốc
     const qrText = await decodeQRFromFile(file);
 
-    // 3. Nén ảnh mạnh để upload
     setProgress(40);
     setLog("🗜 Đang nén ảnh (giảm dung lượng)...");
 
@@ -218,45 +206,42 @@ async function startUpload() {
     }
 
     const base64Img = await blobToBase64(compressedBlob);
-
-    // 4. Upload
     const timeStr = new Date().toISOString();
 
     try {
       if (!qrText) {
-        // Không đọc được QR → Failed
         const failedPath = `inbox/Failed/${file.name}`;
         setProgress(70);
-        setLog("⚠️ Không đọc được QR → upload vào thư mục Failed...");
+        setLog("⚠️ Không đọc được QR → upload vào Failed...");
 
         await uploadToGitHub(failedPath, base64Img, `Upload failed image ${file.name}`);
         setProgress(100);
-        setLog("❌ Không đọc được QR – đã lưu vào Failed", true);
+        setLog("❌ Không đọc được QR – đã lưu Failed", true);
 
-        logGlobal(`⚠️ ${file.name}: không đọc được QR → lưu Failed/`, "error");
-
+        logGlobal(`⚠️ ${file.name}: không đọc được QR → Failed/`, "error");
         await saveLogEntry({
+          user: user.username,
+          displayName: user.displayName,
           fileOriginal: file.name,
           path: failedPath,
           status: "FAILED_QR",
           time: timeStr
         });
       } else {
-        // Đọc QR thành công → Done
         const safe = qrText.replace(/[^a-zA-Z0-9_-]/g, "_");
         const donePath = `inbox/Done/${safe}.jpg`;
 
         setProgress(70);
-        setLog(`📦 QR: <b>${safe}</b><br>Đang upload vào thư mục Done...`);
+        setLog(`📦 QR: <b>${safe}</b><br>Đang upload vào Done...`);
 
         await uploadToGitHub(donePath, base64Img, `Upload done image ${safe}.jpg`);
-
         setProgress(100);
         setLog(`✅ Thành công! Lưu tại: <b>${donePath}</b>`);
 
         logGlobal(`✔ ${file.name} → ${donePath}`);
-
         await saveLogEntry({
+          user: user.username,
+          displayName: user.displayName,
           fileOriginal: file.name,
           qrText: qrText,
           safeName: safe,
@@ -279,14 +264,13 @@ async function startUpload() {
   logGlobal("🎉 Hoàn tất tất cả hình!");
 }
 
-// ===== Buttons mở thư mục trên GitHub =====
+// mở thư mục
 function openDone() {
   window.open(
     "https://github.com/hoailuan0311-code/ChamCongDashboard/tree/main/inbox/Done",
     "_blank"
   );
 }
-
 function openFailed() {
   window.open(
     "https://github.com/hoailuan0311-code/ChamCongDashboard/tree/main/inbox/Failed",
