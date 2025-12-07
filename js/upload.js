@@ -6,7 +6,7 @@ const repoName = "ChamCongDashboard";
 
 // ⚠ THAY BẰNG TOKEN SERVICE (FINE-GRAINED, CHỈ CHO REPO NÀY)
 // ĐỪNG commit token thật lên repo public.
-const SERVICE_TOKEN = "YOUR_SERVICE_TOKEN_HERE";
+const SERVICE_TOKEN = "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";
 
 // === UI helper ===
 function logGlobal(text, type = "info") {
