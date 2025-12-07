@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Upload Log Viewer</title>
+<style>
+  body { font-family: system-ui; padding:20px; }
+  table { width:100%; border-collapse:collapse; }
+  td,th { padding:6px; border-bottom:1px solid #ddd; }
+</style>
+</head>
+<body>
+
+<h2>Lịch sử Upload</h2>
+
+<table id="tbl">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>File gốc</th>
+      <th>QR</th>
+      <th>Trạng thái</th>
+      <th>Thời gian</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+(async () => {
+  const res = await fetch("https://raw.githubusercontent.com/hoailuan0311-code/ChamCongDashboard/main/logs/upload_log.json");
+  const data = await res.json();
+  const tb = document.querySelector("#tbl tbody");
+
+  data.reverse().forEach(r => {
+    tb.innerHTML += `
+      <tr>
+        <td>${r.user}</td>
+        <td>${r.fileOriginal}</td>
+        <td>${r.qr || "-"}</td>
+        <td>${r.status}</td>
+        <td>${r.time}</td>
+      </tr>`;
+  });
+})();
+</script>
+
+</body>
+</html>
