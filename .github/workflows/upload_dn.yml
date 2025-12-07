@@ -1,68 +1,101 @@
-name: Upload Delivery Note Worker
+name: Process Delivery Note
 
 on:
   repository_dispatch:
-    types: [upload_dn]
+    types: [process_dn]
 
 jobs:
   process:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # cho phép workflow push file vào repo
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Install QR & Image tools
         run: |
-          sudo apt update
-          sudo apt install -y zbar-tools imagemagick
+          sudo apt-get update
+          sudo apt-get install -y zbar-tools imagemagick
 
-      - name: Process uploaded image
+      - name: Process temp image
+        env:
+          TMP_PATH: ${{ github.event.client_payload.tmp_path }}
+          ORIGINAL_NAME: ${{ github.event.client_payload.original }}
+          USER_NAME: ${{ github.event.client_payload.user }}
         run: |
-          echo "${{ github.event.client_payload.filedata }}" | base64 -d > input.jpg
+          echo "TMP_PATH=$TMP_PATH"
+          echo "ORIGINAL_NAME=$ORIGINAL_NAME"
+          echo "USER_NAME=$USER_NAME"
 
           mkdir -p inbox/Done inbox/Failed logs
 
-          QR=$(zbarimg --raw input.jpg 2>/dev/null || echo "")
+          # Đọc QR từ file tạm
+          QR=$(zbarimg --raw "$TMP_PATH" 2>/dev/null || echo "")
+          echo "QR: '$QR'"
 
-          convert input.jpg -resize 1400x -quality 40 output.jpg
+          # Nén ảnh
+          COMPRESSED="compressed.jpg"
+          convert "$TMP_PATH" -resize 1400x -quality 40 "$COMPRESSED"
 
+          # Quyết định đường dẫn đích
           if [ -z "$QR" ]; then
-            DEST="inbox/Failed/${{ github.event.client_payload.filename }}"
+            DEST="inbox/Failed/$ORIGINAL_NAME"
+            STATUS="FAILED_QR"
           else
             SAFE=$(echo "$QR" | tr -cd '[:alnum:]_-')
             DEST="inbox/Done/${SAFE}.jpg"
+            STATUS="DONE"
           fi
 
-          cp output.jpg "$DEST"
+          echo "DEST=$DEST"
+          cp "$COMPRESSED" "$DEST"
 
-          LOG="logs/upload_log.json"
-          if [ ! -f "$LOG" ]; then echo "[]" > "$LOG"; fi
+          # Xóa file tạm (tránh đầy repo)
+          rm -f "$TMP_PATH"
 
-          TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          # Cập nhật log JSON
+          LOG_PATH="logs/upload_log.json"
+          if [ ! -f "$LOG_PATH" ]; then
+            echo "[]" > "$LOG_PATH"
+          fi
 
-          node <<EOF
-const fs = require("fs");
-const log = JSON.parse(fs.readFileSync("logs/upload_log.json", "utf8"));
+          TIME_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-log.push({
-  user: "${{ github.event.client_payload.user }}",
-  fileOriginal: "${{ github.event.client_payload.filename }}",
-  qr: "$QR",
-  savedAs: "$DEST",
-  time: "$TIME",
-  status: "$([ -z "$QR" ] && echo FAILED_QR || echo DONE)"
-});
+          node << 'EOF'
+          const fs = require("fs");
+          const path = "logs/upload_log.json";
 
-fs.writeFileSync("logs/upload_log.json", JSON.stringify(log, null, 2));
-EOF
+          let arr = [];
+          try {
+            arr = JSON.parse(fs.readFileSync(path, "utf8"));
+          } catch (e) {
+            arr = [];
+          }
+
+          const entry = {
+            user: process.env.USER_NAME,
+            fileOriginal: process.env.ORIGINAL_NAME,
+            tmpPath: process.env.TMP_PATH,
+            savedAs: process.env.DEST,
+            qr: process.env.QR_VALUE || "",
+            status: process.env.STATUS,
+            time: process.env.TIME_UTC
+          };
+
+          arr.push(entry);
+          fs.writeFileSync(path, JSON.stringify(arr, null, 2));
+          EOF
+        env:
+          DEST: ${{ env.DEST }}
+          QR_VALUE: ${{ env.QR }}
+          STATUS: ${{ env.STATUS }}
+          TIME_UTC: ${{ env.TIME_UTC }}
 
       - name: Commit updates
         run: |
           git config user.name "Upload-Bot"
           git config user.email "bot@example.com"
           git add inbox logs
-          git commit -m "Update uploaded DN" || echo "No changes"
+          git commit -m "Process uploaded Delivery Note" || echo "No changes"
           git push
-
