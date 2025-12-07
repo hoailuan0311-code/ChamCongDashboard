@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Upload Delivery Note – QR Auto Rename</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: Arial; padding: 20px; }
+#preview img { width: 100%; margin-top: 10px; border-radius: 8px; }
+button { padding: 10px; background: #2563eb; color: white; border: none; border-radius: 6px; }
+</style>
+</head>
+
+<body>
+<h2>📤 Upload Delivery Note</h2>
+<p>Chọn 1–100 hình. Hệ thống sẽ tự đọc QR và đổi tên đúng theo ASN.</p>
+
+<input type="file" id="fileInput" accept="image/*" multiple>
+<br><br>
+<button onclick="startUpload()">Bắt đầu tải lên</button>
+
+<div id="status"></div>
+<div id="preview"></div>
+
+<script src="js/qr.js"></script>
+<script src="js/upload.js"></script>
+</body>
+</html>
