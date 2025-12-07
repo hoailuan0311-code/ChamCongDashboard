@@ -1,73 +1,250 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<title>Upload Delivery Note – QR Auto Rename</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>Upload Delivery Note – QR Auto Rename</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body { 
-    font-family: Arial; padding: 20px; 
-    background: #f5f7fb;
-}
-.card {
-    background: #fff; padding: 20px; border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    max-width: 600px; margin: 0 auto;
-}
-button {
-    padding: 10px 16px; background:#2563eb; 
-    color:white; border:none; border-radius:6px; cursor:pointer;
-}
-button:hover { background:#1e4dc7; }
+  <!-- CSS chỉ cho trang upload -->
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+    }
 
-.preview {
-    width: 100%; margin-top: 10px; border-radius: 8px;
-}
+    .upload-card {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px 24px 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
 
-.progress {
-    height: 8px; background:#e5e7eb; border-radius:4px; margin-top:10px;
-}
-.progress-bar {
-    height: 8px; width:0%; background:#2563eb; border-radius:4px;
-    transition: width 0.3s ease;
-}
+    .upload-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
 
-#status div { margin-top: 4px; }
-</style>
+    .upload-icon {
+      font-size: 32px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    p {
+      margin: 4px 0 14px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .upload-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .upload-button {
+      padding: 10px 18px;
+      background: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+
+    .upload-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+      background: #1d4ed8;
+    }
+
+    .global-progress {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 12px;
+      margin-bottom: 10px;
+    }
+
+    .global-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #4f46e5);
+      transition: width 0.2s ease;
+    }
+
+    .upload-footer-buttons {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .link-button {
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      background: #ffffff;
+      padding: 6px 12px;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #374151;
+    }
+
+    .link-button span {
+      font-size: 16px;
+    }
+
+    /* Danh sách file đang xử lý */
+    #processingList {
+      margin-top: 14px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .process-item {
+      display: flex;
+      align-items: flex-start;
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 8px;
+      gap: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .process-thumb {
+      width: 150px;
+      max-height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .process-info {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    .process-title {
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+
+    .progress-mini {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 4px 0 6px;
+    }
+
+    .progress-mini-bar {
+      height: 100%;
+      width: 0%;
+      background: #2563eb;
+      transition: width 0.2s ease;
+    }
+
+    .file-log {
+      color: #4b5563;
+      line-height: 1.4;
+    }
+
+    .file-log b {
+      color: #111827;
+    }
+
+    .file-log.error {
+      color: #dc2626;
+    }
+
+    /* Khung log tổng */
+    #status {
+      margin-top: 14px;
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      max-height: 160px;
+      overflow-y: auto;
+      border: 1px dashed #e5e7eb;
+    }
+
+    #status div {
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .process-item {
+        flex-direction: row;
+      }
+      .process-thumb {
+        width: 110px;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="upload-card">
+    <div class="upload-header">
+      <div class="upload-icon">📤</div>
+      <div>
+        <h1>Upload Delivery Note</h1>
+        <p>Chọn 1–100 hình. Hệ thống sẽ đọc QR từ góc trên bên phải, đổi tên file, nén nhẹ và lưu vào thư mục <b>Done / Failed</b>.</p>
+      </div>
+    </div>
 
-<div class="card">
-<h2>📤 Upload Delivery Note</h2>
-<p>Chọn 1–100 hình. Hệ thống sẽ tự đọc QR, đổi tên, lưu vào thư mục Done / Failed.</p>
+    <div class="upload-actions">
+      <input type="file" id="fileInput" accept="image/*" multiple />
+      <button class="upload-button" onclick="startUpload()">Bắt đầu tải lên</button>
+    </div>
 
-<input type="file" id="fileInput" accept="image/*" multiple>
+    <div class="global-progress">
+      <div class="global-progress-bar" id="globalProgressBar"></div>
+    </div>
 
-<br><br>
-<button onclick="startUpload()">Bắt đầu tải lên</button>
+    <div id="processingList"></div>
 
-<hr>
+    <h3 style="margin-top:18px; font-size:15px;">📄 Log tổng</h3>
+    <div id="status"></div>
 
-<div id="preview"></div>
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="upload-footer-buttons">
+      <button class="link-button" onclick="openDone()">
+        <span>📁</span> Mở thư mục Done
+      </button>
+      <button class="link-button" onclick="openFailed()">
+        <span>⚠️</span> Mở thư mục Failed
+      </button>
+    </div>
+  </div>
 
-<h3>📄 Log xử lý</h3>
-<div id="status" style="max-height:200px; overflow-y:auto; background:white; padding:10px; border-radius:6px;"></div>
-
-<br>
-<button onclick="window.open('https://github.com/hoailuan0311-code/ChamCongDashboard/tree/main/inbox/Done', '_blank')">
-📁 Mở thư mục Done
-</button>
-
-<button onclick="window.open('https://github.com/hoailuan0311-code/ChamCongDashboard/tree/main/inbox/Failed', '_blank')">
-📁 Mở thư mục Failed
-</button>
-
-</div>
-
-<script src="js/qr.js"></script>
-<script src="js/upload.js"></script>
+  <!-- jsQR từ CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <!-- Xử lý QR -->
+  <script src="qr.js"></script>
+  <!-- Logic upload / nén / log -->
+  <script src="upload.js"></script>
 </body>
 </html>
