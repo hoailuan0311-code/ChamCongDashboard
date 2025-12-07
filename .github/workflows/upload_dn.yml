@@ -24,21 +24,20 @@ jobs:
           ORIGINAL_NAME: ${{ github.event.client_payload.original }}
           USER_NAME: ${{ github.event.client_payload.user }}
         run: |
-          echo "TMP_PATH=$TMP_PATH"
-          echo "ORIGINAL_NAME=$ORIGINAL_NAME"
-          echo "USER_NAME=$USER_NAME"
+          echo "TMP_PATH = $TMP_PATH"
+          echo "ORIGINAL_NAME = $ORIGINAL_NAME"
+          echo "USER_NAME = $USER_NAME"
 
           mkdir -p inbox/Done inbox/Failed logs
 
-          # Đọc QR từ file tạm
+          # đọc QR từ file
           QR=$(zbarimg --raw "$TMP_PATH" 2>/dev/null || echo "")
-          echo "QR: '$QR'"
+          echo "QR = '$QR'"
 
-          # Nén ảnh
-          COMPRESSED="compressed.jpg"
-          convert "$TMP_PATH" -resize 1400x -quality 40 "$COMPRESSED"
+          # nén ảnh
+          convert "$TMP_PATH" -resize 1400x -quality 40 "compressed.jpg"
 
-          # Quyết định đường dẫn đích
+          # xác định nơi lưu
           if [ -z "$QR" ]; then
             DEST="inbox/Failed/$ORIGINAL_NAME"
             STATUS="FAILED_QR"
@@ -48,54 +47,41 @@ jobs:
             STATUS="DONE"
           fi
 
-          echo "DEST=$DEST"
-          cp "$COMPRESSED" "$DEST"
+          cp "compressed.jpg" "$DEST"
 
-          # Xóa file tạm (tránh đầy repo)
+          # xóa file tạm
           rm -f "$TMP_PATH"
 
-          # Cập nhật log JSON
-          LOG_PATH="logs/upload_log.json"
-          if [ ! -f "$LOG_PATH" ]; then
-            echo "[]" > "$LOG_PATH"
-          fi
+          # cập nhật log
+          LOG="logs/upload_log.json"
+          if [ ! -f "$LOG" ]; then echo "[]" > "$LOG"; fi
 
-          TIME_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-          node << 'EOF'
-          const fs = require("fs");
-          const path = "logs/upload_log.json";
+          node <<EOF
+const fs = require("fs");
+const logPath = "logs/upload_log.json";
+let log = [];
 
-          let arr = [];
-          try {
-            arr = JSON.parse(fs.readFileSync(path, "utf8"));
-          } catch (e) {
-            arr = [];
-          }
+try { log = JSON.parse(fs.readFileSync(logPath)); } catch {}
 
-          const entry = {
-            user: process.env.USER_NAME,
-            fileOriginal: process.env.ORIGINAL_NAME,
-            tmpPath: process.env.TMP_PATH,
-            savedAs: process.env.DEST,
-            qr: process.env.QR_VALUE || "",
-            status: process.env.STATUS,
-            time: process.env.TIME_UTC
-          };
+log.push({
+  user: process.env.USER_NAME,
+  fileOriginal: process.env.ORIGINAL_NAME,
+  tmpPath: process.env.TMP_PATH,
+  savedAs: process.env.DEST,
+  qr: "${QR}",
+  status: process.env.STATUS,
+  time: "${TIME}"
+});
 
-          arr.push(entry);
-          fs.writeFileSync(path, JSON.stringify(arr, null, 2));
-          EOF
-        env:
-          DEST: ${{ env.DEST }}
-          QR_VALUE: ${{ env.QR }}
-          STATUS: ${{ env.STATUS }}
-          TIME_UTC: ${{ env.TIME_UTC }}
+fs.writeFileSync(logPath, JSON.stringify(log, null, 2));
+EOF
 
       - name: Commit updates
         run: |
           git config user.name "Upload-Bot"
           git config user.email "bot@example.com"
           git add inbox logs
-          git commit -m "Process uploaded Delivery Note" || echo "No changes"
+          git commit -m "Processed DN" || echo "No changes"
           git push
