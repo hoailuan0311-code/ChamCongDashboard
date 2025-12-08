@@ -1,68 +1,159 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Upload Delivery Note</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- UI đẹp -->
   <style>
     body {
       margin: 0;
-      font-family: system-ui, sans-serif;
-      background: #f3f6fb;
-      padding: 24px;
+      padding: 0;
+      background: #eef3fa;
+      font-family: system-ui, -apple-system, sans-serif;
     }
+
     .topbar {
+      padding: 16px 26px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+      font-size: 18px;
+      font-weight: 600;
     }
+
     .logout-btn {
-      padding: 6px 14px;
       background: #ef4444;
       color: white;
-      border-radius: 20px;
-      cursor: pointer;
       border: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 14px;
+      cursor: pointer;
       font-weight: 600;
+      box-shadow: 0 3px 10px rgba(239,68,68,0.3);
+    }
+
+    .panel {
+      margin: 26px auto;
+      width: min(1300px, 95%);
+      background: #fff;
+      padding: 26px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      font-size: 26px;
+      margin: 0 0 10px 0;
+      font-weight: 700;
+    }
+
+    .sub {
+      margin-bottom: 22px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .btn-start {
+      padding: 12px 26px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      margin-left: 10px;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.3);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 26px;
+      background: white;
+    }
+
+    table tr th {
+      background: #f3f4f6;
+      padding: 10px;
+      border-bottom: 2px solid #ddd;
+      text-align: left;
+    }
+
+    table tr td {
+      border-bottom: 1px solid #eee;
+      padding: 10px;
+      font-size: 15px;
+    }
+
+    /* QR crop preview */
+    #qrPreviewBox {
+      margin-top: 30px;
+      padding: 14px;
+      border: 1px dashed #999;
+      display: none;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    #qrPreviewBox img {
+      max-width: 280px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
   </style>
 </head>
 
 <body>
-
-<div class="topbar">
-  <h2>Upload Delivery Note</h2>
-
-  <div>
-    <span id="username"></span>
-    <button class="logout-btn" onclick="logout()">Đăng xuất</button>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div>Upload Delivery Note</div>
+    <div>
+      <span id="username" style="margin-right: 16px; font-size:15px; color:#111;"></span>
+      <button class="logout-btn" onclick="logout()">Đăng xuất</button>
+    </div>
   </div>
-</div>
 
-<input id="files" type="file" multiple accept="image/*">
-<button onclick="startUpload()">Bắt đầu tải lên</button>
+  <!-- MAIN PANEL -->
+  <div class="panel">
 
-<table border="1" cellspacing="0" cellpadding="6" style="margin-top:20px; width:100%; background:white">
-  <thead>
-    <tr>
-      <th>Tập tin</th>
-      <th>QR / Trạng thái</th>
-      <th>Thời gian</th>
-    </tr>
-  </thead>
-  <tbody id="fileTable"></tbody>
-</table>
+    <h1>Upload Delivery Note</h1>
+    <div class="sub">Chọn 1–100 hình. Hệ thống sẽ đọc QR, nén hình, đổi tên và upload lên GitHub.</div>
 
-<!-- ZXing + jsQR -->
-<script src="https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/umd/index.min.js"></script>
-<script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+    <input type="file" id="files" multiple accept="image/*">
+    <button class="btn-start" onclick="startUpload()">Bắt đầu tải lên</button>
 
-<!-- QR helper + upload -->
-<script src="qr.js"></script>
-<script src="upload.js"></script>
+    <!-- TABLE -->
+    <table>
+      <thead>
+        <tr>
+          <th style="width:35%">Tập tin</th>
+          <th style="width:40%">QR / Trạng thái</th>
+          <th style="width:25%">Thời gian</th>
+        </tr>
+      </thead>
+      <tbody id="fileTable"></tbody>
+    </table>
+
+    <!-- QR PREVIEW -->
+    <div id="qrPreviewBox">
+      <b>Vùng crop QR:</b><br><br>
+      <img id="qrPreview">
+    </div>
+
+  </div>
+
+  <!-- QR ENGINES -->
+  <script src="https://unpkg.com/@zxing/browser@latest"></script>
+  <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <!-- Internal Logic -->
+  <script src="qr.js"></script>
+  <script src="upload.js"></script>
 
 </body>
 </html>
