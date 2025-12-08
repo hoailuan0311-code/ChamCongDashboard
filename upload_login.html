@@ -1,84 +1,103 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Đăng nhập – Upload Delivery Note</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
-    body{
-      margin:0;padding:0;display:flex;justify-content:center;align-items:center;
-      background:#eef3fa;height:100vh;font-family:sans-serif;
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, sans-serif;
+      background: #eff3f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
-    .card{
-      width:380px;background:#fff;padding:26px;border-radius:14px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.1);
+    .card {
+      width: 380px;
+      background: white;
+      padding: 24px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
     }
-    .row{margin-bottom:14px;}
-    input{width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;}
-    button{
-      width:100%;padding:10px;background:#2563eb;color:white;border:none;
-      border-radius:8px;cursor:pointer;font-size:15px;font-weight:600;
+    h1 { margin: 0 0 12px; }
+    label { font-size: 14px; }
+    input {
+      width: 100%;
+      padding: 9px;
+      margin-top: 4px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
     }
-    #err{color:#d00;margin-top:10px;height:18px;}
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    #error { color: red; margin-top: 8px; font-size: 13px; }
   </style>
 </head>
 
 <body>
-<div class="card">
-  <h2>Upload Delivery Note</h2>
+  <div class="card">
+    <h1>Upload Delivery Note</h1>
 
-  <div class="row">
     <label>User</label>
-    <input id="u" type="text">
-  </div>
+    <input id="user" type="text" autocomplete="username">
 
-  <div class="row">
     <label>Password</label>
-    <input id="p" type="password">
-  </div>
+    <input id="pass" type="password" autocomplete="current-password">
 
-  <div class="row">
     <label>PAT Token</label>
-    <input id="t" type="password">
+    <input id="token" type="password" autocomplete="off">
+
+    <button onclick="login()">Đăng nhập</button>
+
+    <div id="error"></div>
   </div>
-
-  <button onclick="login()">Đăng nhập</button>
-
-  <div id="err"></div>
-</div>
 
 <script>
-async function login(){
-  const user = document.getElementById("u").value.trim().toLowerCase();
-  const pass = document.getElementById("p").value.trim();
-  const token = document.getElementById("t").value.trim();
-  const errBox = document.getElementById("err");
+async function login() {
+  const u = document.getElementById("user").value.trim().toLowerCase();
+  const p = document.getElementById("pass").value.trim();
+  const t = document.getElementById("token").value.trim();
+  const err = document.getElementById("error");
 
-  errBox.textContent = "";
+  err.textContent = "";
 
-  if(!user || !pass || !token){
-    errBox.textContent = "Thiếu thông tin.";
+  if (!u || !p || !t) {
+    err.textContent = "Vui lòng nhập đủ thông tin.";
     return;
   }
 
   try {
     const res = await fetch("users.json?ts=" + Date.now());
-    if (!res.ok) throw new Error("Không đọc được users.json");
-
     const users = await res.json();
 
-    if (!users[user] || users[user] !== pass) {
-      errBox.textContent = "Sai user hoặc password.";
+    if (!users[u] || users[u] !== p) {
+      err.textContent = "Sai user hoặc mật khẩu.";
       return;
     }
 
-    sessionStorage.setItem("user", user);
-    sessionStorage.setItem("token", token);
+    // SAVE SESSION (CHUẨN DUY NHẤT)
+    sessionStorage.setItem("session_user", u);
+    sessionStorage.setItem("session_token", t);
 
     window.location.href = "upload.html";
-  }
-  catch(e){
-    errBox.textContent = "Lỗi đăng nhập: " + e.message;
+
+  } catch (e) {
+    err.textContent = "Không đọc được users.json";
   }
 }
 </script>
