@@ -1,71 +1,172 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Login – Upload DN</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <title>Đăng nhập – Upload Delivery Note</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; background:#eef2f7; padding:40px; }
-    .box {
-      max-width:400px; margin:auto; padding:25px; background:#fff;
-      border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #e3f2fd 0, #f3f6fb 45%, #e8edf7 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
     }
-    input {
-      width:100%; padding:12px; margin:8px 0;
-      border:1px solid #ccc; border-radius:8px;
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      padding: 28px 26px 26px;
     }
-    button {
-      width:100%; padding:12px;
-      background:#1565c0; color:white; border:none;
-      border-radius:8px; cursor:pointer; font-size:17px;
+    h1 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .subtitle {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #374151;
+      font-weight: 500;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background-color .15s;
+      background: #f9fafb;
+    }
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
+      background: #ffffff;
+    }
+    .row {
+      margin-bottom: 14px;
+    }
+    .btn {
+      width: 100%;
+      padding: 10px 0;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      box-shadow: 0 8px 18px rgba(37,99,235,0.35);
+      transition: transform .08s, box-shadow .08s, filter .08s;
+    }
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(37,99,235,0.25);
+      filter: brightness(0.97);
+    }
+    .error {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #b91c1c;
+      min-height: 18px;
+    }
+    .hint {
+      margin-top: 14px;
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+    .hint code {
+      background: #f3f4f6;
+      padding: 2px 4px;
+      border-radius: 4px;
     }
   </style>
 </head>
-
 <body>
-  <div class="box">
-    <h2>Đăng nhập</h2>
-    <input id="user" placeholder="Username">
-    <input id="pass" placeholder="Password" type="password">
-    <input id="token" placeholder="GitHub Token (bắt buộc)">
-    <button onclick="login()">Đăng nhập</button>
+  <div class="card">
+    <h1>Upload Delivery Note</h1>
+    <div class="subtitle">Đăng nhập để đổi tên & upload chứng từ vào GitHub.</div>
+
+    <form id="loginForm">
+      <div class="row">
+        <label for="username">User</label>
+        <input id="username" type="text" autocomplete="username" placeholder="vd: cris" />
+      </div>
+      <div class="row">
+        <label for="password">Mật khẩu</label>
+        <input id="password" type="password" autocomplete="current-password" />
+      </div>
+      <div class="row">
+        <label for="token">GitHub Personal Access Token (PAT)</label>
+        <input id="token" type="password" autocomplete="off"
+               placeholder="Chỉ lưu trong tab này, không lưu vào code" />
+      </div>
+      <button type="submit" class="btn">Đăng nhập</button>
+    </form>
+
+    <div id="error" class="error"></div>
+
+    <div class="hint">
+      User &amp; Pass lấy từ file <code>users.json</code> trong repo.<br/>
+      PAT: tạo trong GitHub → chỉ cần quyền <code>repo &gt; contents: read/write</code>.
+    </div>
   </div>
 
-<script>
-const USERS = {
-  "linh": "123456",
-  "cris": "abc123",
-  "tuan": "999",
-  "dat": "abc",
-  "hanh": "9999"
-};
+  <script>
+    async function loadUsers() {
+      const res = await fetch("users.json?ts=" + Date.now());
+      if (!res.ok) throw new Error("Không đọc được users.json");
+      return res.json();
+    }
 
-// nếu đã login → vào thẳng upload.html
-(function(){
-  if (localStorage.getItem("session_user") &&
-      localStorage.getItem("session_token")) {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById("error");
+      errBox.textContent = "";
+
+      const user = document.getElementById("username").value.trim().toLowerCase();
+      const pass = document.getElementById("password").value.trim();
+      const token = document.getElementById("token").value.trim();
+
+      if (!user || !pass || !token) {
+        errBox.textContent = "Vui lòng nhập đủ User, Password và PAT.";
+        return;
+      }
+
+      try {
+        const users = await loadUsers();
+        if (!users[user] || users[user] !== pass) {
+          errBox.textContent = "Sai user hoặc mật khẩu.";
+          return;
+        }
+
+        // Lưu session (per tab)
+        sessionStorage.setItem("session_user", user);
+        sessionStorage.setItem("session_token", token);
+
         window.location.href = "upload.html";
-  }
-})();
-
-function login() {
-  const u = user.value.trim().toLowerCase();
-  const p = pass.value.trim();
-  const t = token.value.trim();
-
-  if (!USERS[u] || USERS[u] !== p)
-    return alert("Sai username hoặc password!");
-
-  if (!t)
-    return alert("Token bắt buộc!");
-
-  // lưu đúng KEY mà upload.js yêu cầu
-  localStorage.setItem("session_user", u);
-  localStorage.setItem("session_token", t);
-
-  window.location.href = "upload.html";
-}
-</script>
-
+      } catch (err) {
+        console.error(err);
+        errBox.textContent = "Không thể đăng nhập: " + err.message;
+      }
+    });
+  </script>
 </body>
 </html>
