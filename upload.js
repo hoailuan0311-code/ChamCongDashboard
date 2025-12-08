@@ -12,27 +12,23 @@ let ghToken = null;
 
 
 //------------------------------------------------------------
-// LOGIN CHECK
+// LOGIN CHECK (anti-loop)
 //------------------------------------------------------------
 (function () {
+    const page = location.pathname.split("/").pop();
     const u = localStorage.getItem("session_user");
     const t = localStorage.getItem("session_token");
 
-    if (!u || !t) {
-        window.location.href = "upload_login.html";
-        return;
+    if (page === "upload.html") {
+        if (!u || !t) {
+            window.location.href = "upload_login.html";
+            return;
+        }
+
+        document.getElementById("username").innerText = `Xin chào ${u}`;
+        ghToken = t;
     }
-
-    document.getElementById("username").innerText = `Xin chào ${u}`;
-    ghToken = t;
 })();
-
-function logout() {
-    localStorage.removeItem("session_user");
-    localStorage.removeItem("session_token");
-    window.location.href = "upload_login.html";
-}
-
 
 //------------------------------------------------------------
 // START UPLOAD
