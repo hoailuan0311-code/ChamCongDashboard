@@ -1,8 +1,7 @@
-/****************************************************
- * UPLOAD ENGINE V14 – QR + ASN + SAFE GITHUB PUT
- ****************************************************/
-
-// ====== CONFIG REPO ======
+// upload.js – V16 Turbo + log
+//--------------------------------------------------
+// CONFIG
+//--------------------------------------------------
 const REPO_OWNER = "hoailuan0311-code";
 const REPO_NAME  = "ChamCongDashboard";
 
@@ -10,208 +9,153 @@ const PATH_DONE   = "inbox/Done";
 const PATH_FAILED = "inbox/Failed";
 const LOG_FILE    = "logs/log.json";
 
-let GH_TOKEN = null;
-let CUR_USER = null;
+let ghToken = null;
+let currentUser = null;
 
-// ====== INIT SESSION (chỉ chạy trên upload.html) ======
-(function initSession() {
-  const page = location.pathname.split("/").pop().toLowerCase();
-  if (page !== "upload.html") return;
-
+//--------------------------------------------------
+// Session check (sessionStorage – theo login mới)
+//--------------------------------------------------
+(function () {
   const u = sessionStorage.getItem("session_user");
   const t = sessionStorage.getItem("session_token");
 
-  console.log("SESSION CHECK:", u);
-
   if (!u || !t) {
-    // chưa login → đá về login
-    location.href = "upload_login.html";
+    window.location.href = "upload_login.html";
     return;
   }
 
-  CUR_USER = u;
-  GH_TOKEN = t;
+  currentUser = u;
+  ghToken = t;
 
-  // gắn tên user lên UI nếu có chỗ hiển thị
-  const box =
-    document.getElementById("userBox") ||
-    document.getElementById("userName") ||
-    document.querySelector("[data-user-name]");
-
-  if (box) {
-    box.textContent = u;
-  }
+  console.log("SESSION OK:", u);
 })();
 
-// ====== LOGOUT CHO NÚT onclick="logout()" ======
 function logout() {
   sessionStorage.removeItem("session_user");
   sessionStorage.removeItem("session_token");
-  location.href = "upload_login.html";
+  window.location.href = "upload_login.html";
 }
 
-/****************************************************
- * ENTRY – BẮT ĐẦU UPLOAD
- ****************************************************/
-async function startUpload() {
-  const input = document.getElementById("files");
-  if (!input || !input.files || !input.files.length) {
-    alert("Chưa chọn hình!");
-    return;
-  }
-
-  const files = Array.from(input.files);
-  if (files.length > 100) {
-    alert("Giới hạn tối đa 100 hình/lần.");
-    return;
-  }
-
-  for (const f of files) {
-    // chạy tuần tự cho chắc
-    // (muốn nhanh hơn có thể chạy Promise.all sau)
-    /* eslint-disable no-await-in-loop */
-    await processFile(f);
-    /* eslint-enable no-await-in-loop */
-  }
-}
-
-/****************************************************
- * XỬ LÝ 1 FILE
- ****************************************************/
-async function processFile(file) {
-  const row = addRow(file.name, "Đang giải mã QR…");
-  const previewCanvas = document.getElementById("cropView");
-
-  let result = null;
-
-  try {
-    // extractCode được định nghĩa trong qr.js V14
-    result = await extractCode(file, previewCanvas);
-  } catch (err) {
-    console.error("Decode error:", err);
-    row.status.innerHTML = "❌ Lỗi giải mã QR/ASN";
-    await safeFailed(file, "DECODE_ERROR");
-    await writeLog({
-      ts: Date.now(),
-      user: CUR_USER,
-      srcName: file.name,
-      storedName: null,
-      mode: "DECODE_ERROR",
-      code: null,
-      result: "FAILED"
-    });
-    return;
-  }
-
-  if (!result) {
-    row.status.innerHTML = "❌ Không đọc được QR / ASN → Failed";
-    await safeFailed(file, "NO_CODE");
-    await writeLog({
-      ts: Date.now(),
-      user: CUR_USER,
-      srcName: file.name,
-      storedName: null,
-      mode: "NO_CODE",
-      code: null,
-      result: "FAILED"
-    });
-    return;
-  }
-
-  const { type, code } = result; // type: "QR" | "ASN"
-  if (type === "QR") {
-    row.status.textContent = `QR: ${code}`;
-  } else {
-    row.status.textContent = `ASN: ${code} (fallback)`;
-  }
-
-  // nén ảnh
-  let compressed;
-  try {
-    compressed = await compressImage(file);
-  } catch (err) {
-    console.error("Compress error:", err);
-    row.status.innerHTML = "❌ Lỗi nén ảnh → Failed";
-    await safeFailed(file, "COMPRESS_ERROR");
-    await writeLog({
-      ts: Date.now(),
-      user: CUR_USER,
-      srcName: file.name,
-      storedName: null,
-      mode: "COMPRESS_ERROR",
-      code,
-      result: "FAILED"
-    });
-    return;
-  }
-
-  const newName = `${code}.jpg`;
-
-  // upload vào thư mục Done
-  try {
-    await uploadDone(compressed, newName);
-
-    row.status.textContent += " → Upload OK";
-    row.time.textContent = new Date().toLocaleTimeString();
-
-    await writeLog({
-      ts: Date.now(),
-      user: CUR_USER,
-      srcName: file.name,
-      storedName: newName,
-      mode: type,        // "QR" hoặc "ASN"
-      code,
-      result: "DONE"
-    });
-  } catch (err) {
-    console.error("Upload Done error:", err);
-    row.status.innerHTML = "❌ Lỗi upload → chuyển Failed";
-
-    await safeFailed(file, "UPLOAD_ERROR");
-
-    await writeLog({
-      ts: Date.now(),
-      user: CUR_USER,
-      srcName: file.name,
-      storedName: newName,
-      mode: "UPLOAD_ERROR",
-      code,
-      result: "FAILED"
-    });
-  }
-}
-
-/****************************************************
- * UI – THÊM DÒNG VÀO BẢNG
- ****************************************************/
-function addRow(name, st) {
-  const tb = document.getElementById("fileTable");
+//--------------------------------------------------
+// UI helper
+//--------------------------------------------------
+function addRow(name, statusText) {
+  const tbody = document.getElementById("fileTable");
   const tr = document.createElement("tr");
 
   tr.innerHTML = `
     <td>${name}</td>
-    <td class="st">${st}</td>
+    <td class="st">${statusText}</td>
     <td class="tm">—</td>
   `;
 
-  tb.appendChild(tr);
-
+  tbody.appendChild(tr);
   return {
+    row: tr,
     status: tr.querySelector(".st"),
     time: tr.querySelector(".tm")
   };
 }
 
-/****************************************************
- * NÉN ẢNH – GIẢM KÍCH THƯỚC + CHẤT LƯỢNG
- ****************************************************/
+//--------------------------------------------------
+// START – chạy nhiều file song song (4 luồng)
+//--------------------------------------------------
+async function startUpload() {
+  const input = document.getElementById("files");
+  const files = Array.from(input.files || []);
+
+  if (!files.length) {
+    alert("Chưa chọn file!");
+    return;
+  }
+
+  const cropView = document.getElementById("cropView");
+
+  // Tạo row trước
+  const tasks = files.map((f) => ({
+    file: f,
+    ui: addRow(f.name, "Đang xử lý…"),
+    canvas: cropView
+  }));
+
+  const CONCURRENCY = 4;
+  let idx = 0;
+
+  async function workerLoop() {
+    while (idx < tasks.length) {
+      const myIndex = idx++;
+      const task = tasks[myIndex];
+      await processFile(task.file, task.ui, task.canvas);
+    }
+  }
+
+  const runners = [];
+  for (let i = 0; i < Math.min(CONCURRENCY, tasks.length); i++) {
+    runners.push(workerLoop());
+  }
+
+  await Promise.all(runners);
+  alert("Xong tất cả file.");
+}
+
+//--------------------------------------------------
+// Process 1 file
+//--------------------------------------------------
+async function processFile(file, ui, previewCanvas) {
+  try {
+    ui.status.textContent = "Đang đọc QR / ASN…";
+
+    const info = await extractCode(file, previewCanvas);
+
+    if (!info) {
+      ui.status.textContent = "❌ Không đọc được QR/ASN → Failed";
+      await uploadFailed(file);
+      return;
+    }
+
+    const code = info.code;
+    const label =
+      info.type === "QR"
+        ? `QR: ${code}`
+        : `ASN: ${code} (fallback)`;
+
+    ui.status.textContent = label + " → Upload…";
+
+    // Nén hình
+    const compressed = await compressImage(file);
+    const newName = `${code}.jpg`;
+
+    // Upload vào Done
+    await uploadGitHub(`${PATH_DONE}/${newName}`, compressed, `Upload ${newName}`);
+
+    ui.status.textContent = label + " → Upload OK";
+    ui.time.textContent = new Date().toLocaleTimeString();
+
+    // Ghi log
+    await writeLog({
+      user: currentUser,
+      file: newName,
+      type: info.type,
+      code,
+      ts: Date.now()
+    });
+  } catch (e) {
+    console.error("processFile error:", e);
+    ui.status.textContent = "❌ Lỗi xử lý → Failed";
+    await uploadFailed(file);
+  }
+}
+
+//--------------------------------------------------
+// Compress image ~ 900px, quality 0.7
+//--------------------------------------------------
 function compressImage(file) {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 1600;
       let w = img.width;
       let h = img.height;
+      const MAX = 1600;
 
       if (w > MAX) {
         h = (h * MAX) / w;
@@ -221,7 +165,6 @@ function compressImage(file) {
       const canvas = document.createElement("canvas");
       canvas.width = w;
       canvas.height = h;
-
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, w, h);
 
@@ -231,138 +174,122 @@ function compressImage(file) {
         0.7
       );
     };
-
     img.src = URL.createObjectURL(file);
   });
 }
 
-/****************************************************
- * GITHUB UPLOAD – SAFE (GET SHA TRƯỚC)
- ****************************************************/
-async function uploadGithub(path, base64Content, message) {
+//--------------------------------------------------
+// GitHub helpers
+//--------------------------------------------------
+async function uploadGitHub(path, blob, message) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  const content = await blobToBase64(blob);
 
-  // 1) GET để lấy SHA nếu file đã tồn tại
+  const headers = {
+    Authorization: `Bearer ${ghToken}`,
+    "Content-Type": "application/json"
+  };
+
+  // kiểm tra tồn tại để lấy sha (tránh lỗi 422)
   let sha = null;
-  const getRes = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${GH_TOKEN}`,
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (getRes.status === 200) {
-    const js = await getRes.json();
+  let res = await fetch(url, { headers: { Authorization: `Bearer ${ghToken}` } });
+  if (res.status === 200) {
+    const js = await res.json();
     sha = js.sha;
-  } else if (getRes.status !== 404) {
-    const txt = await getRes.text();
-    throw new Error(`GET before PUT failed: ${getRes.status} – ${txt}`);
   }
 
-  // 2) PUT với/không với SHA
-  const body = { message, content: base64Content };
-  if (sha) body.sha = sha;
-
-  const putRes = await fetch(url, {
+  res = await fetch(url, {
     method: "PUT",
-    headers: {
-      Authorization: `Bearer ${GH_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
+    headers,
+    body: JSON.stringify({ message, content, sha })
   });
 
-  if (!putRes.ok) {
-    const txt = await putRes.text();
-    throw new Error(`PUT failed: ${putRes.status} – ${txt}`);
-  }
-
-  return putRes.json();
-}
-
-// Upload thành công → PATH_DONE
-async function uploadDone(blob, filename) {
-  const base64 = await blobToBase64(blob);
-  const path = `${PATH_DONE}/${filename}`;
-  return uploadGithub(path, base64, `upload done ${filename}`);
-}
-
-// Upload fail → PATH_FAILED (giữ nguyên tên gốc)
-async function safeFailed(file, reason) {
-  try {
-    const base64 = await blobToBase64(file);
-    const path = `${PATH_FAILED}/${file.name}`;
-    await uploadGithub(path, base64, `upload failed (${reason}) ${file.name}`);
-  } catch (err) {
-    console.warn("Upload Failed folder error:", err);
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error("UploadGitHub failed: " + t);
   }
 }
 
-/****************************************************
- * LOG – GHI VÀO logs/log.json
- ****************************************************/
-async function writeLog(entry) {
-  const path = LOG_FILE;
+async function uploadFailed(file) {
+  const path = `${PATH_FAILED}/${file.name}`;
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
+  const content = await blobToBase64(file);
 
-  let oldJson = "[]";
+  const headers = {
+    Authorization: `Bearer ${ghToken}`,
+    "Content-Type": "application/json"
+  };
+
+  // không cần sha, thường Failed không trùng tên
+  const res = await fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      message: `Failed ${file.name}`,
+      content
+    })
+  });
+
+  if (!res.ok) {
+    console.warn("UploadFailed error:", await res.text());
+  }
+}
+
+//--------------------------------------------------
+// Log JSON
+//--------------------------------------------------
+async function writeLog(entry) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LOG_FILE}`;
+
+  const headers = {
+    Authorization: `Bearer ${ghToken}`,
+    "Content-Type": "application/json"
+  };
+
+  let old = "[]";
   let sha = null;
 
-  const getRes = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${GH_TOKEN}`,
-      Accept: "application/vnd.github+json"
-    }
-  });
-
-  if (getRes.status === 200) {
-    const js = await getRes.json();
+  let res = await fetch(url, { headers: { Authorization: `Bearer ${ghToken}` } });
+  if (res.status === 200) {
+    const js = await res.json();
+    old = atob(js.content);
     sha = js.sha;
-    oldJson = atob(js.content);
-  } else if (getRes.status !== 404) {
-    console.warn("GET log.json error:", getRes.status);
   }
 
   let arr = [];
   try {
-    arr = JSON.parse(oldJson);
-    if (!Array.isArray(arr)) arr = [];
+    arr = JSON.parse(old);
   } catch {
     arr = [];
   }
 
   arr.push(entry);
 
-  const newContent = btoa(JSON.stringify(arr, null, 2));
-
-  const body = { message: "update upload log", content: newContent };
-  if (sha) body.sha = sha;
-
-  const putRes = await fetch(url, {
+  res = await fetch(url, {
     method: "PUT",
-    headers: {
-      Authorization: `Bearer ${GH_TOKEN}`,
-      Accept: "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
+    headers,
+    body: JSON.stringify({
+      message: "Update log",
+      content: btoa(JSON.stringify(arr, null, 2)),
+      sha
+    })
   });
 
-  if (!putRes.ok) {
-    console.warn("PUT log.json error:", putRes.status, await putRes.text());
+  if (!res.ok) {
+    console.warn("writeLog error:", await res.text());
   }
 }
 
-/****************************************************
- * UTIL – BINARY → BASE64
- ****************************************************/
+//--------------------------------------------------
+// Utils
+//--------------------------------------------------
 function blobToBase64(blob) {
   return new Promise((resolve) => {
     const r = new FileReader();
-    r.onload = () => resolve(r.result.split(",")[1]);
+    r.onload = () => {
+      const base64 = r.result.split(",")[1];
+      resolve(base64);
+    };
     r.readAsDataURL(blob);
   });
 }
