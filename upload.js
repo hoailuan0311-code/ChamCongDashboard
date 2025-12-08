@@ -1,288 +1,256 @@
-const USERS_URL = "users.json";
+//---------------------------------------------------
+//  CONFIG - dùng đúng 1 lần, không trùng biến nữa
+//---------------------------------------------------
 const REPO_OWNER = "hoailuan0311-code";
 const REPO_NAME  = "ChamCongDashboard";
 
-const loginView  = document.getElementById("loginView");
-const uploadView = document.getElementById("uploadView");
+// nơi lưu ảnh sau upload
+const DONE_PATH   = "inbox/Done";
+const FAILED_PATH = "inbox/Failed";
 
-const usernameEl = document.getElementById("username");
-const passwordEl = document.getElementById("password");
-const tokenEl    = document.getElementById("token");
-const loginErrEl = document.getElementById("loginError");
+// file log chung
+const LOG_FILE = "logs/log.json";
 
-const helloUser  = document.getElementById("helloUser");
-const fileInput  = document.getElementById("fileInput");
-const fileListEl = document.getElementById("fileList");
-const logsEl     = document.getElementById("logs");
-const btnLogin   = document.getElementById("btnLogin");
-const btnStart   = document.getElementById("btnStart");
-const btnLogout  = document.getElementById("btnLogout");
+let ghToken = null;
 
-// ========== SESSION HANDLING (auto logout khi đóng tab) ==========
-function getSession() {
-  try {
-    const raw = sessionStorage.getItem("dn_session");
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
+
+//---------------------------------------------------
+//  Kiểm tra login
+//---------------------------------------------------
+(function checkLogin() {
+  const sess = localStorage.getItem("session_user");
+  const token = localStorage.getItem("session_token");
+
+  if (!sess || !token) {
+    window.location.href = "upload_login.html";
+    return;
   }
-}
-function setSession(obj) {
-  sessionStorage.setItem("dn_session", JSON.stringify(obj));
-}
-function clearSession() {
-  sessionStorage.removeItem("dn_session");
-}
 
-// ========== INIT ==========
-(function init() {
-  const sess = getSession();
-  if (sess && sess.user && sess.token) {
-    showUploadView(sess.user);
-  } else {
-    showLoginView();
-  }
+  document.getElementById("username").innerText = `Xin chào ${sess}!`;
+  ghToken = token;
 })();
 
-function showLoginView() {
-  loginView.style.display  = "block";
-  uploadView.style.display = "none";
-}
-function showUploadView(user) {
-  loginView.style.display  = "none";
-  uploadView.style.display = "block";
-  helloUser.textContent = `Xin chào ${user}!`;
+function logout() {
+  localStorage.removeItem("session_user");
+  localStorage.removeItem("session_token");
+  window.location.href = "upload_login.html";
 }
 
-// ========== LOG UI ==========
-function log(msg, isErr = false) {
-  const line = document.createElement("div");
-  line.textContent = msg;
-  line.style.color = isErr ? "#dc2626" : "#111827";
-  logsEl.appendChild(line);
-  logsEl.scrollTop = logsEl.scrollHeight;
-}
 
-// ========== LOGIN ==========
-btnLogin.addEventListener("click", async () => {
-  loginErrEl.textContent = "";
-  const user = usernameEl.value.trim();
-  const pass = passwordEl.value.trim();
-  const token = tokenEl.value.trim();
+//---------------------------------------------------
+//  Tải file → đọc QR → nén → upload
+//---------------------------------------------------
+async function startUpload() {
+  const files = document.getElementById("files").files;
+  if (!files.length) return alert("Chưa chọn file!");
 
-  if (!user || !pass || !token) {
-    loginErrEl.textContent = "Vui lòng nhập đầy đủ user, password và token.";
-    return;
+  for (const f of files) {
+    await handleFile(f);
   }
+}
+
+
+//---------------------------------------------------
+async function handleFile(file) {
+  const row = addRow(file.name, "Đang xử lý…");
 
   try {
-    const res = await fetch(USERS_URL + `?t=${Date.now()}`);
-    if (!res.ok) throw new Error("Không đọc được users.json");
-    const users = await res.json();
-
-    if (!users[user] || users[user] !== pass) {
-      loginErrEl.textContent = "Sai user hoặc password.";
+    // 1) Đọc QR
+    const qr = await extractQR(file);
+    if (!qr) {
+      row.status.innerText = "❌ Không đọc được QR → Failed";
+      await uploadFailed(file);
       return;
     }
 
-    // Test nhanh token bằng 1 request nhẹ (lấy repo info)
-    const testRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
-      headers: { "Authorization": `Bearer ${token}` }
+    row.status.innerText = `QR: ${qr}`;
+
+    // 2) Nén ảnh
+    const compressed = await compressImage(file);
+
+    // 3) Upload lên GitHub → tên chuẩn {QR}.jpg
+    const newName = `${qr}.jpg`;
+    await uploadToGitHub(compressed, newName);
+
+    row.status.innerText = "✔ Thành công";
+    row.time.innerText = new Date().toLocaleTimeString();
+
+    await writeLog({
+      user: localStorage.getItem("session_user"),
+      file: newName,
+      time: Date.now(),
+      qr
     });
-    if (!testRes.ok) {
-      loginErrEl.textContent = "Token GitHub không hợp lệ hoặc không có quyền repo.";
-      return;
-    }
 
-    setSession({ user, token });
-    showUploadView(user);
-    log(`Đăng nhập thành công: ${user}`);
-  } catch (err) {
-    loginErrEl.textContent = err.message;
+  } catch (e) {
+    console.error(e);
+    row.status.innerText = "❌ Lỗi";
+    await uploadFailed(file);
   }
-});
-
-// ========== LOGOUT ==========
-btnLogout.addEventListener("click", () => {
-  clearSession();
-  location.reload();
-});
-
-// ========== UPLOAD ==========
-let currentFiles = [];
-
-fileInput.addEventListener("change", () => {
-  currentFiles = Array.from(fileInput.files || []);
-  renderFileList();
-});
-
-function renderFileList() {
-  fileListEl.innerHTML = "";
-  currentFiles.forEach(f => {
-    const row = document.createElement("div");
-    row.className = "file-row";
-    row.innerHTML = `
-      <div>${f.name}</div>
-      <div class="status status-run">Chờ xử lý...</div>
-      <div class="time">-</div>
-    `;
-    fileListEl.appendChild(row);
-  });
 }
 
-btnStart.addEventListener("click", async () => {
-  const sess = getSession();
-  if (!sess || !sess.user || !sess.token) {
-    alert("Phiên đăng nhập hết hạn. Vui lòng login lại.");
-    clearSession();
-    location.reload();
-    return;
-  }
-  const ghToken = sess.token;
-  const user    = sess.user;
 
-  if (currentFiles.length === 0) {
-    alert("Chưa chọn hình.");
-    return;
-  }
+//---------------------------------------------------
+//  Thêm dòng vào bảng
+//---------------------------------------------------
+function addRow(name, status) {
+  const tb = document.getElementById("fileTable");
+  const tr = document.createElement("tr");
 
-  btnStart.disabled = true;
-  log(`Bắt đầu xử lý ${currentFiles.length} file...`);
+  tr.innerHTML = `
+    <td>${name}</td>
+    <td class="st">${status}</td>
+    <td class="tm">—</td>
+  `;
 
-  const rows = Array.from(fileListEl.children);
+  tb.appendChild(tr);
 
-  for (let i = 0; i < currentFiles.length; i++) {
-    const file = currentFiles[i];
-    const row = rows[i];
-    const statusEl = row.querySelector(".status");
-    const timeEl   = row.querySelector(".time");
-
-    const t0 = performance.now();
-
-    try {
-      statusEl.textContent = "Đang đọc QR...";
-      statusEl.className = "status status-run";
-
-      const qrText = await decodeQRFromFile(file);
-
-      if (!qrText) {
-        statusEl.textContent = "❌ Không đọc được QR → Failed (không upload)";
-        statusEl.className = "status status-fail";
-
-        const elapsed = (performance.now() - t0) / 1000;
-        timeEl.textContent = elapsed.toFixed(1) + "s";
-
-        // Ghi log FAILED_QR nhưng không upload file
-        await appendLogEntry(ghToken, {
-          time: new Date().toISOString(),
-          user,
-          original: file.name,
-          savedAs: null,
-          qr: null,
-          status: "FAILED_QR"
-        });
-
-        log(`FAILED_QR: ${file.name}`);
-        continue;
-      }
-
-      // clean tên QR
-      const cleanQR = qrText.replace(/[^0-9A-Za-z_-]/g, "");
-      if (!cleanQR) {
-        statusEl.textContent = "❌ QR đọc được nhưng không hợp lệ.";
-        statusEl.className = "status status-fail";
-        continue;
-      }
-
-      // Nén ảnh
-      statusEl.textContent = "Đang nén hình...";
-      const base64Image = await compressToBase64(file);
-
-      // Upload lên inbox/Done/{QR}.jpg
-      statusEl.textContent = "Đang upload...";
-      const destPath = `inbox/Done/${cleanQR}.jpg`;
-      await githubPutFile(ghToken, destPath, base64Image, `Upload DN ${cleanQR}`);
-
-      const elapsed = (performance.now() - t0) / 1000;
-      timeEl.textContent = elapsed.toFixed(1) + "s";
-      statusEl.textContent = `✔ DONE – ${cleanQR}.jpg`;
-      statusEl.className = "status status-ok";
-
-      // Ghi log
-      await appendLogEntry(ghToken, {
-        time: new Date().toISOString(),
-        user,
-        original: file.name,
-        savedAs: destPath,
-        qr: cleanQR,
-        status: "DONE"
-      });
-
-      log(`DONE: ${file.name} → ${destPath}`);
-    } catch (err) {
-      console.error(err);
-      statusEl.textContent = "✗ Lỗi upload";
-      statusEl.className = "status status-fail";
-      timeEl.textContent = "-";
-      log(`ERROR: ${file.name} – ${err.message}`, true);
-    }
-  }
-
-  btnStart.disabled = false;
-  log("Hoàn tất xử lý tất cả file.");
-});
-
-// ========== IMAGE COMPRESS & PUT ==========
-async function compressToBase64(file, maxWidth = 1600, quality = 0.7) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-
-      let w = img.width;
-      let h = img.height;
-      if (w > maxWidth) {
-        h = h * (maxWidth / w);
-        w = maxWidth;
-      }
-
-      canvas.width = w;
-      canvas.height = h;
-      ctx.drawImage(img, 0, 0, w, h);
-
-      const dataUrl = canvas.toDataURL("image/jpeg", quality);
-      resolve(dataUrl.split(",")[1]); // chỉ lấy phần base64
-    };
-    img.onerror = () => reject(new Error("Không đọc được ảnh để nén"));
-    img.src = URL.createObjectURL(file);
-  });
-}
-
-// PUT file vào repo
-async function githubPutFile(ghToken, path, base64Content, message, sha) {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${encodeURIComponent(path)}`;
-
-  const body = {
-    message: message || `Upload ${path}`,
-    content: base64Content,
-    branch: "main"
+  return {
+    status: tr.querySelector(".st"),
+    time:   tr.querySelector(".tm")
   };
-  if (sha) body.sha = sha;
+}
+
+
+//---------------------------------------------------
+// Upload file vào thư mục Done
+//---------------------------------------------------
+async function uploadToGitHub(blob, filename) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DONE_PATH}/${filename}`;
+
+  const content = await blobToBase64(blob);
 
   const res = await fetch(url, {
     method: "PUT",
     headers: {
       "Authorization": `Bearer ${ghToken}`,
-      "Accept": "application/vnd.github+json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(body)
+    body: JSON.stringify({
+      message: `Upload ${filename}`,
+      content: content
+    })
   });
 
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`PUT ${path} failed: ${res.status} – ${t}`);
+  if (!res.ok) throw new Error("Upload failed: " + await res.text());
+}
+
+
+//---------------------------------------------------
+// Upload vào Failed nếu không đọc được QR
+//---------------------------------------------------
+async function uploadFailed(file) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FAILED_PATH}/${file.name}`;
+
+  const content = await blobToBase64(file);
+
+  await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${ghToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: `Failed ${file.name}`,
+      content
+    })
+  });
+}
+
+
+//---------------------------------------------------
+//  Ghi log JSON vào logs/log.json
+//---------------------------------------------------
+async function writeLog(entry) {
+  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LOG_FILE}`;
+
+  // lấy file log
+  let old = "";
+  let sha = null;
+
+  let res = await fetch(url, {
+    headers: { "Authorization": `Bearer ${ghToken}` }
+  });
+
+  if (res.status === 200) {
+    const json = await res.json();
+    old = atob(json.content);
+    sha = json.sha;
   }
-  return res.json();
+
+  let arr = [];
+  try { arr = JSON.parse(old) } catch {}
+
+  arr.push(entry);
+
+  // ghi lại
+  await fetch(url, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${ghToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Update log",
+      content: btoa(JSON.stringify(arr, null, 2)),
+      sha
+    })
+  });
+}
+
+
+//---------------------------------------------------
+// UTIL
+//---------------------------------------------------
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(",")[1]);
+    r.readAsDataURL(blob);
+  });
+}
+
+// compress ảnh 1MB → 300–400KB
+function compressImage(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+
+      const MAX = 1600;
+      let w = img.width;
+      let h = img.height;
+
+      if (w > MAX) { h *= MAX / w; w = MAX; }
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+
+      canvas.toBlob(b => resolve(b), "image/jpeg", 0.6);
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// dùng thư viện qr.js trong repo
+async function extractQR(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const code = jsQR(
+        ctx.getImageData(0, 0, canvas.width, canvas.height).data,
+        canvas.width,
+        canvas.height
+      );
+      resolve(code ? code.data : null);
+    };
+    img.src = URL.createObjectURL(file);
+  });
 }
