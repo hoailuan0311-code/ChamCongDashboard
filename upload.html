@@ -48,20 +48,23 @@ if (!u || !t) {
 </table>
 
 <h3>Vùng crop QR:</h3>
-<img id="cropPreview" style="max-width:350px; border:1px solid #ccc; border-radius:6px;" />
+<img id="cropPreview"
+     style="max-width:350px; border:1px solid #ccc; border-radius:6px;" />
 
-<!-- QR Libraries -->
+<!-- OCR cho ASN fallback -->
+<script src="https://unpkg.com/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
+
+<!-- jsQR (bắt buộc, worker sẽ dùng importScripts tự load lại) -->
 <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
-<script src="https://unpkg.com/@zxing/library@latest"></script>
 
-<!-- QR Engine -->
+<!-- QR Engine (multi-thread, V16) -->
 <script src="qr.js"></script>
 
 <!-- Upload Logic -->
 <script src="upload.js"></script>
 
 <script>
-document.getElementById("userBox").innerText = u;
+document.getElementById("userBox").innerText = sessionStorage.getItem("session_user");
 
 function logout() {
   sessionStorage.removeItem("session_user");
