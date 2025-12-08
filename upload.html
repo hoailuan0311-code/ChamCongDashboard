@@ -1,145 +1,162 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Upload Delivery Note v6</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f3f4f6;
-    }
-    .wrap {
-      max-width: 980px;
-      margin: 24px auto;
-      padding: 0 16px;
-    }
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 20px 22px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
-    }
-    h1 {
-      margin: 0 0 4px;
-      font-size: 24px;
-    }
-    .sub {
-      margin: 0 0 16px;
-      color: #6b7280;
-      font-size: 14px;
-    }
-    .top-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    input[type="file"] {
-      font-size: 13px;
-    }
-    button {
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      background: #2563eb;
-      color: #ffffff;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
-    .hello {
-      margin-left: auto;
-      font-size: 13px;
-      color: #4b5563;
-    }
-    .list-header, .file-row {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) 70px;
-      gap: 8px;
-      font-size: 13px;
-      align-items: center;
-    }
-    .list-header {
-      padding: 6px 0;
-      border-bottom: 1px solid #e5e7eb;
-      color: #6b7280;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-    .file-row {
-      padding: 6px 0;
-      border-bottom: 1px dashed #e5e7eb;
-    }
-    .status-ok {
-      color: #16a34a;
-      font-weight: 500;
-    }
-    .status-fail {
-      color: #dc2626;
-      font-weight: 500;
-    }
-    .status-running {
-      color: #2563eb;
-    }
-    #logs {
-      margin-top: 12px;
-      font-size: 12px;
-      background: #f9fafb;
-      border-radius: 10px;
-      padding: 8px 10px;
-      max-height: 180px;
-      overflow-y: auto;
-      border: 1px solid #e5e7eb;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Upload Delivery Note</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    margin: 0;
+    font-family: "Be Vietnam Pro", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+}
+
+.header {
+    height: 60px;
+    background: white;
+    padding: 0 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.header-title {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #1976d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.dropdown {
+    position: absolute;
+    right: 0;
+    top: 48px;
+    width: 160px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    display: none;
+    overflow: hidden;
+}
+
+.dropdown button {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown button:hover {
+    background: #f2f2f2;
+}
+
+.container {
+    max-width: 900px;
+    margin: 25px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+h2 { margin-top: 0; }
+
+.file-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 140px;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.file-img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.status {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.time {
+    font-size: 13px;
+    text-align: right;
+    color: #666;
+}
+
+.upload-btn {
+    background: #1976d2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.upload-btn:hover {
+    background: #0f60b4;
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>Upload Delivery Note</h1>
-      <p class="sub">Chọn 1–100 hình. Hệ thống sẽ đọc QR, nén hình, đổi tên và tải thẳng vào GitHub (Done/Failed).</p>
 
-      <div class="top-bar">
-        <input type="file" id="fileInput" multiple accept="image/*">
-        <button id="btnStart" onclick="startUpload()">Bắt đầu tải lên</button>
-        <div class="hello" id="helloUser"></div>
-      </div>
+<div class="header">
+    <div class="header-title">Upload Delivery Note</div>
 
-      <div class="list-header">
-        <div>Tập tin</div>
-        <div>QR / Trạng thái</div>
-        <div>Thời gian</div>
-      </div>
-      <div id="fileList"></div>
+    <div class="user-menu" id="userMenu">
+        <div class="user-avatar" id="avatar">C</div>
+        <span id="usernameLabel"></span>
 
-      <div id="logs"></div>
+        <div class="dropdown" id="dropdownMenu">
+            <button id="profileBtn">Hồ sơ</button>
+            <button id="logoutBtn">Đăng xuất</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- jsQR dùng để decode QR code trên canvas -->
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-  <script src="upload.js"></script>
-  <script>
-    // Khởi tạo thông tin user + token cho upload.js
-    const user = JSON.parse(sessionStorage.getItem("uploadUser") || "{}");
-    const token = sessionStorage.getItem("githubToken") || "";
+<div class="container">
 
-    window.UPLOAD_USER = user;
-    window.GITHUB_TOKEN = token;
+    <h2>Chọn file</h2>
 
-    const helloBox = document.getElementById("helloUser");
-    if (user && user.displayName) {
-      helloBox.textContent = "Xin chào " + user.displayName + "!";
-    } else {
-      helloBox.textContent = "Chưa đăng nhập.";
-    }
-  </script>
+    <input type="file" id="fileInput" multiple><br><br>
+
+    <button class="upload-btn" id="startUpload">Bắt đầu tải lên</button>
+
+    <h3 style="margin-top: 32px;">Danh sách tập tin</h3>
+    <div id="fileList"></div>
+
+</div>
+
+<script src="upload_v6_1.js"></script>
 </body>
 </html>
