@@ -48,14 +48,16 @@ if (!u || !t) {
 </table>
 
 <h3>Vùng crop QR:</h3>
-<canvas id="cropView"></canvas>
+<img id="cropPreview" style="max-width:350px; border:1px solid #ccc; border-radius:6px;" />
 
-<!-- ZXing + jsQR -->
-<script src="https://unpkg.com/@zxing/library@latest"></script>
+<!-- QR Libraries -->
 <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 
-<!-- Logic -->
+<!-- QR Engine -->
 <script src="qr.js"></script>
+
+<!-- Upload Logic -->
 <script src="upload.js"></script>
 
 <script>
