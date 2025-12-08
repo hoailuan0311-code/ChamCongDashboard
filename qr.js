@@ -1,156 +1,148 @@
-/****************************************************
- * QR ENGINE V14 – AUTO DETECT + OCR BACKUP
- ****************************************************/
+// qr.js – V16 Turbo, multi-thread decode
+console.log("QR Engine V16 (worker pool) loaded");
 
-console.log("QR Engine V14 loaded");
+// ---------- Worker Pool ----------
+const WORKER_COUNT = 4;          // 4 thread song song (100 file vẫn chạy được)
+const workers = [];
+const idleWorkers = [];
+const jobQueue = [];
+const pendingJobs = new Map();
+let jobSeq = 1;
 
-/* TESSERACT OCR LOAD */
-const TESSERACT = "https://cdn.jsdelivr.net/npm/tesseract.js@5.0.2/dist/tesseract.min.js";
-let tesseractLoaded = false;
+function ensureWorkers() {
+  if (workers.length) return;
 
-function loadOcrEngine() {
-    if (tesseractLoaded) return Promise.resolve();
-    return new Promise(res => {
-        const s = document.createElement("script");
-        s.src = TESSERACT;
-        s.onload = () => { tesseractLoaded = true; res(); };
-        document.body.appendChild(s);
-    });
+  for (let i = 0; i < WORKER_COUNT; i++) {
+    const w = new Worker("qr_worker.js");
+    w.onmessage = (e) => {
+      const { jobId, ok, type, code, error } = e.data;
+      const job = pendingJobs.get(jobId);
+      if (!job) return;
+
+      pendingJobs.delete(jobId);
+      idleWorkers.push(w);
+      runNextJob(); // lấy job tiếp theo trong queue
+
+      if (ok) {
+        job.resolve({ ok: true, type, code });
+      } else {
+        job.resolve({ ok: false, error });
+      }
+    };
+    workers.push(w);
+    idleWorkers.push(w);
+  }
 }
 
-/****************************************************
- * MAIN: extractCode(file)
- ****************************************************/
+function runNextJob() {
+  if (!idleWorkers.length || !jobQueue.length) return;
+  const w = idleWorkers.pop();
+  const { jobId, width, height, buffer } = jobQueue.shift();
+  w.postMessage({ jobId, width, height, buffer }, [buffer]);
+}
+
+function runWorkerJob(imageData) {
+  ensureWorkers();
+
+  return new Promise((resolve) => {
+    const jobId = jobSeq++;
+    pendingJobs.set(jobId, { resolve });
+
+    const buffer = imageData.data.buffer; // chuyển ArrayBuffer
+
+    jobQueue.push({
+      jobId,
+      width: imageData.width,
+      height: imageData.height,
+      buffer
+    });
+
+    runNextJob();
+  });
+}
+
+// ---------- Image helpers ----------
+async function loadImageScaled(file, maxWidth = 900) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width;
+      let h = img.height;
+
+      if (w > maxWidth) {
+        h = (h * maxWidth) / w;
+        w = maxWidth;
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+
+      resolve({ canvas, ctx });
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// OCR fallback -> đọc ASN CH/CR
+async function ocrToASN(canvas) {
+  if (!window.Tesseract) return null;
+
+  try {
+    const { data } = await Tesseract.recognize(canvas, "eng");
+    const text = (data && data.text) || "";
+
+    // Ưu tiên CH, rồi CR
+    const mCH = text.match(/CH\d{6,}/i);
+    const mCR = text.match(/CR\d{6,}/i);
+
+    if (mCH) return mCH[0].toUpperCase();
+    if (mCR) return mCR[0].toUpperCase();
+    return null;
+  } catch (e) {
+    console.warn("OCR error:", e);
+    return null;
+  }
+}
+
+// ---------- Public API ----------
+// file: File/Blob ảnh
+// previewCanvas: canvas để show preview (có thể null)
 async function extractCode(file, previewCanvas) {
-    const img = await fileToImage(file);
+  // 1) Resize + preview
+  const { canvas, ctx } = await loadImageScaled(file, 900);
 
-    // 1) Tự động tìm QR qua ZXing + jsQR
-    let qr = await detectQR(img, previewCanvas);
+  if (previewCanvas) {
+    previewCanvas.width = canvas.width;
+    previewCanvas.height = canvas.height;
+    const pctx = previewCanvas.getContext("2d");
+    pctx.drawImage(canvas, 0, 0);
+  }
 
-    if (qr) return { type: "QR", code: qr };
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-    // 2) Nếu QR FAIL → chạy OCR tìm CHxxxxx
-    let asn = await detectASN(img, previewCanvas);
+  // 2) Gửi sang worker pool decode QR song song
+  const qrResult = await runWorkerJob(imgData);
 
-    if (asn) return { type: "ASN", code: asn };
+  if (qrResult.ok && qrResult.code) {
+    return {
+      type: "QR",
+      code: qrResult.code.trim()
+    };
+  }
 
-    return null;
+  // 3) Nếu QR không ra → OCR fallback đọc ASN
+  const asn = await ocrToASN(canvas);
+  if (asn) {
+    return {
+      type: "ASN",
+      code: asn
+    };
+  }
+
+  // 4) Bó tay
+  return null;
 }
-
-/****************************************************
- * Detect QR bằng ZXing + jsQR + enhancement
- ****************************************************/
-async function detectQR(img, previewCanvas) {
-    drawPreview(img, previewCanvas);
-
-    let raw = await tryZXing(img);
-    if (raw) return cleanQR(raw);
-
-    raw = await tryJsQR(img);
-    if (raw) return cleanQR(raw);
-
-    raw = await tryEnhanceThenJsQR(img);
-    if (raw) return cleanQR(raw);
-
-    return null;
-}
-
-function cleanQR(t) {
-    return t.trim().replace(/[^A-Za-z0-9]/g, "");
-}
-
-/****************************************************
- * ZXing
- ****************************************************/
-async function tryZXing(img) {
-    try {
-        const codeReader = new ZXing.BrowserQRCodeReader();
-        const r = await codeReader.decodeFromImage(img);
-        return r?.text || null;
-    } catch (e) {
-        console.warn("ZXing fail:", e?.message);
-        return null;
-    }
-}
-
-/****************************************************
- * jsQR normal
- ****************************************************/
-async function tryJsQR(img) {
-    const { data, width, height } = getImageData(img);
-    const r = jsQR(data, width, height);
-    return r?.data || null;
-}
-
-/****************************************************
- * Enhancement → jsQR
- ****************************************************/
-async function tryEnhanceThenJsQR(img) {
-    let { canvas, ctx, w, h } = createCanvas(img);
-
-    ctx.filter = "contrast(180%) brightness(120%)";
-    ctx.drawImage(img, 0, 0, w, h);
-
-    const id = ctx.getImageData(0, 0, w, h);
-    const r = jsQR(id.data, w, h);
-    return r?.data || null;
-}
-
-/****************************************************
- * OCR – tìm CHxxxxx
- ****************************************************/
-async function detectASN(img, previewCanvas) {
-    await loadOcrEngine();
-
-    drawPreview(img, previewCanvas);
-
-    const { canvas } = createCanvas(img);
-
-    const worker = await Tesseract.createWorker("eng");
-
-    const { data } = await worker.recognize(canvas);
-
-    await worker.terminate();
-
-    const text = data.text || "";
-
-    const match = text.match(/(CH|CR)[0-9]{6,12}/i);
-
-    return match ? match[0].toUpperCase() : null;
-}
-
-/****************************************************
- * Utilities
- ****************************************************/
-function fileToImage(file) {
-    return new Promise(res => {
-        const img = new Image();
-        img.onload = () => res(img);
-        img.src = URL.createObjectURL(file);
-    });
-}
-
-function createCanvas(img) {
-    const canvas = document.createElement("canvas");
-    const w = img.width;
-    const h = img.height;
-    canvas.width = w; canvas.height = h;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    ctx.drawImage(img, 0, 0, w, h);
-    return { canvas, ctx, w, h };
-}
-
-function getImageData(img) {
-    const { canvas, ctx, w, h } = createCanvas(img);
-    const data = ctx.getImageData(0, 0, w, h);
-    return { data: data.data, width: w, height: h };
-}
-
-function drawPreview(img, previewCanvas) {
-    if (!previewCanvas) return;
-    previewCanvas.width = img.width;
-    previewCanvas.height = img.height;
-    const ctx = previewCanvas.getContext("2d");
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-}
-
