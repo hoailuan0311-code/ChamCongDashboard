@@ -1,6 +1,5 @@
-// upload.js – V16 Turbo + log
 //--------------------------------------------------
-// CONFIG
+// upload.js – V17 Sync with decodeQRSmart()
 //--------------------------------------------------
 const REPO_OWNER = "hoailuan0311-code";
 const REPO_NAME  = "ChamCongDashboard";
@@ -13,7 +12,7 @@ let ghToken = null;
 let currentUser = null;
 
 //--------------------------------------------------
-// Session check (sessionStorage – theo login mới)
+// Session check
 //--------------------------------------------------
 (function () {
   const u = sessionStorage.getItem("session_user");
@@ -69,13 +68,12 @@ async function startUpload() {
     return;
   }
 
-  const cropView = document.getElementById("cropView");
+  const cropPreview = document.getElementById("cropPreview");
 
-  // Tạo row trước
   const tasks = files.map((f) => ({
     file: f,
     ui: addRow(f.name, "Đang xử lý…"),
-    canvas: cropView
+    preview: cropPreview
   }));
 
   const CONCURRENCY = 4;
@@ -85,60 +83,78 @@ async function startUpload() {
     while (idx < tasks.length) {
       const myIndex = idx++;
       const task = tasks[myIndex];
-      await processFile(task.file, task.ui, task.canvas);
+      await processFile(task.file, task.ui, task.preview);
     }
   }
 
-  const runners = [];
-  for (let i = 0; i < Math.min(CONCURRENCY, tasks.length); i++) {
-    runners.push(workerLoop());
-  }
+  await Promise.all(
+    Array.from({ length: Math.min(CONCURRENCY, tasks.length) }, () =>
+      workerLoop()
+    )
+  );
 
-  await Promise.all(runners);
   alert("Xong tất cả file.");
 }
 
 //--------------------------------------------------
-// Process 1 file
+// Process 1 file – V17 AI QR decode
 //--------------------------------------------------
-async function processFile(file, ui, previewCanvas) {
+async function processFile(file, ui, previewImg) {
   try {
     ui.status.textContent = "Đang đọc QR / ASN…";
 
-    const info = await extractCode(file, previewCanvas);
+    // ===============================
+    // ⭐ decodeQRSmart() — V17 AI
+    // ===============================
+    let result;
+    try {
+      result = await decodeQRSmart(file, previewImg);
+    } catch (err) {
+      console.error("decodeQRSmart error:", err);
+      ui.status.textContent = "❌ Lỗi xử lý → Failed";
+      await uploadFailed(file);
+      return;
+    }
 
-    if (!info) {
+    if (!result || !result.ok) {
       ui.status.textContent = "❌ Không đọc được QR/ASN → Failed";
       await uploadFailed(file);
       return;
     }
 
-    const code = info.code;
+    const code = result.value;
     const label =
-      info.type === "QR"
+      result.source === "qr"
         ? `QR: ${code}`
         : `ASN: ${code} (fallback)`;
 
     ui.status.textContent = label + " → Upload…";
 
-    // Nén hình
+    // ===============================
+    // Nén hình (1600px)
+    // ===============================
     const compressed = await compressImage(file);
     const newName = `${code}.jpg`;
 
-    // Upload vào Done
+    // ===============================
+    // Upload vào folder Done
+    // ===============================
     await uploadGitHub(`${PATH_DONE}/${newName}`, compressed, `Upload ${newName}`);
 
     ui.status.textContent = label + " → Upload OK";
     ui.time.textContent = new Date().toLocaleTimeString();
 
-    // Ghi log
+    // ===============================
+    // Ghi log JSON
+    // ===============================
     await writeLog({
       user: currentUser,
       file: newName,
-      type: info.type,
+      type: result.source,
       code,
       ts: Date.now()
     });
+
   } catch (e) {
     console.error("processFile error:", e);
     ui.status.textContent = "❌ Lỗi xử lý → Failed";
@@ -147,7 +163,7 @@ async function processFile(file, ui, previewCanvas) {
 }
 
 //--------------------------------------------------
-// Compress image ~ 900px, quality 0.7
+// Compress image ~ 1600px
 //--------------------------------------------------
 function compressImage(file) {
   return new Promise((resolve) => {
@@ -168,18 +184,14 @@ function compressImage(file) {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, w, h);
 
-      canvas.toBlob(
-        (blob) => resolve(blob),
-        "image/jpeg",
-        0.7
-      );
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.75);
     };
     img.src = URL.createObjectURL(file);
   });
 }
 
 //--------------------------------------------------
-// GitHub helpers
+// Upload GitHub (PUT) + sha protection
 //--------------------------------------------------
 async function uploadGitHub(path, blob, message) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
@@ -190,26 +202,31 @@ async function uploadGitHub(path, blob, message) {
     "Content-Type": "application/json"
   };
 
-  // kiểm tra tồn tại để lấy sha (tránh lỗi 422)
+  // LẤY SHA TRƯỚC KHI PUT
   let sha = null;
-  let res = await fetch(url, { headers: { Authorization: `Bearer ${ghToken}` } });
-  if (res.status === 200) {
-    const js = await res.json();
-    sha = js.sha;
+  let r1 = await fetch(url, {
+    headers: { Authorization: `Bearer ${ghToken}` }
+  });
+
+  if (r1.status === 200) {
+    const j = await r1.json();
+    sha = j.sha;
   }
 
-  res = await fetch(url, {
+  const r2 = await fetch(url, {
     method: "PUT",
     headers,
     body: JSON.stringify({ message, content, sha })
   });
 
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error("UploadGitHub failed: " + t);
+  if (!r2.ok) {
+    throw new Error("UploadGitHub failed: " + (await r2.text()));
   }
 }
 
+//--------------------------------------------------
+// Upload Failed file
+//--------------------------------------------------
 async function uploadFailed(file) {
   const path = `${PATH_FAILED}/${file.name}`;
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`;
@@ -220,7 +237,6 @@ async function uploadFailed(file) {
     "Content-Type": "application/json"
   };
 
-  // không cần sha, thường Failed không trùng tên
   const res = await fetch(url, {
     method: "PUT",
     headers,
@@ -236,7 +252,7 @@ async function uploadFailed(file) {
 }
 
 //--------------------------------------------------
-// Log JSON
+// LOG JSON update
 //--------------------------------------------------
 async function writeLog(entry) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LOG_FILE}`;
@@ -249,9 +265,12 @@ async function writeLog(entry) {
   let old = "[]";
   let sha = null;
 
-  let res = await fetch(url, { headers: { Authorization: `Bearer ${ghToken}` } });
-  if (res.status === 200) {
-    const js = await res.json();
+  let r1 = await fetch(url, {
+    headers: { Authorization: `Bearer ${ghToken}` }
+  });
+
+  if (r1.status === 200) {
+    const js = await r1.json();
     old = atob(js.content);
     sha = js.sha;
   }
@@ -265,7 +284,7 @@ async function writeLog(entry) {
 
   arr.push(entry);
 
-  res = await fetch(url, {
+  const r2 = await fetch(url, {
     method: "PUT",
     headers,
     body: JSON.stringify({
@@ -275,8 +294,8 @@ async function writeLog(entry) {
     })
   });
 
-  if (!res.ok) {
-    console.warn("writeLog error:", await res.text());
+  if (!r2.ok) {
+    console.warn("writeLog error:", await r2.text());
   }
 }
 
@@ -286,10 +305,7 @@ async function writeLog(entry) {
 function blobToBase64(blob) {
   return new Promise((resolve) => {
     const r = new FileReader();
-    r.onload = () => {
-      const base64 = r.result.split(",")[1];
-      resolve(base64);
-    };
+    r.onload = () => resolve(r.result.split(",")[1]);
     r.readAsDataURL(blob);
   });
 }
