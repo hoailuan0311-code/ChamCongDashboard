@@ -24,81 +24,24 @@
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
       padding: 28px 26px 26px;
     }
-    h1 {
-      margin: 0 0 6px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #111827;
+    h1 { margin: 0 0 6px; font-size: 22px; font-weight: 700; }
+    .subtitle { margin-bottom: 20px; font-size: 14px; color: #6b7280; }
+    label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: 500; }
+    input {
+      width: 100%; padding: 9px 11px; border-radius: 10px;
+      border: 1px solid #d1d5db; background: #f9fafb; font-size: 14px;
     }
-    .subtitle {
-      margin-bottom: 20px;
-      font-size: 14px;
-      color: #6b7280;
-    }
-    label {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 4px;
-      color: #374151;
-      font-weight: 500;
-    }
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .15s, box-shadow .15s, background-color .15s;
-      background: #f9fafb;
-    }
-    input:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 1px rgba(37,99,235,0.2);
-      background: #ffffff;
-    }
-    .row {
-      margin-bottom: 14px;
-    }
+    input:focus { border-color: #2563eb; background: #fff; }
+    .row { margin-bottom: 14px; }
     .btn {
-      width: 100%;
-      padding: 10px 0;
-      border-radius: 999px;
-      border: none;
+      width: 100%; padding: 10px 0; border-radius: 999px; border: none;
       background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 6px;
-      box-shadow: 0 8px 18px rgba(37,99,235,0.35);
-      transition: transform .08s, box-shadow .08s, filter .08s;
+      color: white; font-size: 15px; font-weight: 600; cursor: pointer;
     }
-    .btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 4px 10px rgba(37,99,235,0.25);
-      filter: brightness(0.97);
-    }
-    .error {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #b91c1c;
-      min-height: 18px;
-    }
-    .hint {
-      margin-top: 14px;
-      font-size: 12px;
-      color: #6b7280;
-      line-height: 1.4;
-    }
-    .hint code {
-      background: #f3f4f6;
-      padding: 2px 4px;
-      border-radius: 4px;
-    }
+    .error { margin-top: 10px; font-size: 13px; color: #b91c1c; min-height: 18px; }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>Upload Delivery Note</h1>
@@ -106,67 +49,65 @@
 
     <form id="loginForm">
       <div class="row">
-        <label for="username">User</label>
-        <input id="username" type="text" autocomplete="username" placeholder="vd: cris" />
+        <label>User</label>
+        <input id="username" type="text" autocomplete="username" placeholder="vd: cris"/>
       </div>
+
       <div class="row">
-        <label for="password">Mật khẩu</label>
-        <input id="password" type="password" autocomplete="current-password" />
+        <label>Mật khẩu</label>
+        <input id="password" type="password" autocomplete="current-password"/>
       </div>
+
       <div class="row">
-        <label for="token">GitHub Personal Access Token (PAT)</label>
-        <input id="token" type="password" autocomplete="off"
-               placeholder="Chỉ lưu trong tab này, không lưu vào code" />
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input id="token" type="password" autocomplete="off" placeholder="PAT của GitHub"/>
       </div>
+
       <button type="submit" class="btn">Đăng nhập</button>
     </form>
 
     <div id="error" class="error"></div>
-
-    <div class="hint">
-      User &amp; Pass lấy từ file <code>users.json</code> trong repo.<br/>
-      PAT: tạo trong GitHub → chỉ cần quyền <code>repo &gt; contents: read/write</code>.
-    </div>
   </div>
 
-  <script>
-    async function loadUsers() {
-      const res = await fetch("users.json?ts=" + Date.now());
-      if (!res.ok) throw new Error("Không đọc được users.json");
-      return res.json();
+<script>
+async function loadUsers() {
+  const res = await fetch("users.json?ts=" + Date.now());
+  if (!res.ok) throw new Error("Không đọc được users.json");
+  return res.json();
+}
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = document.getElementById("error");
+  err.textContent = "";
+
+  const user = username.value.trim().toLowerCase();
+  const pass = password.value.trim();
+  const token = token.value.trim();
+
+  if (!user || !pass || !token) {
+    err.textContent = "Vui lòng nhập đủ User / Password / PAT.";
+    return;
+  }
+
+  try {
+    const users = await loadUsers();
+    if (!users[user] || users[user] !== pass) {
+      err.textContent = "Sai user hoặc mật khẩu.";
+      return;
     }
 
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const errBox = document.getElementById("error");
-      errBox.textContent = "";
+    // Lưu session
+    localStorage.setItem("session_user", user);
+    localStorage.setItem("session_token", token);
 
-      const user = document.getElementById("username").value.trim().toLowerCase();
-      const pass = document.getElementById("password").value.trim();
-      const token = document.getElementById("token").value.trim();
+    window.location.href = "upload.html";
 
-      if (!user || !pass || !token) {
-        errBox.textContent = "Vui lòng nhập đủ User, Password và PAT.";
-        return;
-      }
+  } catch (e) {
+    err.textContent = "Lỗi đăng nhập: " + e.message;
+  }
+});
+</script>
 
-      try {
-        const users = await loadUsers();
-        if (!users[user] || users[user] !== pass) {
-          errBox.textContent = "Sai user hoặc mật khẩu.";
-          return;
-        }
-
-        // Lưu session (per tab)
-        sessionStorage.setItem("session_user", user);
-        sessionStorage.setItem("session_token", token);
-
-        window.location.href = "upload.html";
-      } catch (err) {
-        console.error(err);
-        errBox.textContent = "Không thể đăng nhập: " + err.message;
-      }
-    });
-  </script>
 </body>
 </html>
