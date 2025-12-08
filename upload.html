@@ -2,92 +2,173 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Upload Delivery Note – V6 FINAL</title>
+  <title>Upload Delivery Note – V6.2</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f3f6fb;
-      padding: 20px;
+      min-height: 100vh;
+      padding: 18px;
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
     }
-    h2 { margin-bottom: 10px }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+      padding: 22px 24px 26px;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: #111827;
+    }
+    .tagline {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
     #userBox {
       text-align: right;
-      font-size: 18px;
-      margin-bottom: 20px;
+      font-size: 14px;
+      color: #374151;
+    }
+    #username {
+      font-weight: 600;
+      color: #111827;
     }
     .logoutBtn {
-      background: #e53935;
+      margin-left: 10px;
+      padding: 6px 14px;
+      border-radius: 999px;
       border: none;
-      padding: 6px 12px;
-      color: white;
-      border-radius: 8px;
+      background: #ef4444;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
       cursor: pointer;
+      box-shadow: 0 6px 16px rgba(248, 113, 113, 0.5);
+      transition: transform .08s, box-shadow .08s, filter .08s;
+    }
+    .logoutBtn:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 8px rgba(248, 113, 113, 0.45);
+      filter: brightness(0.97);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 16px;
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+    input[type="file"] {
+      max-width: 260px;
     }
     .uploadBtn {
-      background: #1565c0;
-      color: white;
-      padding: 10px 22px;
-      border-radius: 8px;
+      padding: 9px 20px;
+      border-radius: 999px;
       border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
       cursor: pointer;
-      font-size: 17px;
-      margin-top: 12px;
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.45);
+      transition: transform .08s, box-shadow .08s, filter .08s;
+    }
+    .uploadBtn:active {
+      transform: translateY(1px);
+      box-shadow: 0 5px 12px rgba(37, 99, 235, 0.35);
+      filter: brightness(0.97);
     }
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
+      margin-top: 18px;
+      font-size: 14px;
+    }
+    thead {
+      background: #f9fafb;
     }
     th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      font-size: 15px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+    th {
+      font-size: 13px;
+      color: #6b7280;
+      font-weight: 600;
+    }
+    tbody tr:nth-child(even) td {
+      background: #fbfdff;
+    }
+    .status-ok { color: #16a34a; }
+    .status-fail { color: #b91c1c; }
+    .status-wait { color: #6b7280; }
+    @media (max-width: 640px) {
+      .card { padding: 18px 16px 20px; }
+      header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .controls { flex-direction: column; align-items: stretch; }
+      input[type="file"] { max-width: 100%; }
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
+  <div class="shell">
+    <div class="card">
+      <header>
+        <div>
+          <h2>Upload Delivery Note</h2>
+          <div class="tagline">
+            Chọn 1–100 hình. Hệ thống sẽ đọc QR, nén hình, đổi tên, và upload lên GitHub
+            vào thư mục <code>Done / Failed</code>.
+          </div>
+        </div>
+        <div id="userBox">
+          <span>Xin chào <span id="username">…</span></span>
+          <button class="logoutBtn" onclick="logout()">Đăng xuất</button>
+        </div>
+      </header>
 
-    <div id="userBox">
-      <span id="username"></span>
-      <button class="logoutBtn" onclick="logout()">Đăng xuất</button>
+      <div class="controls">
+        <input type="file" id="files" multiple accept="image/*" />
+        <button class="uploadBtn" onclick="startUpload()">Bắt đầu tải lên</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40%">Tập tin</th>
+            <th style="width:40%">QR / Trạng thái</th>
+            <th style="width:20%">Thời gian</th>
+          </tr>
+        </thead>
+        <tbody id="fileTable"></tbody>
+      </table>
     </div>
-
-    <h2>Upload Delivery Note</h2>
-    <p>Chọn 1–100 hình. Hệ thống sẽ đọc QR, nén hình, đổi tên, và upload.</p>
-
-    <input type="file" id="files" multiple accept="image/*" />
-    <br />
-    <button class="uploadBtn" onclick="startUpload()">Bắt đầu tải lên</button>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Tập tin</th>
-          <th>QR / Trạng thái</th>
-          <th>Thời gian</th>
-        </tr>
-      </thead>
-      <tbody id="fileTable"></tbody>
-    </table>
   </div>
 
-  <!-- LIBRARY MUST LOAD FIRST -->
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+  <!-- ZXing + jsQR từ CDN -->
+  <script src="https://unpkg.com/@zxing/browser@latest"></script>
+  <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
 
-  <!-- App scripts -->
+  <!-- Helper QR + logic upload -->
   <script src="qr.js"></script>
   <script src="upload.js"></script>
-
 </body>
 </html>
