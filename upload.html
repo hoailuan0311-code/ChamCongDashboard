@@ -1,89 +1,26 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Upload Delivery Note</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
+    font-family: Arial, sans-serif;
+    background: #f4f6fa;
     margin: 0;
-    font-family: "Be Vietnam Pro", sans-serif;
-    background: #f5f7fa;
-    color: #333;
-}
-
-.header {
-    height: 60px;
-    background: white;
-    padding: 0 20px;
-    border-bottom: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.header-title {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.user-menu {
-    position: relative;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.user-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #1976d2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    margin-right: 8px;
-}
-
-.dropdown {
-    position: absolute;
-    right: 0;
-    top: 48px;
-    width: 160px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    display: none;
-    overflow: hidden;
-}
-
-.dropdown button {
-    width: 100%;
-    padding: 10px 16px;
-    border: none;
-    background: white;
-    text-align: left;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.dropdown button:hover {
-    background: #f2f2f2;
+    padding: 0;
 }
 
 .container {
     max-width: 900px;
-    margin: 25px auto;
+    margin: 30px auto;
     background: white;
-    border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-
-h2 { margin-top: 0; }
 
 .file-row {
     display: grid;
@@ -91,72 +28,40 @@ h2 { margin-top: 0; }
     gap: 16px;
     padding: 12px 0;
     border-bottom: 1px solid #eee;
-    align-items: center;
 }
 
 .file-img {
     width: 110px;
     height: 110px;
-    object-fit: cover;
     border-radius: 8px;
-    border: 1px solid #ddd;
-}
-
-.status {
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.time {
-    font-size: 13px;
-    text-align: right;
-    color: #666;
+    object-fit: cover;
 }
 
 .upload-btn {
+    padding: 10px 20px;
     background: #1976d2;
     color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
     border: none;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 10px;
-}
-.upload-btn:hover {
-    background: #0f60b4;
 }
 </style>
 </head>
 
 <body>
-
-<div class="header">
-    <div class="header-title">Upload Delivery Note</div>
-
-    <div class="user-menu" id="userMenu">
-        <div class="user-avatar" id="avatar">C</div>
-        <span id="usernameLabel"></span>
-
-        <div class="dropdown" id="dropdownMenu">
-            <button id="profileBtn">Hồ sơ</button>
-            <button id="logoutBtn">Đăng xuất</button>
-        </div>
-    </div>
-</div>
-
 <div class="container">
 
-    <h2>Chọn file</h2>
+<h2>Upload Delivery Note</h2>
 
-    <input type="file" id="fileInput" multiple><br><br>
+<input type="file" id="fileInput" multiple><br><br>
+<button class="upload-btn" id="startUpload">Bắt đầu tải lên</button>
 
-    <button class="upload-btn" id="startUpload">Bắt đầu tải lên</button>
-
-    <h3 style="margin-top: 32px;">Danh sách tập tin</h3>
-    <div id="fileList"></div>
+<h3>Danh sách tập tin</h3>
+<div id="fileList"></div>
 
 </div>
 
-<script src="upload_v6_1.js"></script>
+<script src="upload.js"></script>
+
 </body>
 </html>
