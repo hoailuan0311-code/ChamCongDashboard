@@ -81,11 +81,11 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   const err = document.getElementById("error");
   err.textContent = "";
 
-  const user = username.value.trim().toLowerCase();
-  const pass = password.value.trim();
-  const token = token.value.trim();
+  const user = document.getElementById("username").value.trim().toLowerCase();
+  const pass = document.getElementById("password").value.trim();
+  const tokenVal = document.getElementById("token").value.trim();
 
-  if (!user || !pass || !token) {
+  if (!user || !pass || !tokenVal) {
     err.textContent = "Vui lòng nhập đủ User / Password / PAT.";
     return;
   }
@@ -99,7 +99,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
     // Lưu session
     localStorage.setItem("session_user", user);
-    localStorage.setItem("session_token", token);
+    localStorage.setItem("session_token", tokenVal);
 
     window.location.href = "upload.html";
 
