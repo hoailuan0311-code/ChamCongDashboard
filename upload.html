@@ -58,7 +58,6 @@
 <body>
   <div class="container">
 
-    <!-- Hiển thị username + logout -->
     <div id="userBox">
       <span id="username"></span>
       <button class="logoutBtn" onclick="logout()">Đăng xuất</button>
@@ -83,7 +82,10 @@
     </table>
   </div>
 
-  <!-- Script -->
+  <!-- LIBRARY MUST LOAD FIRST -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+  <!-- App scripts -->
   <script src="qr.js"></script>
   <script src="upload.js"></script>
 
