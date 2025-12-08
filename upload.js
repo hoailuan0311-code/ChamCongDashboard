@@ -58,11 +58,10 @@ async function processFile(file) {
     const row = addRow(file.name, "Đang xử lý…");
 
     try {
-        // 1) Load hình
         const img = await loadImage(file);
 
-        // 2) Decode QR — bắt buộc ra QR
-        const qr = await decodeQR(img);
+        // 🔥 DECODER MỚI – đọc QR siêu khó
+        const qr = await extractQR(img);
 
         if (!qr) {
             row.status.innerText = "❌ Không đọc được QR → Failed";
@@ -72,17 +71,16 @@ async function processFile(file) {
 
         row.status.innerText = `QR: ${qr}`;
 
-        // 3) Nén hình
+        // NÉN
         const compressed = await compressImage(img);
 
-        // 4) Upload GitHub
+        // UPLOAD
         const newName = `${qr}.jpg`;
         await uploadDone(compressed, newName);
 
         row.status.innerText = "✔ Thành công";
         row.time.innerText = new Date().toLocaleTimeString();
 
-        // 5) Ghi log
         await writeLog({
             user: localStorage.getItem("session_user"),
             file: newName,
@@ -99,7 +97,7 @@ async function processFile(file) {
 
 
 //---------------------------------------------------
-//  ADD ROW UI
+//  UI — ADD ROW
 //---------------------------------------------------
 function addRow(name, status) {
     const tbody = document.getElementById("fileTable");
@@ -124,7 +122,7 @@ function addRow(name, status) {
 //  LOAD IMAGE
 //---------------------------------------------------
 function loadImage(file) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.src = URL.createObjectURL(file);
@@ -136,7 +134,7 @@ function loadImage(file) {
 //  NÉN ẢNH
 //---------------------------------------------------
 function compressImage(img) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
@@ -145,17 +143,16 @@ function compressImage(img) {
         let h = img.height;
 
         if (w > MAX) {
-            h = h * (MAX / w);
+            h *= MAX / w;
             w = MAX;
         }
 
         canvas.width = w;
         canvas.height = h;
-
         ctx.drawImage(img, 0, 0, w, h);
 
         canvas.toBlob(
-            (blob) => resolve(blob),
+            blob => resolve(blob),
             "image/jpeg",
             0.65
         );
@@ -168,7 +165,6 @@ function compressImage(img) {
 //---------------------------------------------------
 async function uploadDone(blob, filename) {
     const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH_DONE}/${filename}`;
-
     const base64 = await blobToBase64(blob);
 
     const res = await fetch(url, {
@@ -217,7 +213,6 @@ async function writeLog(entry) {
     let old = "[]";
     let sha = null;
 
-    // đọc log
     let res = await fetch(url, {
         headers: { "Authorization": `Bearer ${ghToken}` }
     });
@@ -249,10 +244,63 @@ async function writeLog(entry) {
 
 
 //---------------------------------------------------
-// UTIL
+//  QR DECODER V3 (xoay + tăng tương phản + đảo màu)
+//---------------------------------------------------
+async function extractQR(img) {
+    return new Promise(resolve => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        function tryDecode(transform = null) {
+            if (transform) transform();
+
+            const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            return jsQR(data.data, canvas.width, canvas.height, {
+                inversionAttempts: "attemptBoth",
+            });
+        }
+
+        function drawBase() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.filter = "contrast(190%) brightness(115%)";
+            ctx.drawImage(img, 0, 0);
+        }
+
+        img.onload = () => {
+            // Try 1 — base
+            drawBase();
+            let qr = tryDecode();
+            if (qr) return resolve(qr.data.trim());
+
+            // Try 2 — rotate 90°
+            canvas.width = img.height;
+            canvas.height = img.width;
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(Math.PI / 2);
+            ctx.translate(-img.width / 2, -img.height / 2);
+            ctx.filter = "contrast(190%) brightness(115%)";
+            ctx.drawImage(img, 0, 0);
+            ctx.restore();
+
+            const data2 = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            qr = jsQR(data2.data, canvas.width, canvas.height, { inversionAttempts: "attemptBoth" });
+            if (qr) return resolve(qr.data.trim());
+
+            resolve(null);
+        };
+
+        img.onload();
+    });
+}
+
+
+//---------------------------------------------------
+//  UTIL
 //---------------------------------------------------
 function blobToBase64(blob) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
         const r = new FileReader();
         r.onload = () => resolve(r.result.split(",")[1]);
         r.readAsDataURL(blob);
