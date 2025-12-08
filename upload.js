@@ -1,6 +1,6 @@
-//------------------------------------------------------------
+// =============================================
 // CONFIG
-//------------------------------------------------------------
+// =============================================
 const REPO_OWNER = "hoailuan0311-code";
 const REPO_NAME  = "ChamCongDashboard";
 
@@ -11,41 +11,48 @@ const LOG_FILE    = "logs/log.json";
 let ghToken = null;
 
 
-//------------------------------------------------------------
-// LOGIN CHECK
-//------------------------------------------------------------
+// =============================================
+// CHECK SESSION — sessionStorage ONLY
+// =============================================
 (function () {
   const page = location.pathname.split("/").pop();
-  const u = localStorage.getItem("session_user");
-  const t = localStorage.getItem("session_token");
 
-  console.log("SESSION CHECK:", u, t);
+  const u = sessionStorage.getItem("session_user");
+  const t = sessionStorage.getItem("session_token");
 
-  if (page === "upload.html") {
-    if (!u) {
+  if (page === "upload") {
+    if (!u || !t) {
       location.href = "upload_login.html";
       return;
     }
-    document.getElementById("username").innerText = `Xin chào ${u}`;
+    document.getElementById("username").textContent = "Xin chào " + u;
     ghToken = t;
   }
 })();
 
+function logout() {
+  sessionStorage.removeItem("session_user");
+  sessionStorage.removeItem("session_token");
+  location.href = "upload_login.html";
+}
 
-//------------------------------------------------------------
+
+// =============================================
 // START UPLOAD
-//------------------------------------------------------------
+// =============================================
 async function startUpload() {
   const files = document.getElementById("files").files;
   if (!files.length) return alert("Chưa chọn file!");
 
-  for (const f of files) await processFile(f);
+  for (const file of files) {
+    await processFile(file);
+  }
 }
 
 
-//------------------------------------------------------------
-// PROCESS 1 FILE
-//------------------------------------------------------------
+// =============================================
+// PROCESS ONE FILE
+// =============================================
 async function processFile(file) {
   const row = addRow(file.name, "Đang đọc QR…");
 
@@ -59,32 +66,32 @@ async function processFile(file) {
     }
 
     row.status.innerHTML = `✔ QR: ${qr}`;
+
     const compressed = await compressImage(file);
     const newName = `${qr}.jpg`;
-
     await uploadDone(compressed, newName);
 
-    row.status.innerHTML = "✔ Hoàn tất";
-    row.time.innerText = new Date().toLocaleTimeString();
+    row.status.innerHTML = "✔ Thành công";
+    row.time.textContent = new Date().toLocaleTimeString();
 
     await writeLog({
-      user: localStorage.getItem("session_user"),
+      user: sessionStorage.getItem("session_user"),
       qr,
       file: newName,
-      ts: Date.now(),
+      time: Date.now()
     });
 
-  } catch (e) {
-    console.error(e);
-    row.status.innerHTML = "❌ Lỗi xử lý";
+  } catch (err) {
+    console.error(err);
+    row.status.innerHTML = "❌ Lỗi xử lý file";
     await uploadFailed(file);
   }
 }
 
 
-//------------------------------------------------------------
-// ADD ROW
-//------------------------------------------------------------
+// =============================================
+// TABLE ROW
+// =============================================
 function addRow(name, st) {
   const tb = document.getElementById("fileTable");
   const tr = document.createElement("tr");
@@ -96,87 +103,100 @@ function addRow(name, st) {
   `;
 
   tb.appendChild(tr);
-  return { status: tr.querySelector(".st"), time: tr.querySelector(".tm") };
+  return {
+    status: tr.querySelector(".st"),
+    time:   tr.querySelector(".tm")
+  };
 }
 
 
-//------------------------------------------------------------
+// =============================================
 // COMPRESS IMAGE
-//------------------------------------------------------------
+// =============================================
 function compressImage(file) {
   return new Promise(res => {
     const img = new Image();
     img.onload = () => {
-      const MAX = 1600;
       let w = img.width, h = img.height;
+      const MAX = 1600;
+
       if (w > MAX) { h *= MAX / w; w = MAX; }
 
       const c = document.createElement("canvas");
-      c.width = w; c.height = h;
-      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
 
-      c.toBlob(b => res(b), "image/jpeg", 0.7);
+      c.toBlob(b => res(b), "image/jpeg", 0.70);
     };
+
     img.src = URL.createObjectURL(file);
   });
 }
 
 
-//------------------------------------------------------------
-// UPLOAD DONE
-//------------------------------------------------------------
+// =============================================
+// UPLOAD DONE → GitHub
+// =============================================
 async function uploadDone(blob, filename) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH_DONE}/${filename}`;
+
   const base64 = await toBase64(blob);
 
-  const rs = await fetch(url, {
+  const res = await fetch(url, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${ghToken}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
       message: "upload done",
-      content: base64,
-    }),
+      content: base64
+    })
   });
 
-  if (!rs.ok) throw new Error(await rs.text());
+  if (!res.ok) throw new Error(await res.text());
 }
 
 
-//------------------------------------------------------------
+// =============================================
 // UPLOAD FAILED
-//------------------------------------------------------------
+// =============================================
 async function uploadFailed(file) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PATH_FAILED}/${file.name}`;
+
   const base64 = await toBase64(file);
 
   await fetch(url, {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${ghToken}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      message: "failed",
-      content: base64,
-    }),
+      message: "upload failed",
+      content: base64
+    })
   });
 }
 
 
-//------------------------------------------------------------
-// LOG
-//------------------------------------------------------------
+// =============================================
+// WRITE LOG
+// =============================================
 async function writeLog(entry) {
   const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${LOG_FILE}`;
-  let old = "[]", sha = null;
 
-  const rs = await fetch(url, { headers: { Authorization: `Bearer ${ghToken}` } });
+  let old = "[]";
+  let sha = null;
 
-  if (rs.status === 200) {
-    const js = await rs.json();
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${ghToken}` }
+  });
+
+  if (res.status === 200) {
+    const js = await res.json();
     sha = js.sha;
     old = atob(js.content);
   }
@@ -188,24 +208,24 @@ async function writeLog(entry) {
     method: "PUT",
     headers: {
       Authorization: `Bearer ${ghToken}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      message: "log update",
+      message: "update log",
       content: btoa(JSON.stringify(arr, null, 2)),
-      sha,
-    }),
+      sha
+    })
   });
 }
 
 
-//------------------------------------------------------------
+// =============================================
 // UTIL
-//------------------------------------------------------------
+// =============================================
 function toBase64(blob) {
-  return new Promise(r => {
-    const fr = new FileReader();
-    fr.onload = () => r(fr.result.split(",")[1]);
-    fr.readAsDataURL(blob);
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(",")[1]);
+    r.readAsDataURL(blob);
   });
 }
