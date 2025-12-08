@@ -1,164 +1,245 @@
-// ===============================
-//  Upload Delivery Note v5.0
-//  1) PUT file vào inbox/tmp/... trong repo
-//  2) Dispatch event nhỏ tới GitHub Actions để xử lý (QR + nén + Done/Failed)
-//  Token nhập lúc chạy, KHÔNG commit vào repo
-// ===============================
-
+// =============== CONFIG ===============
 const repoUser = "hoailuan0311-code";
 const repoName = "ChamCongDashboard";
 
-// Token runtime (repo classic: scope repo + workflow, hoặc fine-grained: Contents RW + Actions RW)
-let DISPATCH_TOKEN = "";
+// 2 biến này được gán từ upload.html
+let GITHUB_TOKEN = window.GITHUB_TOKEN || "";
+let UPLOAD_USER  = window.UPLOAD_USER  || {};
 
-// Hỏi token 1 lần cho tới khi reload trang
-function getDispatchToken() {
-  if (DISPATCH_TOKEN) return DISPATCH_TOKEN;
-  const t = prompt("Nhập GitHub Token (PAT có quyền repo + workflow):");
-  if (!t) {
-    alert("Không có token → không thể upload.");
-    throw new Error("Missing token");
-  }
-  DISPATCH_TOKEN = t.trim();
-  return DISPATCH_TOKEN;
+// =============== DOM SHORTCUTS ===============
+const fileListEl = document.getElementById("fileList");
+const logsEl     = document.getElementById("logs");
+const btnStart   = document.getElementById("btnStart");
+const fileInput  = document.getElementById("fileInput");
+
+// =============== HELPER ===============
+function log(msg, isError = false) {
+  const line = document.createElement("div");
+  line.textContent = msg;
+  line.style.color = isError ? "#dc2626" : "#111827";
+  logsEl.appendChild(line);
+  logsEl.scrollTop = logsEl.scrollHeight;
 }
 
-// ====== UI helpers ======
-function logBox(msg, isError = false) {
-  const box = document.getElementById("logs");
-  const color = isError ? "red" : "#111827";
-  box.innerHTML += `<div style="color:${color}; margin-bottom:4px;">${msg}</div>`;
-  box.scrollTop = box.scrollHeight;
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
 }
 
-function fileToBase64(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.readAsDataURL(file);
-  });
-}
+async function githubPutFile(path, base64Content, message, sha) {
+  const url = `https://api.github.com/repos/${repoUser}/${repoName}/contents/${encodeURIComponent(path)}`;
 
-function makeItemPreview(file, url) {
-  const container = document.getElementById("processing");
-  const div = document.createElement("div");
-  div.className = "item";
-  div.innerHTML = `
-    <img class="thumb" src="${url}">
-    <div class="info">
-      <div class="name"><b>${file.name}</b></div>
-      <div class="progress"><div class="bar"></div></div>
-      <div class="status">Đang chờ...</div>
-    </div>
-  `;
-  container.appendChild(div);
-  return div;
-}
-
-async function putTempFileToRepo(tmpPath, base64, originalName) {
-  const token = getDispatchToken();
-  const url = `https://api.github.com/repos/${repoUser}/${repoName}/contents/${encodeURIComponent(tmpPath)}`;
+  const body = {
+    message,
+    content: base64Content,
+    branch: "main"
+  };
+  if (sha) body.sha = sha;
 
   const res = await fetch(url, {
     method: "PUT",
     headers: {
-      "Authorization": `Bearer ${token}`,
+      "Authorization": `Bearer ${GITHUB_TOKEN}`,
       "Accept": "application/vnd.github+json",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      message: `Upload temp image ${originalName}`,
-      content: base64,
-      branch: "main"
-    })
+    body: JSON.stringify(body)
   });
 
   if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`PUT /contents lỗi ${res.status}: ${txt}`);
+    const t = await res.text();
+    throw new Error(`PUT ${path} failed: ${res.status} – ${t}`);
   }
+  return res.json();
 }
 
-async function dispatchProcessEvent(user, originalName, tmpPath) {
-  const token = getDispatchToken();
-  const url = `https://api.github.com/repos/${repoUser}/${repoName}/dispatches`;
-
+async function githubGetFile(path) {
+  const url = `https://api.github.com/repos/${repoUser}/${repoName}/contents/${encodeURIComponent(path)}`;
   const res = await fetch(url, {
-    method: "POST",
     headers: {
-      "Authorization": `Bearer ${token}`,
-      "Accept": "application/vnd.github+json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      event_type: "process_dn",
-      client_payload: {
-        user: user.username,
-        original: originalName,
-        tmp_path: tmpPath
-      }
-    })
+      "Authorization": `Bearer ${GITHUB_TOKEN}`,
+      "Accept": "application/vnd.github+json"
+    }
   });
-
   if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`dispatch lỗi ${res.status}: ${txt}`);
+    if (res.status === 404) return null;
+    const t = await res.text();
+    throw new Error(`GET ${path} failed: ${res.status} – ${t}`);
   }
+  return res.json();
 }
 
-// ================= MAIN =================
+// =============== IMAGE TOOLS ===============
 
+// Nén ảnh bằng canvas → trả về base64 (chuỗi, không có prefix data:)
+async function compressToBase64(file, maxWidth = 1400, quality = 0.5) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = maxWidth / img.width;
+      const canvas = document.createElement("canvas");
+      canvas.width = maxWidth;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg", quality);
+      resolve(dataUrl.split(",")[1]); // lấy phần base64 sau dấu ,
+    };
+    img.onerror = () => reject(new Error("Không load được ảnh để nén"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// Decode QR từ góc trên bên phải ảnh
+async function decodeQR(file) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+
+      // crop góc QR (25–30% trên bên phải)
+      const cropW = img.width * 0.28;
+      const cropH = img.height * 0.28;
+      const sx = img.width - cropW;
+      const sy = 0;
+
+      const imageData = ctx.getImageData(sx, sy, cropW, cropH);
+
+      const code = jsQR(imageData.data, cropW, cropH);
+      resolve(code ? code.data : "");
+    };
+    img.onerror = () => resolve("");
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+// =============== LOG JSON ===============
+async function appendLogEntry(entry) {
+  const path = "logs/upload_log.json";
+  const existing = await githubGetFile(path);
+
+  let arr = [];
+  let sha = null;
+
+  if (existing && existing.content) {
+    sha = existing.sha;
+    const raw = atob(existing.content.replace(/\n/g, ""));
+    arr = JSON.parse(raw);
+  }
+
+  arr.push(entry);
+
+  const newContent = utf8ToBase64(JSON.stringify(arr, null, 2));
+  await githubPutFile(path, newContent, "Update upload log", sha);
+}
+
+// =============== UI ROW ===============
+function createRow(fileName) {
+  const row = document.createElement("div");
+  row.className = "file-row";
+
+  const colName = document.createElement("div");
+  colName.textContent = fileName;
+
+  const colStatus = document.createElement("div");
+  colStatus.textContent = "Đang chờ...";
+  colStatus.className = "status-running";
+
+  const colTime = document.createElement("div");
+  colTime.textContent = "-";
+
+  row.appendChild(colName);
+  row.appendChild(colStatus);
+  row.appendChild(colTime);
+
+  fileListEl.appendChild(row);
+
+  return { row, colStatus, colTime };
+}
+
+// =============== MAIN ===============
 async function startUpload() {
-  const input = document.getElementById("fileInput");
-  const files = [...input.files];
+  if (!UPLOAD_USER || !UPLOAD_USER.username) {
+    alert("Chưa đăng nhập (thiếu thông tin user). Vào lại upload_login.html.");
+    return;
+  }
+  if (!GITHUB_TOKEN) {
+    alert("Không có GitHub token. Vào lại trang đăng nhập và nhập PAT.");
+    return;
+  }
 
+  const files = Array.from(fileInput.files || []);
   if (files.length === 0) {
     alert("Chưa chọn hình.");
     return;
   }
 
-  const user = JSON.parse(sessionStorage.getItem("uploadUser") || "{}");
-  if (!user.username) {
-    alert("Chưa đăng nhập.");
-    return;
-  }
+  btnStart.disabled = true;
+  log(`Bắt đầu xử lý ${files.length} hình...`);
 
   for (const file of files) {
-    const previewURL = URL.createObjectURL(file);
-    const item = makeItemPreview(file, previewURL);
-    const bar = item.querySelector(".bar");
-    const status = item.querySelector(".status");
+    const row = createRow(file.name);
+    const { colStatus, colTime } = row;
+
+    const start = performance.now();
 
     try {
-      bar.style.width = "15%";
-      status.textContent = "Đang mã hóa hình...";
-      const base64 = await fileToBase64(file);
+      // 1) Decode QR
+      colStatus.textContent = "Đang đọc QR...";
+      const qrText = await decodeQR(file);
 
-      // Tạo tên temp: inbox/tmp/ts_random.jpg
-      const ts = Date.now();
-      const rand = Math.random().toString(36).slice(2, 8);
-      const tmpName = `${ts}_${rand}.jpg`;
-      const tmpPath = `inbox/tmp/${tmpName}`;
+      // 2) Compress
+      colStatus.textContent = "Đang nén hình...";
+      const base64Image = await compressToBase64(file);
 
-      bar.style.width = "45%";
-      status.textContent = "Đẩy file tạm vào repo...";
+      const cleanQR = qrText ? qrText.replace(/[^0-9A-Za-z_-]/g, "") : "";
+      const isOk = !!cleanQR;
 
-      await putTempFileToRepo(tmpPath, base64, file.name);
+      const fileNameFinal = isOk ? `${cleanQR}.jpg` : file.name;
+      const folder = isOk ? "inbox/Done/" : "inbox/Failed/";
+      const destPath = folder + fileNameFinal;
 
-      bar.style.width = "70%";
-      status.textContent = "Gửi yêu cầu xử lý (Action)...";
+      // 3) Upload file
+      colStatus.textContent = "Đang tải lên GitHub...";
+      await githubPutFile(destPath, base64Image, `Upload ${fileNameFinal}`);
 
-      await dispatchProcessEvent(user, file.name, tmpPath);
+      // 4) Ghi log
+      await appendLogEntry({
+        time: new Date().toISOString(),
+        user: UPLOAD_USER.username,
+        displayName: UPLOAD_USER.displayName,
+        original: file.name,
+        savedAs: destPath,
+        qr: cleanQR || null,
+        status: isOk ? "DONE" : "FAILED_QR"
+      });
 
-      bar.style.width = "100%";
-      status.textContent = "✔ Đã gửi – Action đang xử lý...";
-      logBox(`✔ Gửi file ${file.name} thành công → tmp: ${tmpPath}`);
+      // 5) Cập nhật UI
+      const elapsed = (performance.now() - start) / 1000;
+      colTime.textContent = elapsed.toFixed(1) + "s";
+
+      if (isOk) {
+        colStatus.textContent = `✓ QR: ${cleanQR}`;
+        colStatus.className = "status-ok";
+      } else {
+        colStatus.textContent = "✗ Không đọc được QR";
+        colStatus.className = "status-fail";
+      }
+
+      log(`✔ ${file.name} → ${destPath}`);
     } catch (err) {
       console.error(err);
-      bar.style.width = "100%";
-      bar.style.background = "red";
-      status.textContent = "✖ Lỗi gửi!";
-      logBox(`✖ Gửi thất bại: ${file.name} – ${err.message}`, true);
+      colStatus.textContent = "✗ Lỗi upload";
+      colStatus.className = "status-fail";
+      colTime.textContent = "-";
+
+      log(`✗ Lỗi với file ${file.name}: ${err.message}`, true);
     }
   }
+
+  btnStart.disabled = false;
+  log("Hoàn tất xử lý tất cả file.");
 }
