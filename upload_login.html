@@ -49,28 +49,37 @@
 
 <script>
 async function login(){
-  const u = u.value.trim().toLowerCase();
-  const p = document.getElementById("p").value.trim();
-  const t = document.getElementById("t").value.trim();
+  const user = document.getElementById("u").value.trim().toLowerCase();
+  const pass = document.getElementById("p").value.trim();
+  const token = document.getElementById("t").value.trim();
+  const errBox = document.getElementById("err");
 
-  if(!u || !p || !t){
-    err.textContent = "Thiếu thông tin.";
+  errBox.textContent = "";
+
+  if(!user || !pass || !token){
+    errBox.textContent = "Thiếu thông tin.";
     return;
   }
 
-  const res = await fetch("users.json?ts="+Date.now());
-  const users = await res.json();
+  try {
+    const res = await fetch("users.json?ts=" + Date.now());
+    if (!res.ok) throw new Error("Không đọc được users.json");
 
-  if(!users[u] || users[u]!==p){
-    err.textContent = "Sai user hoặc password";
-    return;
+    const users = await res.json();
+
+    if (!users[user] || users[user] !== pass) {
+      errBox.textContent = "Sai user hoặc password.";
+      return;
+    }
+
+    sessionStorage.setItem("user", user);
+    sessionStorage.setItem("token", token);
+
+    window.location.href = "upload.html";
   }
-
-  // LƯU VÀO sessionStorage (CHUẨN CHÍNH THỨC)
-  sessionStorage.setItem("user", u);
-  sessionStorage.setItem("token", t);
-
-  location.href = "upload.html";
+  catch(e){
+    errBox.textContent = "Lỗi đăng nhập: " + e.message;
+  }
 }
 </script>
 
