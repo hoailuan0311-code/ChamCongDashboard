@@ -1,80 +1,55 @@
-// ======================================================
-// LOAD ZXING
-// ======================================================
-let ZX = null;
+// =============================================
+// QR DECODER V6.5 — ZXing + jsQR fallback
+// =============================================
 
-(async () => {
-    try {
-        ZX = window.ZXingBrowser;
-        if (!ZX) throw new Error("ZXingBrowser not found");
-        console.log("ZXing loaded OK");
-    } catch (e) {
-        console.warn("Không load được ZXing", e);
-    }
-})();
+// ZXing reader
+const ZX = ZXing.BrowserMultiFormatReader
+  ? new ZXing.BrowserMultiFormatReader()
+  : null;
 
+console.log("ZXing loaded:", !!ZX);
 
-// ======================================================
-// HÀM ĐỌC QR SIÊU BỀN V6.3
-// ======================================================
+/**
+ * decodeQR(file)
+ * return: string hoặc null
+ */
 async function extractQR(file) {
-    const imgURL = URL.createObjectURL(file);
+  const img = await loadImage(file);
 
-    // --------------------------------------------------
-    // LEVEL 1 → ZXing (mạnh nhất)
-    // --------------------------------------------------
-    if (ZX) {
-        try {
-            const code = await ZX.BrowserQRCodeReader.decodeFromImageUrl(imgURL);
-            if (code && code.text) return code.text;
-        } catch {
-            // bỏ qua → chuyển fallback
-        }
+  // ---------- Try ZXing ----------
+  if (ZX) {
+    try {
+      const result = await ZX.decodeFromImage(img);
+      if (result && result.text) return result.text.trim();
+    } catch (e) {
+      console.warn("ZXing decode fail → fallback jsQR");
     }
+  }
 
-    // --------------------------------------------------
-    // LEVEL 2 → jsQR + tiền xử lý (đã proven hiệu quả cao)
-    // --------------------------------------------------
-    return new Promise(resolve => {
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-
-            // Tăng contrast + brightness
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.filter = "contrast(180%) brightness(110%)";
-            ctx.drawImage(img, 0, 0);
-
-            let qr = readJSQR(canvas, ctx);
-            if (qr) return resolve(qr);
-
-            // Thử xoay 90°
-            canvas.width = img.height;
-            canvas.height = img.width;
-
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate(Math.PI / 2);
-            ctx.translate(-img.width / 2, -img.height / 2);
-            ctx.filter = "contrast(180%) brightness(110%)";
-            ctx.drawImage(img, 0, 0);
-            ctx.restore();
-
-            qr = readJSQR(canvas, ctx);
-            if (qr) return resolve(qr);
-
-            resolve(null);
-        };
-        img.src = imgURL;
-    });
+  // ---------- Try jsQR fallback ----------
+  return decodeWithJsQR(img);
 }
 
-function readJSQR(canvas, ctx) {
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const qr = jsQR(imgData.data, canvas.width, canvas.height, {
-        inversionAttempts: "attemptBoth",
-    });
-    return qr ? qr.data : null;
+function decodeWithJsQR(img) {
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d");
+  c.width = img.width;
+  c.height = img.height;
+
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, c.width, c.height);
+
+  const qr = jsQR(data.data, c.width, c.height, {
+    inversionAttempts: "attemptBoth"
+  });
+
+  return qr ? qr.data.trim() : null;
+}
+
+function loadImage(file) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.src = URL.createObjectURL(file);
+  });
 }
