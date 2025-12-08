@@ -7,5 +7,12 @@
     "mode": "ASN",
     "code": "CH0587510",
     "result": "DONE"
+  },
+  {
+    "user": "cris",
+    "file": "CH0587512.jpg",
+    "type": "QR",
+    "code": "CH0587512",
+    "ts": 1765188021676
   }
 ]
