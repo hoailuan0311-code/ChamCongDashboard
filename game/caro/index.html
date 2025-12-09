@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Caro — Cris Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="main">
+
+  <h1>Caro — Cris Studio</h1>
+
+  <div class="top-panel">
+    <input id="playerName" placeholder="Tên người chơi">
+
+    <select id="modeSelect">
+      <option value="ai">Chơi với Cris (Pro)</option>
+      <option value="online">Chơi Online</option>
+      <option value="spectate">Xem phòng (Spectate)</option>
+    </select>
+
+    <button id="startBtn">Bắt đầu</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div id="onlineOptions" style="display:none">
+    <button id="createRoomBtn">Tạo phòng</button>
+
+    <input id="roomInput" placeholder="Mã phòng">
+    <button id="joinRoomBtn">Vào phòng</button>
+
+    <div id="roomStatus"></div>
+  </div>
+
+  <div id="gameWrapper">
+    <div id="gameArea"></div>
+
+    <div class="side-panel">
+
+      <div class="info-box">
+        <div>Lượt hiện tại: <span id="turnLabel">—</span></div>
+        <div>Trạng thái: <span id="statusLabel">—</span></div>
+        <div>Timer: <span id="timer">30</span>s</div>
+      </div>
+
+      <div class="chat-box">
+        <h3>Chat</h3>
+        <div id="chatMessages"></div>
+        <input id="chatInput" placeholder="Nhập tin nhắn…">
+        <button id="sendChat">Gửi</button>
+      </div>
+
+      <div class="leaderboard">
+        <h3>Global Leaderboard</h3>
+        <ul id="leaderList"></ul>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="game.js"></script>
+
+</body>
+</html>
 
