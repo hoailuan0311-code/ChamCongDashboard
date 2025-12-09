@@ -253,7 +253,7 @@ function stopTimer() { clearInterval(timerInterval); timerLabel.textContent = '-
 function getNameForSymbol(sym) {
   if (mode === 'ai') {
     if (sym === 'X') return playerNameInput.value.trim() || 'Player';
-    return 'Cris (AI)';
+    return 'Cris';
   } else { // local or online
     if (sym === 'X') return isHost ? (playerNameInput.value.trim()||'Host') : 'PlayerX';
     if (sym === 'O') return isHost ? 'Guest' : (playerNameInput.value.trim()||'Player');
@@ -301,7 +301,7 @@ function onCellClick(e) {
       if (!mv) { playing = false; setStatus('Hòa!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa'); stopTimer(); return; }
       makeAndApplyMove(mv.r,mv.c,'O');
       const line2 = checkWinWithLine(mv.r,mv.c,'O');
-      if (line2) { highlightWin(line2); playing=false; setStatus('Cris (O) thắng!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris (AI)'); pushLeaderboardEntry({winner:'Cris (AI)',reason:'win',room:'local'}); stopTimer(); return; }
+      if (line2) { highlightWin(line2); playing=false; setStatus('Cris (O) thắng!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris'); pushLeaderboardEntry({winner:'Cris',reason:'win',room:'local'}); stopTimer(); return; }
       turn = 'X'; setTurnLabel(turn); setStatus('Lượt bạn'); resetTimer();
     }, 250);
   }
@@ -671,7 +671,7 @@ function startLocalOrAI() {
   makeEmptyBoard(); renderBoard();
   turn = 'X'; setTurnLabel(turn);
   playing = true; isSpectator = false; roomId = null; isHost = false; mySymbol='X';
-  setStatus(mode === 'ai' ? 'Chơi với Cris (AI) — Bạn là X' : 'Local: 2 người cùng máy');
+  setStatus(mode === 'ai' ? 'Chơi với Cris — Bạn là X' : 'Local: 2 người cùng máy');
   resetTimer();
 }
 
