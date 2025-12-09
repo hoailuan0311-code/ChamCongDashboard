@@ -391,7 +391,7 @@ function createRoom() {
   const rRef = db.ref(`caro_rooms/${roomId}`);
   rRef.set({ createdAt: Date.now(), hostName: playerNameInput.value.trim()||'Host', state: { board: flatBoard(), turn: 'X', lastMove: null }}, err=>{
     if (err) { alert('Tạo phòng lỗi'); console.warn(err); }
-    else { roomStatus.textContent = `Phòng: ${roomId} (Bạn là Host/X)`; setupRoomListeners(roomId,false); }
+    else { roomStatus.textContent = `Phòng: ${roomId} (Bạn là chủ phòng - X)`; setupRoomListeners(roomId,false); }
   });
 }
 
