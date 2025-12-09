@@ -652,129 +652,127 @@ function fetchAndRenderGlobalLeaderboard() {
 */
 
 function AI_findBestMove(bd, aiSymbol) {
-  const opp = (aiSymbol === 'X') ? 'O' : 'X';
+  const opp = aiSymbol === 'X' ? 'O' : 'X';
+  const candidates = [];
 
-  // 1. immediate win
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (bd[r][c] === null) {
-        bd[r][c] = aiSymbol;
-        if (checkWinBoard(bd, r, c, aiSymbol)) { bd[r][c] = null; return {r,c}; }
-        bd[r][c] = null;
-      }
-    }
-  }
-
-  // 2. immediate block
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (bd[r][c] === null) {
-        bd[r][c] = opp;
-        if (checkWinBoard(bd, r, c, opp)) { bd[r][c] = null; return {r,c}; }
-        bd[r][c] = null;
-      }
-    }
-  }
-
-  // 3. heuristic scoring
-  let best = null;
-  let bestScore = -Infinity;
+  // Only consider cells near existing stones
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (bd[r][c] !== null) continue;
-      const score = heuristicScoreForCell(bd, r, c, aiSymbol);
-      // prefer central positions slightly
-      const centerBias = (ROWS/2 - Math.abs(r - ROWS/2)) + (COLS/2 - Math.abs(c - COLS/2));
-      const finalScore = score + centerBias * 0.1 + (Math.random() * 0.5);
-      if (finalScore > bestScore) {
-        bestScore = finalScore;
-        best = { r, c };
+      
+      let near = false;
+      for (let dr = -2; dr <= 2; dr++) {
+        for (let dc = -2; dc <= 2; dc++) {
+          let rr = r + dr, cc = c + dc;
+          if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && bd[rr][cc] !== null) {
+            near = true;
+            break;
+          }
+        }
       }
+      if (near) candidates.push({r, c});
     }
   }
-  return best;
-}
 
-function checkWinBoard(bd, r, c, who) {
-  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-  for (const d of dirs) {
-    let cnt = 1;
-    for (let s = 1; s < WIN; s++) {
-      const rr = r + d[0]*s, cc = c + d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS||bd[rr][cc] !== who) break;
-      cnt++;
+  // If board empty → play center
+  if (candidates.length === 0)
+    return {r: Math.floor(ROWS/2), c: Math.floor(COLS/2)};
+
+  let bestScore = -Infinity;
+  let bestMove = candidates[0];
+
+  for (const cell of candidates) {
+    let {r, c} = cell;
+    if (bd[r][c] !== null) continue;
+
+    // 1) Try winning move
+    bd[r][c] = aiSymbol;
+    if (checkWinBoard(bd, r, c, aiSymbol)) {
+      bd[r][c] = null;
+      return {r,c}; // instant win
     }
-    for (let s = 1; s < WIN; s++) {
-      const rr = r - d[0]*s, cc = c - d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS||bd[rr][cc] !== who) break;
-      cnt++;
+    bd[r][c] = null;
+
+    // 2) Try blocking opponent win
+    bd[r][c] = opp;
+    if (checkWinBoard(bd, r, c, opp)) {
+      bd[r][c] = null;
+      return {r,c}; // block immediately
     }
-    if (cnt >= WIN) return true;
+    bd[r][c] = null;
+
+    // 3) Strategy scoring
+    const score = evaluateCell_Strategy(bd, r, c, aiSymbol, opp);
+    if (score > bestScore) {
+      bestScore = score;
+      bestMove = {r, c};
+    }
   }
-  return false;
+
+  return bestMove;
 }
 
-/* heuristic patterns */
-function heuristicScoreForCell(bd, r, c, aiSymbol) {
-  const opp = (aiSymbol === 'X') ? 'O' : 'X';
+function evaluateCell_Strategy(bd, r, c, ai, opp) {
+  let score = 0;
+
+  score += patternScore(bd, r, c, ai) * 2;     // prioritize AI patterns
+  score += patternScore(bd, r, c, opp) * 1.5;  // block opponent patterns
+
+  // prefer center
+  score += 50 - (Math.abs(r - ROWS/2) + Math.abs(c - COLS/2));
+
+  return score;
+}
+
+function patternScore(bd, r, c, who) {
   let total = 0;
-  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+  bd[r][c] = who;
 
-  for (const d of dirs) {
-    let ownCount = 1; // including this cell
-    let openEnds = 0;
+  // direct win
+  if (checkWinBoard(bd, r, c, who)) total += 5000;
 
-    // forward
-    for (let k = 1; k < WIN; k++) {
-      const rr = r + d[0]*k, cc = c + d[1]*k;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      const v = bd[rr][cc];
-      if (v === aiSymbol) ownCount++;
-      else if (v === null) { openEnds++; break; }
-      else break;
-    }
-    // backward
-    for (let k = 1; k < WIN; k++) {
-      const rr = r - d[0]*k, cc = c - d[1]*k;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      const v = bd[rr][cc];
-      if (v === aiSymbol) ownCount++;
-      else if (v === null) { openEnds++; break; }
-      else break;
-    }
+  // open sequences
+  total += countOpenSequences(bd, r, c, who, 4) * 400;
+  total += countOpenSequences(bd, r, c, who, 3) * 150;
+  total += countOpenSequences(bd, r, c, who, 2) * 20;
 
-    // opponent pattern
-    let oppCount = 0, oppOpen=0;
-    for (let k = 1; k < WIN; k++) {
-      const rr = r + d[0]*k, cc = c + d[1]*k;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      const v = bd[rr][cc];
-      if (v === opp) oppCount++;
-      else if (v === null) { oppOpen++; break; }
-      else break;
-    }
-    for (let k = 1; k < WIN; k++) {
-      const rr = r - d[0]*k, cc = c - d[1]*k;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      const v = bd[rr][cc];
-      if (v === opp) oppCount++;
-      else if (v === null) { oppOpen++; break; }
-      else break;
-    }
-
-    // scoring heuristics
-    if (ownCount >= 4) total += 10000;
-    else if (ownCount === 3 && openEnds >= 1) total += 2000;
-    else if (ownCount === 2 && openEnds >= 1) total += 200;
-
-    if (oppCount >= 4) total += 9000; // block urgent
-    else if (oppCount === 3 && oppOpen >= 1) total += 1500;
-    else if (oppCount === 2 && oppOpen >= 1) total += 150;
-  }
+  bd[r][c] = null;
   return total;
 }
 
-/* ========== Spectator & Reconnect helpers ========== */
+function countOpenSequences(bd, r, c, who, len) {
+  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+  let count = 0;
+
+  for (const d of dirs) {
+    let seq = 1;
+    let openStart = false, openEnd = false;
+
+    // forward
+    for (let i=1;i<=len;i++) {
+      const rr = r + d[0]*i, cc = c + d[1]*i;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) seq++;
+      else if (bd[rr][cc] === null) { openEnd = true; break; }
+      else break;
+    }
+
+    // backward
+    for (let i=1;i<=len;i++) {
+      const rr = r - d[0]*i, cc = c - d[1]*i;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) seq++;
+      else if (bd[rr][cc] === null) { openStart = true; break; }
+      else break;
+    }
+
+    if (seq >= len && openStart && openEnd)
+      count++;
+  }
+
+  return count;
+}
+
 
 /* attempt to reconnect to room state if disconnected */
 function tryReconnectToRoom() {
