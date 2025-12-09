@@ -464,22 +464,21 @@ function cloneBoard(bd) {
   return bd.map(row => row.slice());
 }
 
-/* --- Utility: get candidate cells near existing stones --- */
+/* =========================
+   PHẦN 3 — AI Threat-based Engine (Level 2)
+   ========================= */
+
+/* Smart candidate collection – no spam */
 function getCandidateCells(bd, radius = 2) {
   const set = new Set();
+
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (bd[r][c] !== null) {
         for (let dr = -radius; dr <= radius; dr++) {
           for (let dc = -radius; dc <= radius; dc++) {
             const rr = r + dr, cc = c + dc;
-            if (
-              rr >= 0 &&
-              rr < ROWS &&
-              cc >= 0 &&
-              cc < COLS &&
-              bd[rr][cc] === null
-            ) {
+            if (rr >= 0 && rr < ROWS && cc >= 0 && cc < COLS && bd[rr][cc] === null) {
               set.add(rr * COLS + cc);
             }
           }
@@ -488,167 +487,126 @@ function getCandidateCells(bd, radius = 2) {
     }
   }
 
-  const arr = Array.from(set).map(v => ({
+  if (set.size === 0) {
+    return [{ r: Math.floor(ROWS / 2), c: Math.floor(COLS / 2) }];
+  }
+
+  return Array.from(set).map(v => ({
     r: Math.floor(v / COLS),
     c: v % COLS
   }));
-
-  // nếu bàn trống → đi giữa
-  if (arr.length === 0)
-    return [{ r: Math.floor(ROWS / 2), c: Math.floor(COLS / 2) }];
-
-  return arr;
 }
 
-/* --- AI main entry --- */
-function AI_getMove(bd, aiSymbol) {
-  const opp = aiSymbol === 'X' ? 'O' : 'X';
-
-  // 1) candidate cells
-  const candidates = getCandidateCells(bd, 2);
-
-  // 2) immediate win
-  for (const cell of candidates) {
-    const { r, c } = cell;
-    if (bd[r][c] !== null) continue;
-    bd[r][c] = aiSymbol;
-    if (checkWinBoard(bd, r, c, aiSymbol)) {
-      bd[r][c] = null;
-      return { r, c };
-    }
-    bd[r][c] = null;
-  }
-
-  // 3) immediate block
-  for (const cell of candidates) {
-    const { r, c } = cell;
-    if (bd[r][c] !== null) continue;
-    bd[r][c] = opp;
-    if (checkWinBoard(bd, r, c, opp)) {
-      bd[r][c] = null;
-      return { r, c };
-    }
-    bd[r][c] = null;
-  }
-
-  // 4) try fork (double threat)
-  const fork = findForkMove(bd, aiSymbol, opp, candidates);
-  if (fork) return fork;
-
-  // 5) heuristic evaluation
-  let best = null;
-  let bestScore = -Infinity;
-
-  for (const cell of candidates) {
-    const { r, c } = cell;
-    if (bd[r][c] !== null) continue;
-
-    const score = evaluateCellHeuristic(bd, r, c, aiSymbol, opp);
-
-    if (score > bestScore) {
-      bestScore = score;
-      best = { r, c };
-    }
-  }
-
-  if (!best) return { r: Math.floor(ROWS / 2), c: Math.floor(COLS / 2) };
-  return best;
-}
-
-/* --- check immediate win with direct 5 --- */
+/* Basic win checker */
 function checkWinBoard(bd, r, c, who) {
-  const dirs = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [1, -1]
-  ];
+  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
   for (const d of dirs) {
     let cnt = 1;
+
     for (let s = 1; s < WIN; s++) {
-      const rr = r + d[0] * s,
-        cc = c + d[1] * s;
-      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS || bd[rr][cc] !== who)
-        break;
+      const rr = r + d[0]*s, cc = c + d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
       cnt++;
     }
     for (let s = 1; s < WIN; s++) {
-      const rr = r - d[0] * s,
-        cc = c - d[1] * s;
-      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS || bd[rr][cc] !== who)
-        break;
+      const rr = r - d[0]*s, cc = c - d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
       cnt++;
     }
+
     if (cnt >= WIN) return true;
   }
   return false;
 }
 
-/* --- 2-ply fork detection --- */
-function findForkMove(bd, ai, opp, candidates) {
-  for (const cell of candidates) {
-    const { r, c } = cell;
+/* Threat scoring engine */
+function scoreThreats(bd, r, c, who) {
+  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+  let score = 0;
+
+  for (const d of dirs) {
+    let stones = 1;
+    let open = 0;
+
+    // forward
+    for (let s=1; s<WIN; s++) {
+      const rr=r+d[0]*s, cc=c+d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) stones++;
+      else if (bd[rr][cc] === null) { open++; break; }
+      else break;
+    }
+    // backward
+    for (let s=1; s<WIN; s++) {
+      const rr=r-d[0]*s, cc=c-d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) stones++;
+      else if (bd[rr][cc] === null) { open++; break; }
+      else break;
+    }
+
+    if (stones === 4 && open >= 1) score += 5000;
+    else if (stones === 3 && open >= 1) score += 1200;
+    else if (stones === 2 && open >= 1) score += 150;
+  }
+
+  return score;
+}
+
+/* Threat-based AI core */
+function AI_getMove(bd, aiSymbol) {
+  const opp = aiSymbol === 'X' ? 'O' : 'X';
+  const candidates = getCandidateCells(bd, 2);
+
+  /* 1 — Win immediately */
+  for (const {r,c} of candidates) {
     if (bd[r][c] !== null) continue;
+    bd[r][c] = aiSymbol;
+    if (checkWinBoard(bd,r,c,aiSymbol)) { bd[r][c]=null; return {r,c}; }
+    bd[r][c]=null;
+  }
 
-    const bd1 = cloneBoard(bd);
-    bd1[r][c] = ai;
+  /* 2 — Block immediate loss */
+  for (const {r,c} of candidates) {
+    if (bd[r][c] !== null) continue;
+    bd[r][c] = opp;
+    if (checkWinBoard(bd,r,c,opp)) { bd[r][c]=null; return {r,c}; }
+    bd[r][c]=null;
+  }
 
-    // nếu tự thắng ngay thì chọn luôn
-    if (checkWinBoard(bd1, r, c, ai)) return { r, c };
+  /* 3 — Find strongest threat */
+  let best = null;
+  let bestScore = -Infinity;
 
-    let winningReplies = 0;
+  for (const {r,c} of candidates) {
+    if (!bd[r][c]) {
+      let score = 0;
+      bd[r][c] = aiSymbol;
 
-    const oppMoves = getCandidateCells(bd1, 2);
-    for (const oc of oppMoves) {
-      const bd2 = cloneBoard(bd1);
-      if (bd2[oc.r][oc.c] !== null) continue;
-      bd2[oc.r][oc.c] = opp;
+      // AI's threats
+      score += scoreThreats(bd, r, c, aiSymbol);
 
-      const aiReplies = getCandidateCells(bd2, 2);
-      let canWin = false;
+      // Opponent threats if AI ignores
+      bd[r][c] = opp;
+      score += scoreThreats(bd, r, c, opp) * 0.8;
 
-      for (const ar of aiReplies) {
-        if (bd2[ar.r][ar.c] !== null) continue;
-        bd2[ar.r][ar.c] = ai;
+      // revert
+      bd[r][c] = null;
 
-        if (checkWinBoard(bd2, ar.r, ar.c, ai)) {
-          canWin = true;
-          bd2[ar.r][ar.c] = null;
-          break;
-        }
-        bd2[ar.r][ar.c] = null;
+      // slight center bias
+      score += 25 - Math.abs(r - ROWS/2) - Math.abs(c - COLS/2);
+
+      if (score > bestScore) {
+        bestScore = score;
+        best = { r, c };
       }
-
-      if (canWin) winningReplies++;
-      if (winningReplies >= 2) return { r, c }; // fork!
     }
   }
 
-  return null;
+  return best ?? { r: Math.floor(ROWS/2), c: Math.floor(COLS/2) };
 }
 
-/* --- Evaluate heuristic for each cell --- */
-function evaluateCellHeuristic(bd, r, c, ai, opp) {
-  let score = 0;
-
-  bd[r][c] = ai;
-
-  if (checkWinBoard(bd, r, c, ai)) {
-    bd[r][c] = null;
-    return 100000; // direct win
-  }
-
-  score += countThreats(bd, r, c, ai) * 10;
-
-  bd[r][c] = opp;
-  score += countThreats(bd, r, c, opp) * 8;
-
-  // center bias
-  score += 20 - (Math.abs(r - ROWS / 2) + Math.abs(c - COLS / 2)) * 0.5;
-
-  bd[r][c] = null;
-  return score;
-}
+/* ========== End Level 2 AI ========= */
 
 /* --- Threat evaluation (open-4, open-3…) --- */
 function countThreats(bd, r, c, who) {
@@ -748,7 +706,7 @@ function startLocalOrAI() {
   playing = true;
   isSpectator = false;
   roomId = null; isHost = false; mySymbol = 'X';
-  setStatus(mode === 'ai' ? 'Chơi với Cris (AI) — Bạn là X' : 'Chơi local — X đi trước');
+  setStatus(mode === 'ai' ? 'Chơi với Cris — Bạn là X' : 'Chơi local — X đi trước');
   resetTimer();
   cells.forEach(c => c.classList.remove('win'));
 }
