@@ -205,8 +205,28 @@ function saveLocalResult(p1,p2,winnerName,meta={}) {
   localStorage.setItem("caro_hist", JSON.stringify(arr));
 }
 
+function renderLocalLeaderboard() {
+  const arr = JSON.parse(localStorage.getItem('caro_hist') || '[]');
+  const counts = {};
+  for (const it of arr) {
+    if (it && it.winner) counts[it.winner] = (counts[it.winner]||0)+1;
+  }
+  leaderList.innerHTML = '';
+  Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0,20).forEach(name=>{
+    const li = document.createElement('li'); li.textContent = `${name}: ${counts[name]} thắng`; leaderList.appendChild(li);
+  });
+}
+
+/* ========== Chat UI ========== */
+function appendChatMessage(item) {
+  const wrap = document.createElement('div'); wrap.className = 'chat-item';
+  const time = new Date(item.t||Date.now()).toLocaleTimeString();
+  wrap.innerHTML = `<b>${escapeHtml(item.name||'Anon')}</b> <small>${time}</small><div>${escapeHtml(item.msg)}</div>`;
+  chatMessages.appendChild(wrap); chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 /* =========================
-   PHẦN 2 — AI, Move logic, Online helpers
+   PHẦN 2 — Move logic, Online helpers
    ========================= */
 
 /* ========== Board utilities ========== */
@@ -240,7 +260,7 @@ function onCellClick(e) {
     playing = false;
     setStatus(`${turn} thắng!`);
     saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), getNameForSymbol(turn), {type:'local'});
-    pushLeaderboardEntry({ winner: getNameForSymbol(turn), reason:'win', room:'local' });
+    pushGameResult(getNameForSymbol(turn), getNameForSymbol('X'), getNameForSymbol('O'), {type:'local'});
     stopTimer();
     return;
   }
@@ -249,7 +269,7 @@ function onCellClick(e) {
     playing = false;
     setStatus('Hòa!');
     saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa',{type:'local'});
-    pushLeaderboardEntry({ winner: 'Hòa', reason:'draw', room:'local' });
+    pushGameResult('Hòa', getNameForSymbol('X'), getNameForSymbol('O'), {type:'local'});
     stopTimer();
     return;
   }
@@ -264,7 +284,7 @@ function onCellClick(e) {
     setStatus('Cris đang suy nghĩ...');
     setTimeout(()=> {
       const mv = AI_getMove(board, 'O');
-      if (!mv) { playing=false; setStatus('Hòa!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa'); stopTimer(); return; }
+      if (!mv) { playing=false; setStatus('Hòa!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa'); pushGameResult('Hòa', getNameForSymbol('X'), getNameForSymbol('O')); stopTimer(); return; }
       makeAndApplyMove(mv.r,mv.c,'O');
       const line2 = checkWinWithLine(mv.r,mv.c,'O');
       if (line2) {
@@ -272,7 +292,7 @@ function onCellClick(e) {
         playing = false;
         setStatus('Cris (O) thắng!');
         saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris (AI)');
-        pushLeaderboardEntry({ winner: 'Cris (AI)', reason:'win', room:'local' });
+        pushGameResult('Cris (AI)', getNameForSymbol('X'), getNameForSymbol('O'), {type:'ai'});
         stopTimer();
         return;
       }
@@ -311,7 +331,7 @@ function makeAndPushMove(r,c,who) {
       setStatus(`${who} thắng!`);
       const winnerName = (who === mySymbol) ? (playerNameInput.value.trim() || 'You') : 'Opponent';
       saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), winnerName);
-      pushLeaderboardEntry({ winner: winnerName, reason:'win', room: roomId });
+      pushGameResult(winnerName, getNameForSymbol('X'), getNameForSymbol('O'), {room: roomId});
       // push room history
       const histRef = db.ref(`caro_rooms/${roomId}/history`);
       histRef.push({ t: Date.now(), winner: winnerName, reason:'win' });
@@ -358,6 +378,7 @@ function setupRoomListeners(rid, spectator=false) {
       playing = false;
       setStatus(`${mv.who} thắng!`);
       saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), (mv.who === mySymbol ? (playerNameInput.value.trim()||'You') : 'Opponent'));
+      pushGameResult((mv.who === mySymbol ? (playerNameInput.value.trim()||'You') : 'Opponent'), getNameForSymbol('X'), getNameForSymbol('O'), {room: roomId});
       stopTimer();
     } else {
       turn = mv.who === 'X' ? 'O' : 'X';
@@ -391,7 +412,7 @@ function createRoom() {
   const rRef = db.ref(`caro_rooms/${roomId}`);
   rRef.set({ createdAt: Date.now(), hostName: playerNameInput.value.trim()||'Host', state: { board: flatBoard(), turn: 'X', lastMove: null }}, err=>{
     if (err) { alert('Tạo phòng lỗi'); console.warn(err); }
-    else { roomStatus.textContent = `Phòng: ${roomId} (Bạn là chủ phòng - X)`; setupRoomListeners(roomId,false); }
+    else { roomStatus.textContent = `Phòng: ${roomId} (Bạn là Host/X)`; setupRoomListeners(roomId,false); }
   });
 }
 
@@ -413,65 +434,16 @@ function sendChatToRoom(msg) {
   const chatRef = db.ref(`caro_rooms/${roomId}/chat`);
   chatRef.push({ name: playerNameInput.value || 'Guest', msg, t: Date.now() });
 }
-
-/* ========== Leaderboard push ========== */
-function pushLeaderboardEntry(entry) {
-  if (!entry) return;
-  const e = { winner: entry.winner||'Unknown', reason: entry.reason||'', room: entry.room||'', t: Date.now() };
-  if (firebaseEnabled) {
-    const lbRef = db.ref('leaderboard');
-    lbRef.push(e, err => { if (err) console.warn('Push LB failed', err); else fetchAndRenderGlobalLeaderboard(); });
-  } else {
-    console.log('LB not pushed (firebase disabled)');
-  }
-}
-
-/* ========== Connectivity & reconnect helpers ========== */
-function monitorConnection() {
-  if (!firebaseEnabled) return;
-  const connectedRef = db.ref('.info/connected');
-  connectedRef.on('value', snap => {
-    if (snap.val() === true) {
-      console.log('Connected to Firebase');
-      if (roomId) { tryReconnectToRoom(); setupRoomListeners(roomId, isSpectator); }
-    } else {
-      console.log('Disconnected from Firebase');
-      setStatus('Mất kết nối — sẽ tự reconnect');
-    }
-  });
-}
-
-function tryReconnectToRoom() {
-  if (!firebaseEnabled || !roomId) return;
-  const stRef = db.ref(`caro_rooms/${roomId}/state`);
-  stRef.once('value').then(snap => {
-    if (!snap.exists()) return;
-    const st = snap.val();
-    if (st && st.board && st.board.length === ROWS*COLS) {
-      loadBoardFromFlat(st.board); updateCells();
-      if (st.turn) { turn = st.turn; setTurnLabel(turn); }
-    }
-  }).catch(e => console.warn('Reconnect failed', e));
-}
-
-/* ========== End of PHẦN 2 ========== */
 /* =========================
-   PHẦN 3 — AI Cris++ (Smart, Non-Random)
+   PHẦN 3 — AI LEVEL 3 (Threat + Minimax depth=4, alpha-beta)
    ========================= */
 
-/* --- Utility: clone board --- */
-function cloneBoard(bd) {
-  return bd.map(row => row.slice());
-}
+/* clone board */
+function cloneBoard(bd) { return bd.map(r => r.slice()); }
 
-/* =========================
-   PHẦN 3 — AI Threat-based Engine (Level 2)
-   ========================= */
-
-/* Smart candidate collection – no spam */
+/* candidate cells near stones (radius default 2) */
 function getCandidateCells(bd, radius = 2) {
   const set = new Set();
-
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       if (bd[r][c] !== null) {
@@ -486,185 +458,241 @@ function getCandidateCells(bd, radius = 2) {
       }
     }
   }
-
-  if (set.size === 0) {
-    return [{ r: Math.floor(ROWS / 2), c: Math.floor(COLS / 2) }];
-  }
-
-  return Array.from(set).map(v => ({
-    r: Math.floor(v / COLS),
-    c: v % COLS
-  }));
+  if (set.size === 0) return [{ r: Math.floor(ROWS/2), c: Math.floor(COLS/2) }];
+  return Array.from(set).map(v => ({ r: Math.floor(v / COLS), c: v % COLS }));
 }
 
-/* Basic win checker */
+/* basic immediate win checker */
 function checkWinBoard(bd, r, c, who) {
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
   for (const d of dirs) {
     let cnt = 1;
-
-    for (let s = 1; s < WIN; s++) {
-      const rr = r + d[0]*s, cc = c + d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
-      cnt++;
+    for (let s=1;s<WIN;s++){
+      const rr=r+d[0]*s, cc=c+d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS||bd[rr][cc]!==who) break; cnt++;
     }
-    for (let s = 1; s < WIN; s++) {
-      const rr = r - d[0]*s, cc = c - d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
-      cnt++;
+    for (let s=1;s<WIN;s++){
+      const rr=r-d[0]*s, cc=c-d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS||bd[rr][cc]!==who) break; cnt++;
     }
-
-    if (cnt >= WIN) return true;
+    if (cnt>=WIN) return true;
   }
   return false;
 }
 
-/* Threat scoring engine */
-function scoreThreats(bd, r, c, who) {
+/* sliding-window threat count (open-4, open-3, etc.) */
+function countWindowThreats(bd, r, c, who) {
+  let total = 0;
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-  let score = 0;
-
   for (const d of dirs) {
-    let stones = 1;
-    let open = 0;
-
-    // forward
-    for (let s=1; s<WIN; s++) {
-      const rr=r+d[0]*s, cc=c+d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      if (bd[rr][cc] === who) stones++;
-      else if (bd[rr][cc] === null) { open++; break; }
-      else break;
+    // build line centered at (r,c)
+    const line = [{r,c}];
+    for (let s=1;s<WIN;s++){
+      const rr=r+d[0]*s, cc=c+d[1]*s; if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break; line.push({r:rr,c:cc});
     }
-    // backward
-    for (let s=1; s<WIN; s++) {
-      const rr=r-d[0]*s, cc=c-d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
-      if (bd[rr][cc] === who) stones++;
-      else if (bd[rr][cc] === null) { open++; break; }
-      else break;
+    for (let s=1;s<WIN;s++){
+      const rr=r-d[0]*s, cc=c-d[1]*s; if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break; line.unshift({r:rr,c:cc});
     }
-
-    if (stones === 4 && open >= 1) score += 5000;
-    else if (stones === 3 && open >= 1) score += 1200;
-    else if (stones === 2 && open >= 1) score += 150;
+    // slide windows
+    for (let i=0;i+WIN<=line.length;i++){
+      let own=0, emp=0, opp=0;
+      for (let k=0;k<WIN;k++){
+        const p=line[i+k], v=bd[p.r][p.c];
+        if (v===who) own++;
+        else if (v===null) emp++;
+        else opp++;
+      }
+      if (opp===0) {
+        if (own===4 && emp===1) total += 1000; // almost win
+        else if (own===3 && emp===2) total += 250;
+        else if (own===2 && emp===3) total += 50;
+      } else {
+        if (own===4 && opp===1) total += 200;
+      }
+    }
   }
+  return total;
+}
 
+/* score a candidate for move ordering */
+function scoreCandidateForOrdering(bd, r, c, ai, opp) {
+  let score = 0;
+  bd[r][c] = ai;
+  score += countWindowThreats(bd, r, c, ai) * 10; // prioritize own threats
+  bd[r][c] = opp;
+  score += countWindowThreats(bd, r, c, opp) * 6; // block weight
+  bd[r][c] = null;
+  // center bias
+  score += 30 - (Math.abs(r-ROWS/2) + Math.abs(c-COLS/2));
   return score;
 }
 
-/* Threat-based AI core */
+/* find immediate fork (double threat) — fast 2-ply scan */
+function findForkMove(bd, ai, opp, candidates) {
+  for (const {r,c} of candidates) {
+    if (bd[r][c] !== null) continue;
+    const bd1 = cloneBoard(bd);
+    bd1[r][c] = ai;
+    if (checkWinBoard(bd1,r,c,ai)) return {r,c};
+    // count AI immediate winning replies after each opponent reply
+    let forks = 0;
+    const oppCandidates = getCandidateCells(bd1,2);
+    for (const oc of oppCandidates) {
+      if (bd1[oc.r][oc.c] !== null) continue;
+      const bd2 = cloneBoard(bd1);
+      bd2[oc.r][oc.c] = opp;
+      const nextCaps = getCandidateCells(bd2,2);
+      for (const nc of nextCaps) {
+        if (bd2[nc.r][nc.c] !== null) continue;
+        bd2[nc.r][nc.c] = ai;
+        if (checkWinBoard(bd2,nc.r,nc.c,ai)) { forks++; bd2[nc.r][nc.c]=null; break; }
+        bd2[nc.r][nc.c]=null;
+      }
+      if (forks >= 2) return {r,c};
+    }
+  }
+  return null;
+}
+
+/* MINIMAX with alpha-beta, depth parameter (maxDepth=4 for Level 3B) */
+function minimax(bd, depth, alpha, beta, maximizingPlayer, ai, opp) {
+  if (depth === 0) return evaluateBoard(bd, ai, opp);
+
+  const candidates = getCandidateCells(bd, 2);
+
+  // move ordering: evaluate candidates roughly and sort desc
+  const scored = [];
+  for (const {r,c} of candidates) {
+    if (bd[r][c] !== null) continue;
+    const sc = scoreCandidateForOrdering(bd, r, c, ai, opp);
+    scored.push({r,c,sc});
+  }
+  if (scored.length === 0) return evaluateBoard(bd, ai, opp);
+  scored.sort((a,b) => b.sc - a.sc);
+
+  if (maximizingPlayer) {
+    let maxEval = -Infinity;
+    for (const mv of scored) {
+      const {r,c} = mv;
+      bd[r][c] = ai;
+      if (checkWinBoard(bd,r,c,ai)) { bd[r][c]=null; return 100000 + depth*10; } // immediate best
+      const evalv = minimax(bd, depth-1, alpha, beta, false, ai, opp);
+      bd[r][c] = null;
+      if (evalv > maxEval) maxEval = evalv;
+      alpha = Math.max(alpha, evalv);
+      if (beta <= alpha) break; // prune
+    }
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+    for (const mv of scored) {
+      const {r,c} = mv;
+      bd[r][c] = opp;
+      if (checkWinBoard(bd,r,c,opp)) { bd[r][c]=null; return -100000 - depth*10; }
+      const evalv = minimax(bd, depth-1, alpha, beta, true, ai, opp);
+      bd[r][c] = null;
+      if (evalv < minEval) minEval = evalv;
+      beta = Math.min(beta, evalv);
+      if (beta <= alpha) break;
+    }
+    return minEval;
+  }
+}
+
+/* evaluate board for ai vs opp (heuristic) */
+function evaluateBoard(bd, ai, opp) {
+  const candidates = getCandidateCells(bd, 2);
+  let score = 0;
+  for (const {r,c} of candidates) {
+    if (bd[r][c] !== null) continue;
+    bd[r][c] = ai;
+    score += countWindowThreats(bd, r, c, ai) * 8;
+    bd[r][c] = opp;
+    score -= countWindowThreats(bd, r, c, opp) * 6;
+    bd[r][c] = null;
+  }
+  return score;
+}
+
+/* main AI entry for Level 3 (depth 4) */
 function AI_getMove(bd, aiSymbol) {
   const opp = aiSymbol === 'X' ? 'O' : 'X';
   const candidates = getCandidateCells(bd, 2);
 
-  /* 1 — Win immediately */
+  // 1. immediate win
   for (const {r,c} of candidates) {
     if (bd[r][c] !== null) continue;
     bd[r][c] = aiSymbol;
     if (checkWinBoard(bd,r,c,aiSymbol)) { bd[r][c]=null; return {r,c}; }
-    bd[r][c]=null;
+    bd[r][c] = null;
   }
 
-  /* 2 — Block immediate loss */
+  // 2. immediate block
   for (const {r,c} of candidates) {
     if (bd[r][c] !== null) continue;
     bd[r][c] = opp;
     if (checkWinBoard(bd,r,c,opp)) { bd[r][c]=null; return {r,c}; }
-    bd[r][c]=null;
+    bd[r][c] = null;
   }
 
-  /* 3 — Find strongest threat */
+  // 3. fork detection (force double threat)
+  const fork = findForkMove(bd, aiSymbol, opp, candidates);
+  if (fork) return fork;
+
+  // 4. minimax search depth=4 (ai->opp->ai->opp)
   let best = null;
   let bestScore = -Infinity;
+  const depth = 4; // Level 3B chosen by Cris
 
+  // order top candidates (limit to top N to speed up)
+  const scored = [];
   for (const {r,c} of candidates) {
-    if (!bd[r][c]) {
-      let score = 0;
-      bd[r][c] = aiSymbol;
+    if (bd[r][c] !== null) continue;
+    const sc = scoreCandidateForOrdering(bd, r, c, aiSymbol, opp);
+    scored.push({r,c,sc});
+  }
+  scored.sort((a,b)=>b.sc - a.sc);
 
-      // AI's threats
-      score += scoreThreats(bd, r, c, aiSymbol);
-
-      // Opponent threats if AI ignores
-      bd[r][c] = opp;
-      score += scoreThreats(bd, r, c, opp) * 0.8;
-
-      // revert
-      bd[r][c] = null;
-
-      // slight center bias
-      score += 25 - Math.abs(r - ROWS/2) - Math.abs(c - COLS/2);
-
-      if (score > bestScore) {
-        bestScore = score;
-        best = { r, c };
-      }
-    }
+  const LIMIT = Math.min(12, scored.length); // consider top 12 candidates
+  for (let i=0;i<LIMIT;i++){
+    const {r,c} = scored[i];
+    bd[r][c] = aiSymbol;
+    if (checkWinBoard(bd,r,c,aiSymbol)) { bd[r][c]=null; return {r,c}; }
+    const val = minimax(bd, depth-1, -Infinity, Infinity, false, aiSymbol, opp);
+    bd[r][c] = null;
+    if (val > bestScore) { bestScore = val; best = {r,c}; }
   }
 
-  return best ?? { r: Math.floor(ROWS/2), c: Math.floor(COLS/2) };
+  if (!best) return { r: Math.floor(ROWS/2), c: Math.floor(COLS/2) };
+  return best;
 }
 
-/* ========== End Level 2 AI ========= */
+/* ========== End AI Level 3 ========= */
 
-/* --- Threat evaluation (open-4, open-3…) --- */
-function countThreats(bd, r, c, who) {
-  let total = 0;
-  const dirs = [
-    [0, 1],
-    [1, 0],
-    [1, 1],
-    [1, -1]
-  ];
+/* =========================
+   HISTORY / LEADERBOARD writer
+   ========================= */
 
-  for (const d of dirs) {
-    let line = [{ r, c }];
-
-    // gather forward
-    for (let s = 1; s < WIN; s++) {
-      const rr = r + d[0] * s,
-        cc = c + d[1] * s;
-      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) break;
-      line.push({ r: rr, c: cc });
+function pushGameResult(winnerName, p1, p2, meta = {}) {
+  const entry = {
+    winner: winnerName || 'Unknown',
+    players: { p1: p1 || null, p2: p2 || null },
+    meta,
+    t: Date.now()
+  };
+  // push to leaderboard node
+  if (firebaseEnabled) {
+    db.ref('leaderboard').push(entry).catch(e => console.warn('LB push fail', e));
+    // also push to room history if in room
+    if (roomId) {
+      db.ref(`caro_rooms/${roomId}/history`).push({ winner: winnerName, players: {p1,p2}, meta, t: Date.now() }).catch(e => console.warn('hist push fail', e));
     }
-
-    // gather backward
-    for (let s = 1; s < WIN; s++) {
-      const rr = r - d[0] * s,
-        cc = c - d[1] * s;
-      if (rr < 0 || rr >= ROWS || cc < 0 || cc >= COLS) break;
-      line.unshift({ r: rr, c: cc });
-    }
-
-    // slide window of length 5 along this line
-    for (let i = 0; i + WIN <= line.length; i++) {
-      let cnt = 0,
-        empty = 0,
-        opp = 0;
-
-      for (let k = 0; k < WIN; k++) {
-        const p = line[i + k];
-        const v = bd[p.r][p.c];
-        if (v === who) cnt++;
-        else if (v === null) empty++;
-        else opp++;
-      }
-
-      if (opp === 0) {
-        if (cnt === 4 && empty === 1) total += 1000;
-        else if (cnt === 3 && empty === 2) total += 250;
-        else if (cnt === 2 && empty === 3) total += 40;
-      } else {
-        if (cnt === 4 && opp === 1) total += 200;
-      }
-    }
+  } else {
+    const arr = JSON.parse(localStorage.getItem('caro_hist') || '[]');
+    arr.push({ time: (new Date()).toLocaleString(), p1, p2, winner: winnerName, meta });
+    localStorage.setItem('caro_hist', JSON.stringify(arr));
   }
-
-  return total;
 }
-
-/* ========== End of PHẦN 3 ========== */
 /* =========================
    PHẦN 4 — UI wiring, boot, leaderboard fetch, helpers
    ========================= */
@@ -706,7 +734,7 @@ function startLocalOrAI() {
   playing = true;
   isSpectator = false;
   roomId = null; isHost = false; mySymbol = 'X';
-  setStatus(mode === 'ai' ? 'Chơi với Cris — Bạn là X' : 'Chơi local — X đi trước');
+  setStatus(mode === 'ai' ? 'Chơi với Cris (AI) — Bạn là X' : 'Chơi local — X đi trước');
   resetTimer();
   cells.forEach(c => c.classList.remove('win'));
 }
@@ -819,12 +847,12 @@ function onTimeExpired() {
   if (!playing) return;
   const loser = turn;
   const winner = (turn === 'X') ? 'O' : 'X';
-  const winnerName = getNameForSymbol(winner);
+  const winnerName = (winner === 'X') ? getNameForSymbol('X') : getNameForSymbol('O');
   setStatus(`Hết giờ! ${winner} thắng`);
   playing = false;
   stopTimer();
   saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), winnerName, { reason: 'timeout' });
-  pushLeaderboardEntry({ winner: winnerName, reason: 'timeout', room: roomId || 'local' });
+  pushGameResult(winnerName, getNameForSymbol('X'), getNameForSymbol('O'), { reason: 'timeout', room: roomId || 'local' });
   if (firebaseEnabled && mode === 'online' && roomId) {
     const histRef = db.ref(`caro_rooms/${roomId}/history`);
     histRef.push({ t: Date.now(), winner: winnerName, reason: 'timeout' });
@@ -836,4 +864,4 @@ function debugPrintBoard() {
   console.log(board.map(r => r.map(c => c || '.').join(' ')).join('\n'));
 }
 
-/* ========== End of PHẦN 4 — game.js complete ========= */
+/* ========== End of game.js ========= */
