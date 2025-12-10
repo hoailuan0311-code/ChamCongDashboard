@@ -141,7 +141,7 @@ function renderTable(){
     const hasDate = r.NgayCapLai && (r.NgayCapLai+"").trim() !== "";
 
     const mkHtml = hasPass
-      ? `<div class="tooltip"><span class="done">✔ ${escapeHtml(r.MatKhauMoi)}</span><span class="tiptext">Đã cấp mật khẩu</span></div>
+      ? `<div class="tooltip"><span class="done">${escapeHtml(r.MatKhauMoi)}</span><span class="tiptext">Đã cấp mật khẩu</span></div>
          <button class="copyBtn" onclick="copyText('${escapeAttr(r.MatKhauMoi)}')">Copy</button>`
       : `<div class="tooltip"><span class="pending">⏳ Pending</span><span class="tiptext">Chờ HR cập nhật</span></div>`;
 
