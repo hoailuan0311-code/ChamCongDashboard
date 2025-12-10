@@ -1,277 +1,219 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-<meta charset="UTF-8" />
-<title>Pass CADENA đã cấp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="utf-8"/>
+<title>🔐 Pass CADENA đã cấp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
-
 <style>
-body {
-    font-family: "Be Vietnam Pro", sans-serif;
-    background: #f2f6ff;
-    margin: 20px;
-}
-
-h1 {
-    text-align: center;
-    font-size: 42px;
-    font-weight: 800;
-    color: #00aaff;
-}
-
-.container {
-    max-width: 1300px;
-    margin: auto;
-    text-align: center;
-}
-
-button {
-    font-size: 18px;
-    padding: 14px 26px;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
-    transition: 0.25s;
-}
-
-.view-btn {
-    background: linear-gradient(135deg, #a78bfa, #c084fc);
-    color: #fff;
-    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.4);
-}
-.view-btn:hover {
-    transform: translateY(-3px);
-}
-
-input {
-    margin-top: 20px;
-    width: 50%;
-    padding: 12px 16px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: 1px solid #bbb;
-    outline: none;
-}
-
-/* Table */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 25px;
-    background: #fff;
-    border-radius: 14px;
-    overflow: hidden;
-}
-
-th, td {
-    padding: 14px;
-    border-bottom: 1px solid #eee;
-    font-size: 16px;
-}
-th {
-    background: #eef3ff;
-    font-weight: 700;
-    font-size: 17px;
-}
-
-/* Status styles */
-.status-yellow {
-    background: #fcd34d;
-    color: #7c4a00;
-    padding: 5px 12px;
-    border-radius: 10px;
-    font-weight: 600;
-    display: inline-block;
-    animation: blink 1.2s infinite ease-in-out;
-}
-.status-green {
-    background: #86efac;
-    color: #065f46;
-    padding: 5px 12px;
-    border-radius: 10px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-/* Blink animation */
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: .45; }
-    100% { opacity: 1; }
-}
-
-/* Tooltip */
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-.tooltip .tiptext {
-    visibility: hidden;
-    background-color: rgba(0,0,0,0.75);
-    color: #fff;
-    text-align: center;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-    position: absolute;
-    z-index: 10;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    white-space: nowrap;
-}
-
-.tooltip:hover .tiptext {
-    visibility: visible;
-}
-
-.copy-btn {
-    margin-left: 8px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-}
-.copy-btn:hover {
-    background: #2563eb;
-}
+  body{font-family:"Be Vietnam Pro",sans-serif;background:#f1f5f9;padding:24px}
+  h1{text-align:center;color:#00aaff;font-size:40px;margin:6px 0 10px;font-weight:800}
+  #unlockBtn{display:block;margin:12px auto;padding:12px 32px;background:linear-gradient(135deg,#a78bfa,#818cf8);color:#fff;border-radius:12px;border:0;cursor:pointer;font-weight:700}
+  #lockNotice{text-align:center;color:#666;margin-bottom:12px}
+  #searchBox{display:block;margin:10px auto 18px;padding:10px 14px;width:360px;border-radius:10px;border:1px solid #ddd}
+  table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+  th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
+  th{background:#f8fafc;font-weight:700}
+  .pending{background:#fcd34d;color:#422; padding:6px 12px;border-radius:10px;animation:blink 1.2s infinite}
+  .done{background:#4ade80;color:#062;padding:6px 12px;border-radius:10px}
+  @keyframes blink{50%{opacity:.4}}
+  .copyBtn{margin-left:10px;padding:6px 10px;background:#3b82f6;color:#fff;border:0;border-radius:8px;cursor:pointer}
+  .copyBtn:hover{background:#2563eb}
+  .locked{display:none!important}
+  .fade-in{animation:fade .45s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .tooltip{position:relative;display:inline-block}
+  .tooltip .tiptext{visibility:hidden;background:rgba(0,0,0,.75);color:#fff;padding:6px 8px;border-radius:6px;font-size:13px;position:absolute;z-index:10;top:-36px;left:50%;transform:translateX(-50%);white-space:nowrap}
+  .tooltip:hover .tiptext{visibility:visible}
+  .small{font-size:13px;color:#666}
+  .note{max-width:900px;margin:8px auto 0;color:#444;text-align:center}
 </style>
 </head>
-
 <body>
+  <h1>📁 Pass CADENA đã cấp</h1>
 
-<div class="container">
-    <h1>📁 Pass CADENA đã cấp</h1>
+  <button id="unlockBtn">🔑 Xem Pass CADENA đã cấp</button>
+  <div id="lockNotice">🔒 Dữ liệu nhạy cảm đang ẩn — nhập KEY để mở khóa</div>
 
-    <button class="view-btn" onclick="askKey()">🔑 Xem Pass CADENA đã cấp</button>
+  <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…" />
 
-    <br>
-    <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…">
+  <div class="note small">File lấy trực tiếp từ GitHub raw (auto). Nếu không thấy data, kiểm tra file JSON/JS trên repo.</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>MSNV</th>
-                <th>Họ Tên</th>
-                <th>BU</th>
-                <th>Bộ phận</th>
-                <th>Lý do cấp lại</th>
-                <th>Mật Khẩu Mới</th>
-                <th>Team</th>
-                <th>Ngày Cấp Lại</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
-
-<script src="datapassCadena.js"></script>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th><th>MSNV</th><th>Họ Tên</th><th>BU</th><th>Bộ phận</th>
+        <th class="colSensitive">Lý do cấp lại</th>
+        <th class="colSensitive">Mật Khẩu Mới</th>
+        <th class="colSensitive">Team</th>
+        <th class="colSensitive">Ngày Cấp Lại</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
 
 <script>
-let rawData = [...passCadenaData];
-let filteredData = [];
-let accessKey = "";
+/*
+  Robust loader: fetch raw file from GitHub (or any raw URL).
+  - If file content is a JSON array -> parse directly
+  - If file contains JS like `const name = [ ... ]` -> extract first [...] and parse
+  - If you want different URL, change RAW_URL
+*/
+const RAW_URL = "https://raw.githubusercontent.com/hoailuan0311-code/ChamCongDashboard/main/datapassCadena.js";
+// If you prefer .json: https://raw.githubusercontent.com/.../datapassCadena.json
 
-/* =====================================================================
-   ASK FOR KEY BEFORE SHOWING DATA
-===================================================================== */
-function askKey() {
-    let key = prompt("🔐 Nhập KEY xác thực để xem dữ liệu:");
+let passData = [];        // final array of records
+let unlocked = false;
+let currentKey = "";
 
-    if (!key || key.trim() === "") {
-        alert("❌ KEY không hợp lệ!");
-        return;
+// helper: fetch + parse flexible JSON/JS
+async function loadRawData(){
+  try{
+    const r = await fetch(RAW_URL + "?v=" + Date.now(), {cache: "no-store"});
+    if(!r.ok) throw new Error("Fetch failed: " + r.status);
+    const txt = await r.text();
+    console.log("Raw file length:", txt.length);
+    // Try to parse direct JSON first
+    try {
+      const j = JSON.parse(txt);
+      if(Array.isArray(j)){ passData = j; console.log("Parsed as JSON array"); return; }
+    } catch(e) { /* ignore */ }
+
+    // Otherwise try to extract first JSON array inside text
+    const match = txt.match(/\[([\s\S]*)\]/m);
+    if(match){
+      const jsonText = "[" + match[1] + "]";
+      passData = JSON.parse(jsonText);
+      console.log("Extracted JSON array from JS wrapper");
+      return;
     }
 
-    accessKey = key.trim().toLowerCase();
+    // If still nothing
+    throw new Error("Không tìm thấy mảng JSON trong file raw.");
+  } catch(err){
+    console.error("loadRawData error:", err);
+    alert("Lỗi load dữ liệu: " + err.message + "\nKiểm tra RAW_URL hoặc file trên GitHub.");
+  }
+}
 
-    filteredData = rawData.filter(x => (x.Key + "").toLowerCase() === accessKey);
-
-    if (filteredData.length === 0) {
-        alert("❌ KEY không tồn tại trong hệ thống!");
-        return;
+// date conversion: accept number or numeric-string excel serial, or ISO-like string
+function excelDateToString(v){
+  if(v === undefined || v === null || v === "") return "";
+  // if looks numeric (like "46001" or 46001)
+  if(!isNaN(Number(v))){
+    const n = Number(v);
+    // guard unrealistic small numbers
+    if(n > 25000){
+      const d = new Date((n - 25569) * 86400 * 1000);
+      if(!isNaN(d)) return d.toLocaleDateString("en-GB");
     }
-
-    renderTable(filteredData);
+  }
+  // otherwise try Date parse
+  const d2 = new Date(v);
+  if(!isNaN(d2)) return d2.toLocaleDateString("en-GB");
+  return v + "";
 }
 
-/* =====================================================================
-   FORMAT EXCEL DATE
-===================================================================== */
-function excelDate(v) {
-    if (!v || v === 0) return "";
-    const d = new Date((v - 25569) * 86400 * 1000);
-    return d.toLocaleDateString("en-GB");
-}
+// render table based on current filters and unlocked state
+function renderTable(){
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+  const q = (document.getElementById("searchBox").value || "").toLowerCase();
 
-/* =====================================================================
-   RENDER TABLE
-===================================================================== */
-function renderTable(data) {
-    let tbody = document.getElementById("tableBody");
-    tbody.innerHTML = "";
+  // filter: if unlocked -> only rows with same KEY; if locked -> none show (or could show minimal rows)
+  let data = passData.slice();
 
-    data.forEach(r => {
+  // If unlocked, keep only rows with matching key. Otherwise show nothing sensitive (we'll still show nothing rows).
+  if(unlocked && currentKey){
+    data = data.filter(r => ("" + (r.Key||"")).toLowerCase() === currentKey);
+  } else {
+    // locked state: render zero rows (keeps headers)
+    data = [];
+  }
 
-        let mk = r.MatKhauMoi && r.MatKhauMoi !== ""
-            ? `<div class="tooltip"><span class="status-green">✔ ${r.MatKhauMoi}</span>
-               <span class="tiptext">Đã cấp mật khẩu</span></div>
-               <button class="copy-btn" onclick="copyPass('${r.MatKhauMoi}')">Copy</button>`
-            : `<div class="tooltip"><span class="status-yellow">⏳ Pending</span>
-               <span class="tiptext">Chờ HR cập nhật</span></div>`;
+  // then filter by search
+  if(q){
+    data = data.filter(r => ((r.MSNV||"")+"").toLowerCase().includes(q) || ((r.HoTen||"")+"").toLowerCase().includes(q));
+  }
 
-        let ngay = r.NgayCapLai && r.NgayCapLai !== "" && r.NgayCapLai !== 0
-            ? `<div class="tooltip"><span class="status-green">✔ ${excelDate(r.NgayCapLai)}</span>
-               <span class="tiptext">Đã hoàn tất</span></div>`
-            : `<div class="tooltip"><span class="status-yellow">⏳ Pending</span>
-               <span class="tiptext">Đang chờ xử lý</span></div>`;
+  for(const r of data){
+    const hasPass = r.MatKhauMoi && (r.MatKhauMoi+"").trim() !== "";
+    const hasDate = r.NgayCapLai && (r.NgayCapLai+"").trim() !== "";
 
-        tbody.innerHTML += `
-        <tr>
-            <td>${excelDate(r.Date)}</td>
-            <td>${r.MSNV}</td>
-            <td>${r.HoTen}</td>
-            <td>${r.BU}</td>
-            <td>${r.BoPhan}</td>
-            <td>${r.LyDo}</td>
-            <td>${mk}</td>
-            <td>${r.Team}</td>
-            <td>${ngay}</td>
-        </tr>`;
-    });
-}
+    const mkHtml = hasPass
+      ? `<div class="tooltip"><span class="done">✔ ${escapeHtml(r.MatKhauMoi)}</span><span class="tiptext">Đã cấp mật khẩu</span></div>
+         <button class="copyBtn" onclick="copyText('${escapeAttr(r.MatKhauMoi)}')">Copy</button>`
+      : `<div class="tooltip"><span class="pending">⏳ Pending</span><span class="tiptext">Chờ HR cập nhật</span></div>`;
 
-/* =====================================================================
-   SEARCH REALTIME
-===================================================================== */
-document.getElementById("searchBox").addEventListener("input", e => {
+    const ngayHtml = hasDate
+      ? `<div class="tooltip"><span class="done">✔ ${excelDateToString(r.NgayCapLai)}</span><span class="tiptext">Đã cấp</span></div>`
+      : `<div class="tooltip"><span class="pending">⏳ Pending</span><span class="tiptext">Đang chờ xử lý</span></div>`;
 
-    let t = e.target.value.toLowerCase();
-
-    let result = filteredData.filter(x =>
-        (x.MSNV + "").includes(t) ||
-        (x.HoTen + "").toLowerCase().includes(t)
+    tbody.insertAdjacentHTML("beforeend",
+      `<tr class="fade-in">
+         <td>${excelDateToString(r.Date)}</td>
+         <td>${escapeHtml(r.MSNV)}</td>
+         <td>${escapeHtml(r.HoTen)}</td>
+         <td>${escapeHtml(r.BU)}</td>
+         <td>${escapeHtml(r.BoPhan)}</td>
+         <td class="colSensitive">${escapeHtml(r.LyDo)}</td>
+         <td class="colSensitive">${mkHtml}</td>
+         <td class="colSensitive">${escapeHtml(r.Team)}</td>
+         <td class="colSensitive">${ngayHtml}</td>
+       </tr>`
     );
-
-    renderTable(result);
-});
-
-/* =====================================================================
-   COPY PASSWORD
-===================================================================== */
-function copyPass(text) {
-    navigator.clipboard.writeText(text);
-    alert("📋 Đã copy mật khẩu!");
+  }
 }
-</script>
 
+// utility: escape for HTML and attributes
+function escapeHtml(s){
+  if(s === undefined || s === null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
+
+// copy
+function copyText(t){
+  navigator.clipboard.writeText(t+"").then(()=>alert("📋 Đã copy mật khẩu!"), ()=>alert("Không thể copy."));
+}
+
+// toggle sensitive columns hidden class
+function setSensitiveVisibility(visible){
+  document.querySelectorAll(".colSensitive").forEach(el=>{
+    if(visible) el.classList.remove("locked"); else el.classList.add("locked");
+  });
+}
+
+// initialize: hide sensitive columns first, attach listeners, load data
+(async function init(){
+  setSensitiveVisibility(false); // hide initially
+  document.getElementById("searchBox").addEventListener("input", renderTable);
+  document.getElementById("unlockBtn").addEventListener("click", async ()=>{
+    // if passData empty try to reload
+    if(passData.length === 0) await loadRawData();
+
+    const key = (prompt("Nhập KEY để mở dữ liệu:") || "").trim().toLowerCase();
+    if(!key) return;
+
+    // check
+    const ok = passData.some(r => (""+(r.Key||"")).toLowerCase() === key);
+    if(!ok){ alert("❌ KEY không tồn tại hoặc sai."); return; }
+
+    // unlock
+    unlocked = true;
+    currentKey = key;
+    document.getElementById("lockNotice").style.display = "none";
+    setSensitiveVisibility(true);
+    renderTable();
+  });
+
+  // initial load: fetch data but still locked, so nothing visible
+  await loadRawData();
+  console.log("Loaded records:", passData.length);
+  // If you want to auto-unlock for testing, set unlocked=true and currentKey to first key:
+  // unlocked = true; currentKey = (passData[0] && (passData[0].Key||"").toLowerCase());
+  // setSensitiveVisibility(true); renderTable();
+})();
+</script>
 </body>
 </html>
