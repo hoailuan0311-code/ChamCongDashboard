@@ -64,11 +64,24 @@ h2 { margin-top: 25px; }
 }
 
 .search-bar button {
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border-radius: 10px;
     cursor: pointer;
     border: none;
-    background: #ccc;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #8EC5FC, #E0C3FC);
+    box-shadow: 0 6px 14px rgba(142, 197, 252, 0.4);
+    transition: 0.25s;
+}
+
+.search-bar button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(224, 195, 252, 0.5);
+}
+
+.search-bar button:active {
+    transform: scale(0.97);
 }
 
 /* Nút phản hồi chấm công & các nút mới */
