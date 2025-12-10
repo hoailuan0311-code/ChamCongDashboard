@@ -260,7 +260,7 @@ function onCellClick(e) {
         highlightWin(line2);
         playing = false;
         setStatus('Cris (AI) thắng!');
-        saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris');
+        saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris (AI)');
         pushGameResult('Cris (AI)', getNameForSymbol('X'), getNameForSymbol('O'), {type:'ai'});
         stopTimer();
         return;
