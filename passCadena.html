@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<title>📂 Danh sách Pass CADENA đã cấp</title>
+<title>📂 Pass CADENA đã cấp</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
@@ -14,6 +14,7 @@ body {
     margin: 20px;
 }
 
+/* TITLE */
 h1 {
     text-align: center;
     font-size: 40px;
@@ -23,24 +24,7 @@ h1 {
     -webkit-text-fill-color: transparent;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background: #eef3f8;
-}
-
+/* VIEW BUTTON */
 .view-pass-btn {
     padding: 12px 18px;
     border: none;
@@ -59,6 +43,72 @@ th {
     box-shadow: 0 10px 20px rgba(224,195,252,0.5);
 }
 
+/* SEARCH BAR */
+.search-box {
+    text-align:center;
+    margin-top: 20px;
+}
+
+.search-box input {
+    padding: 10px;
+    width: 260px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #eef3f8;
+}
+
+/* COPY BUTTON */
+.copy-btn {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 16px;
+    margin-left: 6px;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.copy-btn:hover {
+    color: #0056b3;
+}
+
+/* TOAST */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #4facfe;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.3s;
+}
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 </style>
 </head>
 
@@ -66,10 +116,17 @@ th {
 
 <h1>📂 Pass CADENA đã cấp</h1>
 
+<!-- BUTTON NHẬP KEY -->
 <div style="text-align:center;">
     <button onclick="askKeyAndFilter()" class="view-pass-btn">🔑 Xem Pass CADENA đã cấp</button>
 </div>
 
+<!-- SEARCH BAR -->
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Tìm theo MSNV hoặc Họ Tên…">
+</div>
+
+<!-- TABLE -->
 <table id="passTable">
     <thead>
         <tr>
@@ -78,21 +135,26 @@ th {
             <th>Họ Tên</th>
             <th>BU</th>
             <th>Bộ phận</th>
-            <th>Lý do</th>
-            <th>Mật khẩu mới</th>
+            <th>Lý do cấp lại</th>
+            <th>Mật Khẩu Mới</th>
             <th>Team</th>
+            <th>Ngày Cấp Lại</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
 
+<!-- TOAST -->
+<div id="toast" class="toast">Copied!</div>
+
 <!-- IMPORT DATA -->
 <script src="datapassCadena.js"></script>
 
 <script>
-// ========================= KEY CHECK =========================
+let filteredData = [];
 
-async function askKeyAndFilter() {
+/* ========================= CHECK KEY ========================= */
+function askKeyAndFilter() {
     let key = prompt("🔐 Nhập KEY để xem Pass CADENA:");
 
     if (!key) {
@@ -100,20 +162,19 @@ async function askKeyAndFilter() {
         return;
     }
 
-    const filtered = passCadena.filter(
+    filteredData = passCadena.filter(
         x => (x.Key + "").toLowerCase() === key.toLowerCase()
     );
 
-    if (filtered.length === 0) {
+    if (filteredData.length === 0) {
         alert("❌ KEY không đúng hoặc không tồn tại!");
         return;
     }
 
-    renderTable(filtered);
+    renderTable(filteredData);
 }
 
-// ========================= RENDER TABLE =========================
-
+/* ========================= RENDER TABLE ========================= */
 function renderTable(data){
     let tbody = document.querySelector("#passTable tbody");
     tbody.innerHTML = "";
@@ -127,12 +188,44 @@ function renderTable(data){
                 <td>${r.BU || ""}</td>
                 <td>${r.BoPhan || ""}</td>
                 <td>${r.LyDo || ""}</td>
-                <td><b>${r.MatKhauMoi || ""}</b></td>
+                <td>
+                    <span>${r.MatKhauMoi || ""}</span>
+                    <button class="copy-btn" onclick="copyPassword('${r.MatKhauMoi || ""}')">📋</button>
+                </td>
                 <td>${r.Team || ""}</td>
+                <td>${r.NgayCapLai || ""}</td>
             </tr>
         `;
     });
 }
+
+/* ========================= COPY PASSWORD ========================= */
+function copyPassword(text) {
+    navigator.clipboard.writeText(text);
+    showToast();
+}
+
+/* ========================= TOAST ========================= */
+function showToast() {
+    let t = document.getElementById("toast");
+    t.classList.add("show");
+
+    setTimeout(() => {
+        t.classList.remove("show");
+    }, 2000);
+}
+
+/* ========================= SEARCH REALTIME ========================= */
+document.getElementById("searchInput").addEventListener("input", function(){
+    let q = this.value.toLowerCase();
+
+    let results = filteredData.filter(row =>
+        (row.MSNV + "").toLowerCase().includes(q) ||
+        (row.HoTen + "").toLowerCase().includes(q)
+    );
+
+    renderTable(results);
+});
 
 </script>
 
