@@ -47,7 +47,7 @@ let board = [];
 let cells = [];
 let turn = 'X';
 let playing = false;
-let mode = 'ai';
+let mode = 'ai'; // note: some html might use 'cris' — code supports both
 let roomId = null;
 let isHost = false;
 let mySymbol = 'X';
@@ -77,6 +77,7 @@ let roomMeta = { hostName: null, guestName: null };
     /* some safety so cells show visually even without external CSS */
     #gameArea { display: grid; gap: 2px; }
     .cell { background: rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; font-size:18px; border-radius:2px;}
+    .win { box-shadow: 0 0 12px 3px rgba(255,215,0,0.9) !important; }
   `;
   document.head.appendChild(s);
 })();
@@ -167,14 +168,19 @@ function highlightLastMove(r,c) {
 }
 
 /* ========== Player name helpers ========== */
+/* treat both mode 'ai' and 'cris' as AI mode */
+function isAIMode() {
+  return mode === 'ai' || mode === 'cris';
+}
+
 function getNameForSymbol(sym) {
   // if online and room meta available, use host/guest
   if (mode === 'online' && roomMeta) {
     if (sym === 'X') return roomMeta.hostName || (isHost? (playerNameInput.value||'Host') : 'Player X');
     if (sym === 'O') return roomMeta.guestName || (!isHost? (playerNameInput.value||'Guest') : 'Player O');
   }
-  // local/ai fallback
-  if (mode === 'ai') {
+  // local/ai or cris fallback
+  if (isAIMode()) {
     if (sym === 'X') return playerNameInput.value.trim() || 'Bạn';
     return 'Cris (AI)';
   }
@@ -182,16 +188,22 @@ function getNameForSymbol(sym) {
   return sym;
 }
 
-/* enhanced setTurnLabel: accept symbol or free text */
+/* enhanced setTurnLabel: accept symbol or free text and strip duplicate prefix */
 function setTurnLabel(symOrText) {
-  if (symOrText === 'X' || symOrText === 'O') {
-    turnLabel.textContent = `Lượt hiện tại: ${getNameForSymbol(symOrText)}`;
+  let str = symOrText;
+  if (typeof str === 'string' && str.startsWith('Lượt hiện tại:')) {
+    // sanitize if code passed a full label by mistake
+    str = str.replace(/^Lượt hiện tại:\s*/,'');
+  }
+  if (str === 'X' || str === 'O') {
+    turnLabel.textContent = `Lượt hiện tại: ${getNameForSymbol(str)}`;
   } else {
-    turnLabel.textContent = `Lượt hiện tại: ${symOrText}`;
+    turnLabel.textContent = `Lượt hiện tại: ${str}`;
   }
 }
 
 function setStatus(s) { statusLabel.textContent = `Trạng thái: ${s}`; }
+
 /* =========================
    PHẦN 2 — Move logic, Online helpers, Chat, Room share
    ========================= */
@@ -217,7 +229,7 @@ function onCellClick(e) {
     return;
   }
 
-  // local or ai
+  // local or ai (covers both 'ai' and 'cris' since isAIMode is used later)
   makeAndApplyMove(r,c, turn);
   highlightLastMove(r,c);
 
@@ -247,9 +259,10 @@ function onCellClick(e) {
   setTurnLabel(turn);
   resetTimer();
 
-  // AI turn (if playing vs AI)
-  if (mode === 'ai' && playing && turn === 'O') {
+  // AI turn (if playing vs AI / Cris)
+  if (isAIMode() && playing && turn === 'O') {
     setStatus('Cris đang suy nghĩ...');
+    // small delay for UX
     setTimeout(()=> {
       const mv = AI_getMove(board, 'O');
       if (!mv) { playing=false; setStatus('Hòa!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa'); pushGameResult('Hòa', getNameForSymbol('X'), getNameForSymbol('O')); stopTimer(); return; }
@@ -331,6 +344,10 @@ function setupRoomListeners(rid, spectator=false) {
       if (st.turn) { turn = st.turn; setTurnLabel(turn); }
       if (st.meta) {
         roomMeta = st.meta;
+      }
+      // if lastMove present, highlight it
+      if (st.lastMove) {
+        highlightLastMove(st.lastMove.r, st.lastMove.c);
       }
     } else {
       roomStateRef.set({ board: flatBoard(), turn: 'X', lastMove: null, meta: roomMeta });
@@ -650,7 +667,7 @@ function startLocalOrAI() {
   playing = true;
   isSpectator = false;
   roomId = null; isHost = false; mySymbol = 'X';
-  setStatus(mode === 'ai' ? 'Chơi với Cris (AI) — Bạn là X' : 'Chơi local — X đi trước');
+  setStatus(isAIMode() ? 'Chơi với Cris (AI) — Bạn là X' : 'Chơi local — X đi trước');
   resetTimer();
   cells.forEach(c => c.classList.remove('win'));
 }
@@ -721,7 +738,7 @@ function monitorAndBoot() {
       if (snap.val() === true) {
         console.log('Firebase connected');
         if (roomId) {
-          tryReconnectToRoom();
+          tryReconnectToRoom && tryReconnectToRoom();
           setupRoomListeners(roomId, isSpectator);
         }
         fetchAndRenderGlobalLeaderboard();
