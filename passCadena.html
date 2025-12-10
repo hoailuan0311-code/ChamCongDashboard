@@ -1,164 +1,239 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-<meta charset="UTF-8">
-<title>📂 Pass CADENA đã cấp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<title>Pass CADENA đã cấp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
-body { font-family: "Be Vietnam Pro", sans-serif; background:#f5f7fa; margin:20px; }
-h1 { text-align:center; font-size:40px; font-weight:800; color:#00b7ff; }
-
-.search-box {
-    display:flex;
-    justify-content:center;
-    margin-top:20px;
+body {
+    font-family: "Be Vietnam Pro", sans-serif;
+    background: #f2f6ff;
+    margin: 20px;
 }
 
-#searchInput {
-    width:300px;
-    padding:10px 14px;
-    border-radius:10px;
-    border:1px solid #ccc;
-    font-size:16px;
+h1 {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 800;
+    color: #00aaff;
 }
 
-.pass-btn {
-    display:block;
-    margin:15px auto;
-    padding:14px 28px;
-    background:linear-gradient(135deg,#a78bfa,#c084fc);
-    border:none;
-    border-radius:14px;
-    font-size:18px;
-    color:white;
-    font-weight:600;
-    cursor:pointer;
-    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+.container {
+    max-width: 1300px;
+    margin: auto;
+    text-align: center;
 }
 
-.pass-btn:hover {
-    transform:translateY(-2px);
+button {
+    font-size: 18px;
+    padding: 14px 26px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.25s;
 }
 
+.view-btn {
+    background: linear-gradient(135deg, #a78bfa, #c084fc);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(167, 139, 250, 0.4);
+}
+.view-btn:hover {
+    transform: translateY(-3px);
+}
+
+input {
+    margin-top: 20px;
+    width: 50%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+    outline: none;
+}
+
+/* Table */
 table {
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-    background:white;
-    border-radius:12px;
-    overflow:hidden;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
 }
 
 th, td {
-    padding:10px;
-    border-bottom:1px solid #ddd;
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+}
+th {
+    background: #eef3ff;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+/* Status styles */
+.status-yellow {
+    background: #fcd34d;
+    color: #7c4a00;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: inline-block;
+    animation: blink 1.2s infinite ease-in-out;
+}
+.status-green {
+    background: #86efac;
+    color: #065f46;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Blink animation */
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: .45; }
+    100% { opacity: 1; }
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tiptext {
+    visibility: hidden;
+    background-color: rgba(0,0,0,0.75);
+    color: #fff;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    position: absolute;
+    z-index: 10;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+.tooltip:hover .tiptext {
+    visibility: visible;
 }
 
 .copy-btn {
-    padding:4px 10px;
-    border:none;
-    border-radius:6px;
-    background:#0ea5e9;
-    color:white;
-    cursor:pointer;
+    margin-left: 8px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+.copy-btn:hover {
+    background: #2563eb;
 }
 </style>
 </head>
 
 <body>
 
-<h1>📂 Pass CADENA đã cấp</h1>
+<div class="container">
+    <h1>📁 Pass CADENA đã cấp</h1>
 
-<button class="pass-btn" onclick="enterKey()">🔑 Xem Pass CADENA đã cấp</button>
+    <button class="view-btn" onclick="askKey()">🔑 Xem Pass CADENA đã cấp</button>
 
-<div class="search-box">
-    <input id="searchInput" placeholder="Tìm theo MSNV hoặc Họ Tên…" oninput="searchData()">
+    <br>
+    <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>MSNV</th>
+                <th>Họ Tên</th>
+                <th>BU</th>
+                <th>Bộ phận</th>
+                <th>Lý do cấp lại</th>
+                <th>Mật Khẩu Mới</th>
+                <th>Team</th>
+                <th>Ngày Cấp Lại</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
 </div>
 
-<table>
-<thead>
-<tr>
-    <th>Date</th>
-    <th>MSNV</th>
-    <th>Họ Tên</th>
-    <th>BU</th>
-    <th>Bộ phận</th>
-    <th>Lý do cấp lại</th>
-    <th>Mật Khẩu Mới</th>
-    <th>Team</th>
-    <th>Ngày Cấp Lại</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
+<script src="datapassCadena.js"></script>
 
 <script>
-
-// 🔥 FETCH đúng JSON THUẦN của bạn (ARRAY)
-let rawData = [];
+let rawData = [...passCadenaData];
 let filteredData = [];
+let accessKey = "";
 
-async function loadData() {
-    const res = await fetch("datapassCadena.js?cache="+Date.now());
-    rawData = await res.json();   // JSON format trên repo của bạn
-}
-loadData();
+/* =====================================================================
+   ASK FOR KEY BEFORE SHOWING DATA
+===================================================================== */
+function askKey() {
+    let key = prompt("🔐 Nhập KEY xác thực để xem dữ liệu:");
 
-// 🔑 NHẬP KEY → lọc đúng dòng
-async function enterKey(){
-    if(rawData.length === 0) await loadData();
-
-    let key = prompt("Nhập KEY:");
-
-    if(!key){
-        alert("Bạn chưa nhập KEY!");
+    if (!key || key.trim() === "") {
+        alert("❌ KEY không hợp lệ!");
         return;
     }
 
-    filteredData = rawData.filter(
-        r => (r.Key+"").toLowerCase() === key.toLowerCase()
-    );
+    accessKey = key.trim().toLowerCase();
 
-    if(filteredData.length === 0){
-        alert("KEY không đúng hoặc không tồn tại trong hệ thống!");
+    filteredData = rawData.filter(x => (x.Key + "").toLowerCase() === accessKey);
+
+    if (filteredData.length === 0) {
+        alert("❌ KEY không tồn tại trong hệ thống!");
         return;
     }
 
     renderTable(filteredData);
 }
 
-function excelDate(n){
-    let d = new Date((n - 25569) * 86400 * 1000);
-    return d.toLocaleDateString("vi-VN");
+/* =====================================================================
+   FORMAT EXCEL DATE
+===================================================================== */
+function excelDate(v) {
+    if (!v || v === 0) return "";
+    const d = new Date((v - 25569) * 86400 * 1000);
+    return d.toLocaleDateString("en-GB");
 }
 
-// ⭐ COPY PASSWORD
-function copyPass(text){
-    navigator.clipboard.writeText(text);
-    alert("Đã copy mật khẩu!");
-}
-
-// ⭐ SEARCH real-time
-function searchData(){
-    let s = document.getElementById("searchInput").value.toLowerCase();
-
-    let f = filteredData.filter(r =>
-        r.MSNV.toLowerCase().includes(s) ||
-        r.HoTen.toLowerCase().includes(s)
-    );
-
-    renderTable(f);
-}
-
-// ⭐ RENDER TABLE
-function renderTable(data){
+/* =====================================================================
+   RENDER TABLE
+===================================================================== */
+function renderTable(data) {
     let tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
 
-    data.forEach(r=>{
+    data.forEach(r => {
+
+        let mk = r.MatKhauMoi && r.MatKhauMoi !== ""
+            ? `<div class="tooltip"><span class="status-green">✔ ${r.MatKhauMoi}</span>
+               <span class="tiptext">Đã cấp mật khẩu</span></div>
+               <button class="copy-btn" onclick="copyPass('${r.MatKhauMoi}')">Copy</button>`
+            : `<div class="tooltip"><span class="status-yellow">⏳ Pending</span>
+               <span class="tiptext">Chờ HR cập nhật</span></div>`;
+
+        let ngay = r.NgayCapLai && r.NgayCapLai !== "" && r.NgayCapLai !== 0
+            ? `<div class="tooltip"><span class="status-green">✔ ${excelDate(r.NgayCapLai)}</span>
+               <span class="tiptext">Đã hoàn tất</span></div>`
+            : `<div class="tooltip"><span class="status-yellow">⏳ Pending</span>
+               <span class="tiptext">Đang chờ xử lý</span></div>`;
+
         tbody.innerHTML += `
         <tr>
             <td>${excelDate(r.Date)}</td>
@@ -167,17 +242,35 @@ function renderTable(data){
             <td>${r.BU}</td>
             <td>${r.BoPhan}</td>
             <td>${r.LyDo}</td>
-            <td>
-                ${r.MatKhauMoi}
-                <button class="copy-btn" onclick="copyPass('${r.MatKhauMoi}')">Copy</button>
-            </td>
+            <td>${mk}</td>
             <td>${r.Team}</td>
-            <td>${excelDate(r.NgayCapLai)}</td>
-        </tr>
-        `;
+            <td>${ngay}</td>
+        </tr>`;
     });
 }
 
+/* =====================================================================
+   SEARCH REALTIME
+===================================================================== */
+document.getElementById("searchBox").addEventListener("input", e => {
+
+    let t = e.target.value.toLowerCase();
+
+    let result = filteredData.filter(x =>
+        (x.MSNV + "").includes(t) ||
+        (x.HoTen + "").toLowerCase().includes(t)
+    );
+
+    renderTable(result);
+});
+
+/* =====================================================================
+   COPY PASSWORD
+===================================================================== */
+function copyPass(text) {
+    navigator.clipboard.writeText(text);
+    alert("📋 Đã copy mật khẩu!");
+}
 </script>
 
 </body>
