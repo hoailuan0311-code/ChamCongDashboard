@@ -5,7 +5,8 @@
 /* ========== CONFIG ========== */
 
 const COLS = 30, ROWS = 20, WIN = 5;
-const TURN_TIMEOUT = 30;
+// TURN timeout changed to 60 seconds as requested
+const TURN_TIMEOUT = 60;
 
 /* ========== YOUR FIREBASE CONFIG (CRIS) ========== */
 const firebaseConfig = {
@@ -61,6 +62,24 @@ let db = null;
 let roomMovesRef = null;
 let roomStateRef = null;
 let roomChatRef = null;
+
+/* store room players locally */
+let roomMeta = { hostName: null, guestName: null };
+
+/* ========== Add minimal CSS for last-move highlight (injected) ========== */
+(function injectStyles(){
+  const s = document.createElement('style');
+  s.textContent = `
+    .cell.last-move { outline: 3px solid #00d9ff; animation: lastMovePulse 0.6s ease-out; }
+    @keyframes lastMovePulse { from { outline-color: #ffffff; } to { outline-color: #00d9ff; } }
+    .cell.x { color: #00ff7f; font-weight:700; text-align:center; }
+    .cell.o { color: #ff6b6b; font-weight:700; text-align:center; }
+    /* some safety so cells show visually even without external CSS */
+    #gameArea { display: grid; gap: 2px; }
+    .cell { background: rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; font-size:18px; border-radius:2px;}
+  `;
+  document.head.appendChild(s);
+})();
 
 /* ========== Firebase Init ========== */
 function initFirebase() {
@@ -139,94 +158,42 @@ function cellBy(r,c) {
   return cells[r * COLS + c];
 }
 
-/* ========== Win Detection ========== */
-function checkWinWithLine(r, c, who, bd = board) {
-  const dirs = [[0,1],[1,0],[1,1],[1,-1]];
+/* highlight last move helper */
+function highlightLastMove(r,c) {
+  if (!cells || cells.length===0) return;
+  cells.forEach(el => el.classList.remove('last-move'));
+  const el = cellBy(r,c);
+  if (el) el.classList.add('last-move');
+}
 
-  for (const d of dirs) {
-    let line = [{r,c}];
-
-    for (let s=1; s<WIN; s++) {
-      const rr = r + d[0]*s, cc = c + d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
-      line.push({r:rr,c:cc});
-    }
-    for (let s=1; s<WIN; s++) {
-      const rr = r - d[0]*s, cc = c - d[1]*s;
-      if (rr<0||rr>=ROWS||cc<0||cc>=COLS || bd[rr][cc] !== who) break;
-      line.push({r:rr,c:cc});
-    }
-
-    if (line.length >= WIN) return line;
+/* ========== Player name helpers ========== */
+function getNameForSymbol(sym) {
+  // if online and room meta available, use host/guest
+  if (mode === 'online' && roomMeta) {
+    if (sym === 'X') return roomMeta.hostName || (isHost? (playerNameInput.value||'Host') : 'Player X');
+    if (sym === 'O') return roomMeta.guestName || (!isHost? (playerNameInput.value||'Guest') : 'Player O');
   }
-  return null;
+  // local/ai fallback
+  if (mode === 'ai') {
+    if (sym === 'X') return playerNameInput.value.trim() || 'Bạn';
+    return 'Cris (AI)';
+  }
+  // default
+  return sym;
 }
 
-function highlightWin(line) {
-  cells.forEach(c => c.classList.remove("win"));
-  if (!line) return;
-  for (const p of line) {
-    cellBy(p.r,p.c).classList.add("win");
+/* enhanced setTurnLabel: accept symbol or free text */
+function setTurnLabel(symOrText) {
+  if (symOrText === 'X' || symOrText === 'O') {
+    turnLabel.textContent = `Lượt hiện tại: ${getNameForSymbol(symOrText)}`;
+  } else {
+    turnLabel.textContent = `Lượt hiện tại: ${symOrText}`;
   }
 }
 
-/* ========== Timer ========== */
-function resetTimer() {
-  stopTimer();
-  timerRemaining = TURN_TIMEOUT;
-  timerLabel.textContent = timerRemaining;
-  timerInterval = setInterval(() => {
-    timerRemaining--;
-    timerLabel.textContent = timerRemaining;
-    if (timerRemaining <= 0) {
-      clearInterval(timerInterval);
-      onTimeExpired();
-    }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(timerInterval);
-}
-
-/* ========== UI ========== */
-function setStatus(s) { statusLabel.textContent = s; }
-function setTurnLabel(s) { turnLabel.textContent = s; }
-
-/* ========== Local History ========== */
-function saveLocalResult(p1,p2,winnerName,meta={}) {
-  const arr = JSON.parse(localStorage.getItem("caro_hist")||"[]");
-  arr.push({
-    time: new Date().toLocaleString(),
-    p1, p2,
-    winner: winnerName,
-    meta
-  });
-  localStorage.setItem("caro_hist", JSON.stringify(arr));
-}
-
-function renderLocalLeaderboard() {
-  const arr = JSON.parse(localStorage.getItem('caro_hist') || '[]');
-  const counts = {};
-  for (const it of arr) {
-    if (it && it.winner) counts[it.winner] = (counts[it.winner]||0)+1;
-  }
-  leaderList.innerHTML = '';
-  Object.keys(counts).sort((a,b)=>counts[b]-counts[a]).slice(0,20).forEach(name=>{
-    const li = document.createElement('li'); li.textContent = `${name}: ${counts[name]} thắng`; leaderList.appendChild(li);
-  });
-}
-
-/* ========== Chat UI ========== */
-function appendChatMessage(item) {
-  const wrap = document.createElement('div'); wrap.className = 'chat-item';
-  const time = new Date(item.t||Date.now()).toLocaleTimeString();
-  wrap.innerHTML = `<b>${escapeHtml(item.name||'Anon')}</b> <small>${time}</small><div>${escapeHtml(item.msg)}</div>`;
-  chatMessages.appendChild(wrap); chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-function escapeHtml(s){ if (!s && s !== 0) return ''; return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function setStatus(s) { statusLabel.textContent = `Trạng thái: ${s}`; }
 /* =========================
-   PHẦN 2 — Move logic, Online helpers
+   PHẦN 2 — Move logic, Online helpers, Chat, Room share
    ========================= */
 
 /* ========== Board utilities ========== */
@@ -238,7 +205,7 @@ function boardIsFull() {
 /* ========== Move handlers (UI click) ========== */
 function onCellClick(e) {
   if (!playing) return;
-  if (isSpectator) return;
+  if (isSpectator) return; // spectators cannot place
   const r = parseInt(e.currentTarget.dataset.r,10);
   const c = parseInt(e.currentTarget.dataset.c,10);
   if (board[r][c]) return;
@@ -252,13 +219,14 @@ function onCellClick(e) {
 
   // local or ai
   makeAndApplyMove(r,c, turn);
+  highlightLastMove(r,c);
 
   // check win
   const line = checkWinWithLine(r,c,turn);
   if (line) {
     highlightWin(line);
     playing = false;
-    setStatus(`${turn} thắng!`);
+    setStatus(`${getNameForSymbol(turn)} thắng!`);
     saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), getNameForSymbol(turn), {type:'local'});
     pushGameResult(getNameForSymbol(turn), getNameForSymbol('X'), getNameForSymbol('O'), {type:'local'});
     stopTimer();
@@ -279,19 +247,20 @@ function onCellClick(e) {
   setTurnLabel(turn);
   resetTimer();
 
-  // AI turn
+  // AI turn (if playing vs AI)
   if (mode === 'ai' && playing && turn === 'O') {
     setStatus('Cris đang suy nghĩ...');
     setTimeout(()=> {
       const mv = AI_getMove(board, 'O');
       if (!mv) { playing=false; setStatus('Hòa!'); saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Hòa'); pushGameResult('Hòa', getNameForSymbol('X'), getNameForSymbol('O')); stopTimer(); return; }
       makeAndApplyMove(mv.r,mv.c,'O');
+      highlightLastMove(mv.r,mv.c);
       const line2 = checkWinWithLine(mv.r,mv.c,'O');
       if (line2) {
         highlightWin(line2);
         playing = false;
-        setStatus('Cris (O) thắng!');
-        saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris (AI)');
+        setStatus('Cris (AI) thắng!');
+        saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'),'Cris');
         pushGameResult('Cris (AI)', getNameForSymbol('X'), getNameForSymbol('O'), {type:'ai'});
         stopTimer();
         return;
@@ -300,7 +269,7 @@ function onCellClick(e) {
       turn = 'X'; setTurnLabel(turn);
       setStatus('Lượt bạn');
       resetTimer();
-    }, 260);
+    }, 180);
   }
 }
 
@@ -317,22 +286,22 @@ function makeAndPushMove(r,c,who) {
   const newMv = movesRef.push();
   newMv.set({ r, c, who, t: Date.now() }, err => {
     if (err) { console.warn('Push move failed', err); return; }
-    // update snapshot state
-    const stateRef = db.ref(`caro_rooms/${roomId}/state`);
     // apply locally immediately for snappy UI
     board[r][c] = who; updateCells();
-    stateRef.set({ board: flatBoard(), turn: (who==='X'?'O':'X'), lastMove: {r,c,who,t:Date.now()} });
+    highlightLastMove(r,c);
+    // update snapshot state
+    const stateRef = db.ref(`caro_rooms/${roomId}/state`);
+    stateRef.set({ board: flatBoard(), turn: (who==='X'?'O':'X'), lastMove: {r,c,who,t:Date.now()}, meta: roomMeta });
 
     // check win
     const line = checkWinWithLine(r,c,who);
     if (line) {
       highlightWin(line);
       playing = false;
-      setStatus(`${who} thắng!`);
-      const winnerName = (who === mySymbol) ? (playerNameInput.value.trim() || 'You') : 'Opponent';
+      setStatus(`${getNameForSymbol(who)} thắng!`);
+      const winnerName = getNameForSymbol(who);
       saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), winnerName);
       pushGameResult(winnerName, getNameForSymbol('X'), getNameForSymbol('O'), {room: roomId});
-      // push room history
       const histRef = db.ref(`caro_rooms/${roomId}/history`);
       histRef.push({ t: Date.now(), winner: winnerName, reason:'win' });
       stopTimer();
@@ -354,14 +323,17 @@ function setupRoomListeners(rid, spectator=false) {
   roomChatRef = db.ref(`caro_rooms/${roomId}/chat`);
   const histRef = db.ref(`caro_rooms/${roomId}/history`);
 
-  // load existing state or init
+  // load existing state or init, and read meta (host/guest)
   roomStateRef.once('value').then(snap => {
     const st = snap.val();
     if (st && st.board && st.board.length === ROWS*COLS) {
       loadBoardFromFlat(st.board); updateCells();
       if (st.turn) { turn = st.turn; setTurnLabel(turn); }
+      if (st.meta) {
+        roomMeta = st.meta;
+      }
     } else {
-      roomStateRef.set({ board: flatBoard(), turn: 'X', lastMove: null });
+      roomStateRef.set({ board: flatBoard(), turn: 'X', lastMove: null, meta: roomMeta });
     }
   });
 
@@ -372,13 +344,14 @@ function setupRoomListeners(rid, spectator=false) {
     // skip if already played locally
     if (board[mv.r][mv.c]) return;
     board[mv.r][mv.c] = mv.who; updateCells();
+    highlightLastMove(mv.r,mv.c);
     const line = checkWinWithLine(mv.r,mv.c,mv.who);
     if (line) {
       highlightWin(line);
       playing = false;
-      setStatus(`${mv.who} thắng!`);
-      saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), (mv.who === mySymbol ? (playerNameInput.value.trim()||'You') : 'Opponent'));
-      pushGameResult((mv.who === mySymbol ? (playerNameInput.value.trim()||'You') : 'Opponent'), getNameForSymbol('X'), getNameForSymbol('O'), {room: roomId});
+      setStatus(`${getNameForSymbol(mv.who)} thắng!`);
+      saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), getNameForSymbol(mv.who));
+      pushGameResult(getNameForSymbol(mv.who), getNameForSymbol('X'), getNameForSymbol('O'), {room: roomId});
       stopTimer();
     } else {
       turn = mv.who === 'X' ? 'O' : 'X';
@@ -387,8 +360,8 @@ function setupRoomListeners(rid, spectator=false) {
     }
   });
 
-  // chat
-  roomChatRef.limitToLast(200).on('child_added', snap => {
+  // chat: everyone can send/see messages (spectators too)
+  roomChatRef.limitToLast(500).on('child_added', snap => {
     if (snap.exists()) appendChatMessage(snap.val());
   });
 
@@ -398,6 +371,9 @@ function setupRoomListeners(rid, spectator=false) {
     if (!it) return;
     roomStatus.textContent = `Phòng ${roomId} — Gần nhất: ${it.winner || '-'}`;
   });
+
+  // show share button + room info
+  renderRoomHeader();
 
   playing = true;
   setStatus('Kết nối phòng — chờ lượt');
@@ -409,8 +385,10 @@ function createRoom() {
   if (!firebaseEnabled) { alert('Firebase chưa cấu hình'); return; }
   const id = Math.random().toString(36).slice(2,9);
   roomId = id; isHost = true; mySymbol = 'X'; isSpectator = false;
+  roomMeta.hostName = playerNameInput.value.trim() || 'Host';
+  roomMeta.guestName = null;
   const rRef = db.ref(`caro_rooms/${roomId}`);
-  rRef.set({ createdAt: Date.now(), hostName: playerNameInput.value.trim()||'Host', state: { board: flatBoard(), turn: 'X', lastMove: null }}, err=>{
+  rRef.set({ createdAt: Date.now(), hostName: roomMeta.hostName, state: { board: flatBoard(), turn: 'X', lastMove: null, meta: roomMeta }}, err=>{
     if (err) { alert('Tạo phòng lỗi'); console.warn(err); }
     else { roomStatus.textContent = `Phòng: ${roomId} (Bạn là Host/X)`; setupRoomListeners(roomId,false); }
   });
@@ -423,25 +401,51 @@ function joinRoom(id, asSpectator=false) {
   rRef.once('value').then(snap => {
     if (!snap.exists()) { alert('Phòng không tồn tại'); return; }
     roomId = id; isHost = false; isSpectator = asSpectator; mySymbol = asSpectator ? null : 'O';
+    // write guest name if not spectator
+    if (!asSpectator) {
+      const guestName = playerNameInput.value.trim() || 'Guest';
+      db.ref(`caro_rooms/${roomId}/state/meta/guestName`).set(guestName).catch(()=>{});
+      roomMeta.guestName = guestName;
+    }
     roomStatus.textContent = `Đã vào phòng ${roomId} ${asSpectator ? '(Spectator)' : '(Bạn là O)'}`;
     setupRoomListeners(roomId, asSpectator);
   });
 }
 
-/* send chat to room */
+/* send chat to room - everyone (spectator included) can chat */
 function sendChatToRoom(msg) {
   if (!firebaseEnabled || !roomId) { appendChatMessage({ name: playerNameInput.value||'You', msg, t: Date.now() }); return; }
   const chatRef = db.ref(`caro_rooms/${roomId}/chat`);
   chatRef.push({ name: playerNameInput.value || 'Guest', msg, t: Date.now() });
 }
+
+/* render room header: show share button and names */
+function renderRoomHeader() {
+  if (!roomStatus) return;
+  roomStatus.innerHTML = `Phòng: ${roomId} — Host: ${roomMeta.hostName || '-'} — Guest: ${roomMeta.guestName || '-'}`;
+  // create share button if not exists
+  if (!document.getElementById('shareRoomBtn')) {
+    const btn = document.createElement('button');
+    btn.id = 'shareRoomBtn';
+    btn.textContent = 'Chia sẻ phòng';
+    btn.style.marginLeft = '10px';
+    btn.addEventListener('click', ()=> {
+      const url = `${location.origin}${location.pathname}?room=${roomId}`;
+      navigator.clipboard.writeText(url).then(()=> {
+        alert('Link phòng đã copy: ' + url);
+      }).catch(()=> { prompt('Copy link phòng:', url); });
+    });
+    roomStatus.appendChild(btn);
+  }
+}
 /* =========================
-   PHẦN 3 — AI LEVEL 3 (Threat + Minimax depth=4, alpha-beta)
+   PHẦN 3 — AI Level 2.5 (Threat-based, light & strong)
    ========================= */
 
-/* clone board */
+/* Utility: clone board */
 function cloneBoard(bd) { return bd.map(r => r.slice()); }
 
-/* candidate cells near stones (radius default 2) */
+/* Candidate cells near stones (radius 2) */
 function getCandidateCells(bd, radius = 2) {
   const set = new Set();
   for (let r = 0; r < ROWS; r++) {
@@ -462,7 +466,7 @@ function getCandidateCells(bd, radius = 2) {
   return Array.from(set).map(v => ({ r: Math.floor(v / COLS), c: v % COLS }));
 }
 
-/* basic immediate win checker */
+/* Basic win checker */
 function checkWinBoard(bd, r, c, who) {
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
   for (const d of dirs) {
@@ -480,61 +484,53 @@ function checkWinBoard(bd, r, c, who) {
   return false;
 }
 
-/* sliding-window threat count (open-4, open-3, etc.) */
-function countWindowThreats(bd, r, c, who) {
-  let total = 0;
+/* Threat scoring engine: open-4/open-3 detection */
+function scoreThreats(bd, r, c, who) {
   const dirs = [[0,1],[1,0],[1,1],[1,-1]];
-  for (const d of dirs) {
-    // build line centered at (r,c)
-    const line = [{r,c}];
-    for (let s=1;s<WIN;s++){
-      const rr=r+d[0]*s, cc=c+d[1]*s; if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break; line.push({r:rr,c:cc});
-    }
-    for (let s=1;s<WIN;s++){
-      const rr=r-d[0]*s, cc=c-d[1]*s; if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break; line.unshift({r:rr,c:cc});
-    }
-    // slide windows
-    for (let i=0;i+WIN<=line.length;i++){
-      let own=0, emp=0, opp=0;
-      for (let k=0;k<WIN;k++){
-        const p=line[i+k], v=bd[p.r][p.c];
-        if (v===who) own++;
-        else if (v===null) emp++;
-        else opp++;
-      }
-      if (opp===0) {
-        if (own===4 && emp===1) total += 1000; // almost win
-        else if (own===3 && emp===2) total += 250;
-        else if (own===2 && emp===3) total += 50;
-      } else {
-        if (own===4 && opp===1) total += 200;
-      }
-    }
-  }
-  return total;
-}
-
-/* score a candidate for move ordering */
-function scoreCandidateForOrdering(bd, r, c, ai, opp) {
   let score = 0;
-  bd[r][c] = ai;
-  score += countWindowThreats(bd, r, c, ai) * 10; // prioritize own threats
-  bd[r][c] = opp;
-  score += countWindowThreats(bd, r, c, opp) * 6; // block weight
-  bd[r][c] = null;
-  // center bias
-  score += 30 - (Math.abs(r-ROWS/2) + Math.abs(c-COLS/2));
+  for (const d of dirs) {
+    let stones = 1;
+    let open = 0;
+    for (let s=1; s<WIN; s++) {
+      const rr=r+d[0]*s, cc=c+d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) stones++;
+      else if (bd[rr][cc] === null) { open++; break; }
+      else break;
+    }
+    for (let s=1; s<WIN; s++) {
+      const rr=r-d[0]*s, cc=c-d[1]*s;
+      if (rr<0||rr>=ROWS||cc<0||cc>=COLS) break;
+      if (bd[rr][cc] === who) stones++;
+      else if (bd[rr][cc] === null) { open++; break; }
+      else break;
+    }
+    if (stones === 4 && open >= 1) score += 5000;
+    else if (stones === 3 && open >= 1) score += 1200;
+    else if (stones === 2 && open >= 1) score += 150;
+  }
   return score;
 }
 
-/* find immediate fork (double threat) — fast 2-ply scan */
+/* Heuristic for candidate ordering */
+function scoreCandidateForOrdering(bd, r, c, ai, opp) {
+  let score = 0;
+  bd[r][c] = ai;
+  score += scoreThreats(bd, r, c, ai);
+  bd[r][c] = opp;
+  score += scoreThreats(bd, r, c, opp) * 0.8;
+  bd[r][c] = null;
+  score += 15 - (Math.abs(r-ROWS/2)+Math.abs(c-COLS/2))*0.3;
+  return score;
+}
+
+/* Fork detection (fast 2-ply) */
 function findForkMove(bd, ai, opp, candidates) {
   for (const {r,c} of candidates) {
     if (bd[r][c] !== null) continue;
     const bd1 = cloneBoard(bd);
     bd1[r][c] = ai;
     if (checkWinBoard(bd1,r,c,ai)) return {r,c};
-    // count AI immediate winning replies after each opponent reply
     let forks = 0;
     const oppCandidates = getCandidateCells(bd1,2);
     for (const oc of oppCandidates) {
@@ -554,125 +550,46 @@ function findForkMove(bd, ai, opp, candidates) {
   return null;
 }
 
-/* MINIMAX with alpha-beta, depth parameter (maxDepth=4 for Level 3B) */
-function minimax(bd, depth, alpha, beta, maximizingPlayer, ai, opp) {
-  if (depth === 0) return evaluateBoard(bd, ai, opp);
-
-  const candidates = getCandidateCells(bd, 2);
-
-  // move ordering: evaluate candidates roughly and sort desc
-  const scored = [];
-  for (const {r,c} of candidates) {
-    if (bd[r][c] !== null) continue;
-    const sc = scoreCandidateForOrdering(bd, r, c, ai, opp);
-    scored.push({r,c,sc});
-  }
-  if (scored.length === 0) return evaluateBoard(bd, ai, opp);
-  scored.sort((a,b) => b.sc - a.sc);
-
-  if (maximizingPlayer) {
-    let maxEval = -Infinity;
-    for (const mv of scored) {
-      const {r,c} = mv;
-      bd[r][c] = ai;
-      if (checkWinBoard(bd,r,c,ai)) { bd[r][c]=null; return 100000 + depth*10; } // immediate best
-      const evalv = minimax(bd, depth-1, alpha, beta, false, ai, opp);
-      bd[r][c] = null;
-      if (evalv > maxEval) maxEval = evalv;
-      alpha = Math.max(alpha, evalv);
-      if (beta <= alpha) break; // prune
-    }
-    return maxEval;
-  } else {
-    let minEval = Infinity;
-    for (const mv of scored) {
-      const {r,c} = mv;
-      bd[r][c] = opp;
-      if (checkWinBoard(bd,r,c,opp)) { bd[r][c]=null; return -100000 - depth*10; }
-      const evalv = minimax(bd, depth-1, alpha, beta, true, ai, opp);
-      bd[r][c] = null;
-      if (evalv < minEval) minEval = evalv;
-      beta = Math.min(beta, evalv);
-      if (beta <= alpha) break;
-    }
-    return minEval;
-  }
-}
-
-/* evaluate board for ai vs opp (heuristic) */
-function evaluateBoard(bd, ai, opp) {
-  const candidates = getCandidateCells(bd, 2);
-  let score = 0;
-  for (const {r,c} of candidates) {
-    if (bd[r][c] !== null) continue;
-    bd[r][c] = ai;
-    score += countWindowThreats(bd, r, c, ai) * 8;
-    bd[r][c] = opp;
-    score -= countWindowThreats(bd, r, c, opp) * 6;
-    bd[r][c] = null;
-  }
-  return score;
-}
-
-/* main AI entry for Level 3 (depth 4) */
+/* Main AI entry (Level 2.5) */
 function AI_getMove(bd, aiSymbol) {
   const opp = aiSymbol === 'X' ? 'O' : 'X';
   const candidates = getCandidateCells(bd, 2);
 
-  // 1. immediate win
+  // immediate win
   for (const {r,c} of candidates) {
-    if (bd[r][c] !== null) continue;
-    bd[r][c] = aiSymbol;
+    if (bd[r][c]!==null) continue;
+    bd[r][c]=aiSymbol;
     if (checkWinBoard(bd,r,c,aiSymbol)) { bd[r][c]=null; return {r,c}; }
-    bd[r][c] = null;
+    bd[r][c]=null;
   }
-
-  // 2. immediate block
+  // immediate block
   for (const {r,c} of candidates) {
-    if (bd[r][c] !== null) continue;
-    bd[r][c] = opp;
+    if (bd[r][c]!==null) continue;
+    bd[r][c]=opp;
     if (checkWinBoard(bd,r,c,opp)) { bd[r][c]=null; return {r,c}; }
-    bd[r][c] = null;
+    bd[r][c]=null;
   }
-
-  // 3. fork detection (force double threat)
+  // fork
   const fork = findForkMove(bd, aiSymbol, opp, candidates);
   if (fork) return fork;
 
-  // 4. minimax search depth=4 (ai->opp->ai->opp)
-  let best = null;
-  let bestScore = -Infinity;
-  const depth = 4; // Level 3B chosen by Cris
-
-  // order top candidates (limit to top N to speed up)
-  const scored = [];
+  // heuristic scoring / ordering
+  let best = null, bestScore = -Infinity;
   for (const {r,c} of candidates) {
-    if (bd[r][c] !== null) continue;
-    const sc = scoreCandidateForOrdering(bd, r, c, aiSymbol, opp);
-    scored.push({r,c,sc});
+    if (bd[r][c]) continue;
+    const sc = scoreCandidateForOrdering(bd,r,c,aiSymbol,opp);
+    // center bias small
+    const cb = 10 - (Math.abs(r-ROWS/2)+Math.abs(c-COLS/2))*0.2;
+    const final = sc + cb + Math.random()*0.2; // tiny rand for variety
+    if (final > bestScore) { bestScore = final; best = {r,c}; }
   }
-  scored.sort((a,b)=>b.sc - a.sc);
-
-  const LIMIT = Math.min(12, scored.length); // consider top 12 candidates
-  for (let i=0;i<LIMIT;i++){
-    const {r,c} = scored[i];
-    bd[r][c] = aiSymbol;
-    if (checkWinBoard(bd,r,c,aiSymbol)) { bd[r][c]=null; return {r,c}; }
-    const val = minimax(bd, depth-1, -Infinity, Infinity, false, aiSymbol, opp);
-    bd[r][c] = null;
-    if (val > bestScore) { bestScore = val; best = {r,c}; }
-  }
-
   if (!best) return { r: Math.floor(ROWS/2), c: Math.floor(COLS/2) };
   return best;
 }
 
-/* ========== End AI Level 3 ========= */
+/* ========== End AI Level 2.5 ========= */
 
-/* =========================
-   HISTORY / LEADERBOARD writer
-   ========================= */
-
+/* HISTORY / LEADERBOARD writer (robust) */
 function pushGameResult(winnerName, p1, p2, meta = {}) {
   const entry = {
     winner: winnerName || 'Unknown',
@@ -680,10 +597,8 @@ function pushGameResult(winnerName, p1, p2, meta = {}) {
     meta,
     t: Date.now()
   };
-  // push to leaderboard node
   if (firebaseEnabled) {
     db.ref('leaderboard').push(entry).catch(e => console.warn('LB push fail', e));
-    // also push to room history if in room
     if (roomId) {
       db.ref(`caro_rooms/${roomId}/history`).push({ winner: winnerName, players: {p1,p2}, meta, t: Date.now() }).catch(e => console.warn('hist push fail', e));
     }
@@ -706,17 +621,18 @@ function fetchAndRenderGlobalLeaderboard() {
   const lbRef = db.ref('leaderboard').limitToLast(5000);
   lbRef.once('value').then(snap => {
     const data = snap.val() || {};
-    const counts = {};
+    const items = [];
     Object.values(data).forEach(it => {
-      if (!it || !it.winner) return;
-      counts[it.winner] = (counts[it.winner] || 0) + 1;
+      if (!it) return;
+      items.push(it);
     });
-    const arr = Object.keys(counts).map(k => ({ name: k, wins: counts[k] }));
-    arr.sort((a, b) => b.wins - a.wins);
+    // show last 20 entries (sorted by time desc)
+    items.sort((a,b)=> (b.t||0) - (a.t||0));
     leaderList.innerHTML = '';
-    arr.slice(0, 20).forEach(i => {
+    items.slice(0,20).forEach(i => {
       const li = document.createElement('li');
-      li.textContent = `${i.name}: ${i.wins} thắng`;
+      const name = i.winner || (i.players && (i.players.p1||i.players.p2)) || 'Unknown';
+      li.textContent = `${name} — ${new Date(i.t).toLocaleString()}`;
       leaderList.appendChild(li);
     });
   }).catch(err => {
@@ -783,6 +699,7 @@ safeAddListener(joinRoomBtn, 'click', () => {
 safeAddListener(sendChatBtn, 'click', () => {
   const msg = (chatInput && chatInput.value) ? chatInput.value.trim() : '';
   if (!msg) return;
+  // everyone (including spectators) can chat
   if (!firebaseEnabled || !roomId) {
     appendChatMessage({ name: playerNameInput.value || 'You', msg, t: Date.now() });
     chatInput.value = '';
@@ -841,6 +758,26 @@ function boot() {
 /* start up */
 boot();
 
+/* ========== Timer ========== */
+function resetTimer() {
+  stopTimer();
+  timerRemaining = TURN_TIMEOUT;
+  timerLabel.textContent = `${timerRemaining}s`;
+  timerInterval = setInterval(() => {
+    timerRemaining--;
+    timerLabel.textContent = `${timerRemaining}s`;
+    if (timerRemaining <= 0) {
+      clearInterval(timerInterval);
+      onTimeExpired();
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerLabel.textContent = '0s';
+}
+
 /* ========== Small utilities ========== */
 /* handle timer expiry */
 function onTimeExpired() {
@@ -848,7 +785,7 @@ function onTimeExpired() {
   const loser = turn;
   const winner = (turn === 'X') ? 'O' : 'X';
   const winnerName = (winner === 'X') ? getNameForSymbol('X') : getNameForSymbol('O');
-  setStatus(`Hết giờ! ${winner} thắng`);
+  setStatus(`Hết giờ! ${winnerName} thắng`);
   playing = false;
   stopTimer();
   saveLocalResult(getNameForSymbol('X'), getNameForSymbol('O'), winnerName, { reason: 'timeout' });
