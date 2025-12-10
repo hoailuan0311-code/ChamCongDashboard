@@ -71,7 +71,7 @@ h2 { margin-top: 25px; }
     background: #ccc;
 }
 
-/* Nút phản hồi chấm công */
+/* Nút phản hồi chấm công & các nút mới */
 .feedback-btn {
     background: linear-gradient(135deg, #06b6d4, #3b82f6);
     color: white;
@@ -156,8 +156,18 @@ audio { display: none; }
 
     <button id="clearFilterBtn">Xóa lọc</button>
 
-    <!-- ⭐ NÚT MỚI: PHẢN HỒI CHẤM CÔNG -->
+    <!-- ⭐ NÚT PHẢN HỒI CHẤM CÔNG -->
     <button id="feedbackBtn" class="feedback-btn">📝 Phản hồi chấm công</button>
+
+    <!-- ⭐ NÚT GỬI YÊU CẦU PASS CADENA -->
+    <button id="passBtn" class="feedback-btn" style="background:linear-gradient(135deg,#16a085,#27ae60); box-shadow:0 10px 20px rgba(39,174,96,0.35);">
+        🔐 Gửi yêu cầu cấp lại Pass CADENA
+    </button>
+
+    <!-- ⭐ NÚT XEM PASS CADENA ĐÃ CẤP -->
+    <button id="viewPassBtn" class="feedback-btn" style="background:linear-gradient(135deg,#8e44ad,#9b59b6); box-shadow:0 10px 20px rgba(142,68,173,0.35);">
+        📁 Xem Pass CADENA đã cấp
+    </button>
 </div>
 
 <h2>Danh sách chi tiết</h2>
@@ -284,7 +294,6 @@ function renderAll(data){
 }
 
 /* ================= CHART FUNCTIONS ================= */
-
 Chart.register(ChartDataLabels);
 
 function renderBU(data){
@@ -361,9 +370,19 @@ function renderNgay(data){
     });
 }
 
-/* ================= BUTTON MỞ FORM PHẢN HỒI ================= */
+/* ================= BUTTON PHẢN HỒI CHẤM CÔNG ================= */
 document.getElementById("feedbackBtn").addEventListener("click", () => {
     window.open("https://forms.office.com/r/wSm7WHpgCw", "_blank");
+});
+
+/* ================= BUTTON GỬI YÊU CẦU PASS CADENA ================= */
+document.getElementById("passBtn").addEventListener("click", () => {
+    window.open("https://forms.office.com/r/wMUXy1P6P1", "_blank");
+});
+
+/* ================= BUTTON XEM PASS CADENA ================= */
+document.getElementById("viewPassBtn").addEventListener("click", () => {
+    window.open("passCadena.index", "_blank");
 });
 
 /* ================= BACKGROUND MUSIC ================= */
