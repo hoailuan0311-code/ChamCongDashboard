@@ -8,6 +8,7 @@ const passCadena = [
     "LyDo": "Bị Khóa",
     "MatKhauMoi": "ABC123!",
     "Team": "RYOBI",
-    "Key": "LUAN123"
+    "NgayCapLai": "2025-12-10",
+    "Key": "LUAN001"
   }
 ];
