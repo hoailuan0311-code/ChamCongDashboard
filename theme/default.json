@@ -1,1 +1,17 @@
+{
+    "name": "Default",
+    "description": "Giao diện gốc hệ thống, tự động theo Light/Dark mode. Không hiệu ứng, không nhạc, không thay đổi màu sắc.",
+    
+    "effect": null, 
+    "music": null,
+
+    "cssDay": null,
+    "cssNight": null,
+
+    "override": {
+        "background": null,
+        "textColor": null,
+        "font": null
+    }
+}
 

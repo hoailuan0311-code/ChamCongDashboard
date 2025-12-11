@@ -1,0 +1,7 @@
+{
+    "name": "firework",
+    "override": true,
+    "background": "#000000",
+    "effect": "firework.js",
+    "music": "firework.mp3"
+}

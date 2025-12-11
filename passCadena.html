@@ -206,39 +206,58 @@ function setSensitiveVisibility(show){
 </script>
 
 
-<!-- ===================== THEME LOADER (THÊM MỚI) ===================== -->
+<!-- ===================== THEME LOADER (FINAL) ===================== -->
 <script>
 async function loadTheme() {
     try {
+        // Load danh sách theme
         const cfg = await fetch("theme/themeList.json?v=" + Date.now());
         const { activeTheme } = await cfg.json();
 
+        // Nếu đang dùng default → GIỮ NGUYÊN UI, KHÔNG OVERWRITE
+        if (activeTheme === "default") {
+            console.log("Theme: default → giữ nguyên giao diện gốc");
+            return;
+        }
+
+        // Load theme file (noel.json, tet.json, ...)
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
         const theme = await themeFile.json();
 
+        // Nếu theme không override → cũng không làm gì hết
+        if (!theme.override) {
+            console.log("Theme override = false → giữ nguyên layout gốc");
+            return;
+        }
+
+        // ÁP DỤNG THEME
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
 
+        // Nhạc theme (nếu có)
         if (theme.music) {
             const audio = document.createElement("audio");
             audio.src = "theme/" + theme.music;
             audio.loop = true;
             audio.autoplay = true;
+            audio.volume = 0.45;
             audio.id = "themeMusic";
-            audio.volume = 0.5;
             document.body.appendChild(audio);
         }
 
+        // Hiệu ứng (nếu có)
         if (theme.effect) {
-            const script = document.createElement("script");
-            script.src = "theme/" + theme.effect;
-            document.body.appendChild(script);
+            const effectScript = document.createElement("script");
+            effectScript.src = "theme/" + theme.effect;
+            document.body.appendChild(effectScript);
         }
+
     } catch (e) {
         console.error("Theme load error:", e);
     }
 }
+
 loadTheme();
 </script>
 
