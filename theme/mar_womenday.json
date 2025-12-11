@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "Women's Day (8/3)",
+  "background": "linear-gradient(180deg,#ff9fb1,#ffb3c7)",
+  "textColor": "#2b1b20",
+  "music": "NhacWomenday.mp3",
+  "effect": "petals.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 3,
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.95)",
+    "tableText": "#20161a",
+    "tableHeaderBg": "rgba(255,240,245,0.95)",
+    "cardBg": "rgba(255,255,255,0.95)",
+    "boxBorder": "rgba(0,0,0,0.06)"
+  }
+}
