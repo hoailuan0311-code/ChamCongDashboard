@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "Halloween",
+  "background": "linear-gradient(180deg,#0f0c29,#302b63,#24243e)",
+  "textColor": "#ffd8a8",
+  "music": "NhacHalloween.mp3",
+  "effect": "bats.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 10,
+  "uiColors": {
+    "tableBg": "rgba(0,0,0,0.06)",
+    "tableText": "#ffd8a8",
+    "tableHeaderBg": "rgba(0,0,0,0.08)",
+    "cardBg": "rgba(255,255,255,0.02)",
+    "boxBorder": "rgba(255,255,255,0.04)"
+  }
+}
