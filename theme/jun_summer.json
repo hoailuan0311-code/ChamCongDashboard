@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "Summer Vibes",
+  "background": "linear-gradient(180deg,#ffd89b,#19547b)",
+  "textColor": "#111111",
+  "music": "NhacSummer.mp3",
+  "effect": "sunrays.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 6,
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.95)",
+    "tableText": "#111111",
+    "tableHeaderBg": "rgba(255,250,240,0.95)",
+    "cardBg": "rgba(255,255,255,0.98)",
+    "boxBorder": "rgba(0,0,0,0.06)"
+  }
+}
