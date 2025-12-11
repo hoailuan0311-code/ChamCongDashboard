@@ -11,25 +11,34 @@
   #unlockBtn{display:block;margin:12px auto;padding:12px 32px;background:linear-gradient(135deg,#a78bfa,#818cf8);color:#fff;border-radius:12px;border:0;cursor:pointer;font-weight:700}
   #lockNotice{text-align:center;color:#666;margin-bottom:12px}
   #searchBox{display:block;margin:10px auto 18px;padding:10px 14px;width:360px;border-radius:10px;border:1px solid #ddd}
+
   table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
   th,td{padding:12px;border-bottom:1px solid #eee;text-align:left}
   th{background:#f8fafc;font-weight:700}
-  .pending{background:#fcd34d;color:#422; padding:6px 12px;border-radius:10px;animation:blink 1.2s infinite}
+
+  .pending{background:#fcd34d;color:#422;padding:6px 12px;border-radius:10px;animation:blink 1.2s infinite}
   .done{background:#4ade80;color:#062;padding:6px 12px;border-radius:10px}
+
   @keyframes blink{50%{opacity:.4}}
+
   .copyBtn{margin-left:10px;padding:6px 10px;background:#3b82f6;color:#fff;border:0;border-radius:8px;cursor:pointer}
   .copyBtn:hover{background:#2563eb}
+
   .locked{display:none!important}
+
   .fade-in{animation:fade .45s ease}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
   .tooltip{position:relative;display:inline-block}
   .tooltip .tiptext{visibility:hidden;background:rgba(0,0,0,.75);color:#fff;padding:6px 8px;border-radius:6px;font-size:13px;position:absolute;z-index:10;top:-36px;left:50%;transform:translateX(-50%);white-space:nowrap}
   .tooltip:hover .tiptext{visibility:visible}
+
   .small{font-size:13px;color:#666}
   .note{max-width:900px;margin:8px auto 0;color:#444;text-align:center}
 </style>
 </head>
 <body>
+
   <h1>📁 Pass CADENA đã cấp</h1>
 
   <button id="unlockBtn">🔑 Xem Pass CADENA đã cấp</button>
@@ -37,7 +46,10 @@
 
   <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…" />
 
-  <div class="note small">Kiểm tra và nhập đúng thông tin. Bấm Copy để tránh sai sót. Sau khi đăng nhập lại vui lòng đổi mật khẩu mới để tránh lộ thông tin của bạn nhé!</div>
+  <div class="note small">
+    Kiểm tra và nhập đúng thông tin. Bấm Copy để tránh sai sót.  
+    Sau khi đăng nhập lại vui lòng đổi mật khẩu mới để tránh lộ thông tin của bạn nhé!
+  </div>
 
   <table>
     <thead>
@@ -53,87 +65,67 @@
   </table>
 
 <script>
-/*
-  Robust loader: fetch raw file from GitHub (or any raw URL).
-  - If file content is a JSON array -> parse directly
-  - If file contains JS like `const name = [ ... ]` -> extract first [...] and parse
-  - If you want different URL, change RAW_URL
-*/
+/* RAW FILE URL */
 const RAW_URL = "https://raw.githubusercontent.com/hoailuan0311-code/ChamCongDashboard/main/datapassCadena.js";
-// If you prefer .json: https://raw.githubusercontent.com/.../datapassCadena.json
 
-let passData = [];        // final array of records
+let passData = [];
 let unlocked = false;
 let currentKey = "";
 
-// helper: fetch + parse flexible JSON/JS
+/* LOAD RAW DATA (dùng JSON hoặc JS đều được) */
 async function loadRawData(){
   try{
-    const r = await fetch(RAW_URL + "?v=" + Date.now(), {cache: "no-store"});
-    if(!r.ok) throw new Error("Fetch failed: " + r.status);
+    const r = await fetch(RAW_URL + "?v=" + Date.now(), {cache:"no-store"});
     const txt = await r.text();
-    console.log("Raw file length:", txt.length);
-    // Try to parse direct JSON first
+
     try {
       const j = JSON.parse(txt);
-      if(Array.isArray(j)){ passData = j; console.log("Parsed as JSON array"); return; }
-    } catch(e) { /* ignore */ }
+      if(Array.isArray(j)){ passData = j; return; }
+    } catch(e){}
 
-    // Otherwise try to extract first JSON array inside text
     const match = txt.match(/\[([\s\S]*)\]/m);
     if(match){
-      const jsonText = "[" + match[1] + "]";
-      passData = JSON.parse(jsonText);
-      console.log("Extracted JSON array from JS wrapper");
+      passData = JSON.parse("[" + match[1] + "]");
       return;
     }
 
-    // If still nothing
-    throw new Error("Không tìm thấy DATA trong file raw.");
+    alert("Không đọc được dữ liệu trong datapassCadena.js");
   } catch(err){
-    console.error("loadRawData error:", err);
-    alert("Lỗi load dữ liệu: " + err.message + "\nKiểm tra RAW_URL hoặc file trên GitHub.");
+    alert("Lỗi load dữ liệu: " + err.message);
   }
 }
 
-// date conversion: accept number or numeric-string excel serial, or ISO-like string
+/* EXCEL DATE → STRING */
 function excelDateToString(v){
   if(v === undefined || v === null || v === "") return "";
-  // if looks numeric (like "46001" or 46001)
   if(!isNaN(Number(v))){
     const n = Number(v);
-    // guard unrealistic small numbers
     if(n > 25000){
       const d = new Date((n - 25569) * 86400 * 1000);
-      if(!isNaN(d)) return d.toLocaleDateString("en-GB");
+      return d.toLocaleDateString("en-GB");
     }
   }
-  // otherwise try Date parse
   const d2 = new Date(v);
   if(!isNaN(d2)) return d2.toLocaleDateString("en-GB");
   return v + "";
 }
 
-// render table based on current filters and unlocked state
+/* RENDER TABLE */
 function renderTable(){
   const tbody = document.getElementById("tableBody");
   tbody.innerHTML = "";
-  const q = (document.getElementById("searchBox").value || "").toLowerCase();
 
-  // filter: if unlocked -> only rows with same KEY; if locked -> none show (or could show minimal rows)
-  let data = passData.slice();
+  const q = (searchBox.value || "").toLowerCase();
 
-  // If unlocked, keep only rows with matching key. Otherwise show nothing sensitive (we'll still show nothing rows).
-  if(unlocked && currentKey){
-    data = data.filter(r => ("" + (r.Key||"")).toLowerCase() === currentKey);
-  } else {
-    // locked state: render zero rows (keeps headers)
-    data = [];
-  }
+  let data = unlocked && currentKey
+    ? passData.filter(r => (""+(r.Key||"")).toLowerCase() === currentKey)
+    : [];
 
-  // then filter by search
   if(q){
-    data = data.filter(r => ((r.MSNV||"")+"").toLowerCase().includes(q) || ((r.HoTen||"")+"").toLowerCase().includes(q));
+    data = data.filter(r =>
+      (r.MSNV+"").toLowerCase().includes(q) ||
+      (r.HoTen+"").toLowerCase().includes(q)
+    );
   }
 
   for(const r of data){
@@ -146,74 +138,109 @@ function renderTable(){
       : `<div class="tooltip"><span class="pending">⏳ Pending</span><span class="tiptext">Chờ HR cập nhật</span></div>`;
 
     const ngayHtml = hasDate
-      ? `<div class="tooltip"><span class="done">✔ ${excelDateToString(r.NgayCapLai)}</span><span class="tiptext">Đã cấp</span></div>`
+      ? `<div class="tooltip"><span class="done">${excelDateToString(r.NgayCapLai)}</span><span class="tiptext">Đã cấp</span></div>`
       : `<div class="tooltip"><span class="pending">⏳ Pending</span><span class="tiptext">Đang chờ xử lý</span></div>`;
 
-    tbody.insertAdjacentHTML("beforeend",
-      `<tr class="fade-in">
-         <td>${excelDateToString(r.Date)}</td>
-         <td>${escapeHtml(r.MSNV)}</td>
-         <td>${escapeHtml(r.HoTen)}</td>
-         <td>${escapeHtml(r.BU)}</td>
-         <td>${escapeHtml(r.BoPhan)}</td>
-         <td class="colSensitive">${escapeHtml(r.LyDo)}</td>
-         <td class="colSensitive">${mkHtml}</td>
-         <td class="colSensitive">${escapeHtml(r.Team)}</td>
-         <td class="colSensitive">${ngayHtml}</td>
-       </tr>`
-    );
+    tbody.insertAdjacentHTML("beforeend", `
+      <tr class="fade-in">
+        <td>${excelDateToString(r.Date)}</td>
+        <td>${escapeHtml(r.MSNV)}</td>
+        <td>${escapeHtml(r.HoTen)}</td>
+        <td>${escapeHtml(r.BU)}</td>
+        <td>${escapeHtml(r.BoPhan)}</td>
+        <td class="colSensitive">${escapeHtml(r.LyDo)}</td>
+        <td class="colSensitive">${mkHtml}</td>
+        <td class="colSensitive">${escapeHtml(r.Team)}</td>
+        <td class="colSensitive">${ngayHtml}</td>
+      </tr>
+    `);
   }
 }
 
-// utility: escape for HTML and attributes
+/* ESCAPE HTML */
 function escapeHtml(s){
   if(s === undefined || s === null) return "";
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
 }
 function escapeAttr(s){ return escapeHtml(s).replace(/"/g,'&quot;'); }
 
-// copy
+/* COPY */
 function copyText(t){
-  navigator.clipboard.writeText(t+"").then(()=>alert("📋 Đã copy mật khẩu!"), ()=>alert("Không thể copy."));
+  navigator.clipboard.writeText(t+"")
+    .then(()=> alert("📋 Đã copy mật khẩu!"));
 }
 
-// toggle sensitive columns hidden class
-function setSensitiveVisibility(visible){
-  document.querySelectorAll(".colSensitive").forEach(el=>{
-    if(visible) el.classList.remove("locked"); else el.classList.add("locked");
-  });
+/* SHOW/HIDE SENSITIVE COLUMNS */
+function setSensitiveVisibility(show){
+  document.querySelectorAll(".colSensitive").forEach(el =>
+    show ? el.classList.remove("locked") : el.classList.add("locked")
+  );
 }
 
-// initialize: hide sensitive columns first, attach listeners, load data
+/* INIT */
 (async function init(){
-  setSensitiveVisibility(false); // hide initially
-  document.getElementById("searchBox").addEventListener("input", renderTable);
-  document.getElementById("unlockBtn").addEventListener("click", async ()=>{
-    // if passData empty try to reload
+  setSensitiveVisibility(false);
+
+  searchBox.addEventListener("input", renderTable);
+
+  unlockBtn.addEventListener("click", async ()=>{
     if(passData.length === 0) await loadRawData();
 
     const key = (prompt("Nhập KEY để mở dữ liệu:") || "").trim().toLowerCase();
     if(!key) return;
 
-    // check
     const ok = passData.some(r => (""+(r.Key||"")).toLowerCase() === key);
     if(!ok){ alert("❌ KEY không tồn tại hoặc sai."); return; }
 
-    // unlock
     unlocked = true;
     currentKey = key;
-    document.getElementById("lockNotice").style.display = "none";
+    lockNotice.style.display = "none";
     setSensitiveVisibility(true);
     renderTable();
   });
 
-  // initial load: fetch data but still locked, so nothing visible
   await loadRawData();
-  console.log("Loaded records:", passData.length);
-  // If you want to auto-unlock for testing, set unlocked=true and currentKey to first key:
-  // unlocked = true; currentKey = (passData[0] && (passData[0].Key||"").toLowerCase());
-  // setSensitiveVisibility(true); renderTable();
 })();
 </script>
+
+
+<!-- ===================== THEME LOADER (THÊM MỚI) ===================== -->
+<script>
+async function loadTheme() {
+    try {
+        const cfg = await fetch("theme/themeList.json?v=" + Date.now());
+        const { activeTheme } = await cfg.json();
+
+        const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
+        const theme = await themeFile.json();
+
+        if (theme.background) document.body.style.background = theme.background;
+        if (theme.textColor) document.body.style.color = theme.textColor;
+        if (theme.font) document.body.style.fontFamily = theme.font;
+
+        if (theme.music) {
+            const audio = document.createElement("audio");
+            audio.src = "theme/" + theme.music;
+            audio.loop = true;
+            audio.autoplay = true;
+            audio.id = "themeMusic";
+            audio.volume = 0.5;
+            document.body.appendChild(audio);
+        }
+
+        if (theme.effect) {
+            const script = document.createElement("script");
+            script.src = "theme/" + theme.effect;
+            document.body.appendChild(script);
+        }
+    } catch (e) {
+        console.error("Theme load error:", e);
+    }
+}
+loadTheme();
+</script>
+
 </body>
 </html>
