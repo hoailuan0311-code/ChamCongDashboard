@@ -2,8 +2,8 @@
   "name": "Tet Vietnam",
   "background": "linear-gradient(180deg,#8B0000,#b30000,#ff9900)",
   "textColor": "#fff2cc",
-  "music": "Tet.mp3",
-  "effect": "tet_firework.js",
+  "music": "NhacTet.mp3",
+  "effect": "firework.js",
   "font": "\"Be Vietnam Pro\", sans-serif"
 }
 
