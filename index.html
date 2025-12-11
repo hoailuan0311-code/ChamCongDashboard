@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<title>📅 Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</title>
+<title>📅 Dashboard Phản Hồi Chấm CÔng – WAREHOUSE RYOBI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Font tiếng Việt -->
@@ -80,11 +80,6 @@ h2 { margin-top: 25px; }
     box-shadow: 0 10px 20px rgba(224, 195, 252, 0.5);
 }
 
-.search-bar button:active {
-    transform: scale(0.97);
-}
-
-/* Nút phản hồi chấm công & các nút mới */
 .feedback-btn {
     background: linear-gradient(135deg, #06b6d4, #3b82f6);
     color: white;
@@ -169,15 +164,12 @@ audio { display: none; }
 
     <button id="clearFilterBtn">Xóa lọc</button>
 
-    <!-- ⭐ NÚT PHẢN HỒI CHẤM CÔNG -->
     <button id="feedbackBtn" class="feedback-btn">📝 Phản hồi chấm công</button>
 
-    <!-- ⭐ NÚT GỬI YÊU CẦU PASS CADENA -->
     <button id="passBtn" class="feedback-btn" style="background:linear-gradient(135deg,#16a085,#27ae60); box-shadow:0 10px 20px rgba(39,174,96,0.35);">
         🔐 Gửi yêu cầu cấp lại Pass CADENA
     </button>
 
-    <!-- ⭐ NÚT XEM PASS CADENA ĐÃ CẤP -->
     <button id="viewPassBtn" class="feedback-btn" style="background:linear-gradient(135deg,#8e44ad,#9b59b6); box-shadow:0 10px 20px rgba(142,68,173,0.35);">
         📁 Xem Pass CADENA đã cấp
     </button>
@@ -204,7 +196,6 @@ audio { display: none; }
 <h2>Biểu đồ phụ</h2>
 
 <div class="footer-layout">
-
     <div class="footer-row">
         <div class="chart-box">
             <h3>Theo BU</h3>
@@ -226,7 +217,6 @@ audio { display: none; }
         <h3>Theo ngày chỉnh</h3>
         <canvas id="chartNgay"></canvas>
     </div>
-
 </div>
 
 <!-- Background Music -->
@@ -234,11 +224,13 @@ audio { display: none; }
     <source src="NhacGiangSinh.mp3" type="audio/mpeg">
 </audio>
 
+
+<!-- ===================== SCRIPT gốc của bạn ===================== -->
 <script>
 const jsonUrl = "https://hoailuan0311-code.github.io/ChamCongDashboard/data.json";
 let fullData = [];
 
-/* ================= LOAD DATA ================= */
+/* LOAD DATA */
 async function loadData(){
     let res = await fetch(jsonUrl + "?cache=" + Date.now());
     fullData = await res.json();
@@ -246,14 +238,14 @@ async function loadData(){
 }
 loadData();
 
-/* ================= FORMAT DATE ================= */
+/* FORMAT DATE */
 function excelDate(v){
     if (!v) return "";
     const d = new Date((v - 25569) * 86400 * 1000);
     return isNaN(d) ? v : d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
-/* ================= SEARCH REALTIME ================= */
+/* SEARCH */
 document.getElementById("searchMSNV").addEventListener("input", applySearch);
 document.getElementById("searchName").addEventListener("input", applySearch);
 
@@ -269,13 +261,13 @@ function applySearch(){
     renderAll(f);
 }
 
-/* ================= SORT ================= */
+/* SORT */
 function sortBy(col){
     fullData.sort((a,b)=> (a[col] > b[col] ? 1 : -1));
     renderAll(fullData);
 }
 
-/* ================= RENDER TABLE ================= */
+/* RENDER TABLE */
 function renderTable(data){
     let tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
@@ -297,7 +289,7 @@ function renderTable(data){
     });
 }
 
-/* ================= RENDER ALL ================= */
+/* RENDER ALL */
 function renderAll(data){
     renderTable(data);
     renderBU(data);
@@ -306,7 +298,7 @@ function renderAll(data){
     renderNgay(data);
 }
 
-/* ================= CHART FUNCTIONS ================= */
+/* CHART FUNCTIONS */
 Chart.register(ChartDataLabels);
 
 function renderBU(data){
@@ -383,25 +375,59 @@ function renderNgay(data){
     });
 }
 
-/* ================= BUTTON PHẢN HỒI CHẤM CÔNG ================= */
+/* BUTTON ACTIONS */
 document.getElementById("feedbackBtn").addEventListener("click", () => {
     window.open("https://forms.office.com/r/wSm7WHpgCw", "_blank");
 });
 
-/* ================= BUTTON GỬI YÊU CẦU PASS CADENA ================= */
 document.getElementById("passBtn").addEventListener("click", () => {
     window.open("https://forms.office.com/r/wMUXy1P6P1", "_blank");
 });
 
-/* ================= BUTTON XEM PASS CADENA ================= */
 document.getElementById("viewPassBtn").addEventListener("click", () => {
     window.open("passCadena.html", "_blank");
 });
 
-/* ================= BACKGROUND MUSIC ================= */
+/* MUSIC */
 document.addEventListener("click", ()=> bgMusic.play(), {once:true});
 document.addEventListener("touchstart", ()=> bgMusic.play(), {once:true});
+</script>
 
+
+<!-- ===================== THEME LOADER (THÊM MỚI) ===================== -->
+<script>
+async function loadTheme() {
+    try {
+        const cfg = await fetch("theme/themeList.json?v=" + Date.now());
+        const { activeTheme } = await cfg.json();
+
+        const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
+        const theme = await themeFile.json();
+
+        if (theme.background) document.body.style.background = theme.background;
+        if (theme.textColor) document.body.style.color = theme.textColor;
+        if (theme.font) document.body.style.fontFamily = theme.font;
+
+        if (theme.music) {
+            const audio = document.createElement("audio");
+            audio.src = "theme/" + theme.music;
+            audio.loop = true;
+            audio.autoplay = true;
+            audio.id = "themeMusic";
+            audio.volume = 0.5;
+            document.body.appendChild(audio);
+        }
+
+        if (theme.effect) {
+            const script = document.createElement("script");
+            script.src = "theme/" + theme.effect;
+            document.body.appendChild(script);
+        }
+    } catch (e) {
+        console.error("Theme load error:", e);
+    }
+}
+loadTheme();
 </script>
 
 </body>
