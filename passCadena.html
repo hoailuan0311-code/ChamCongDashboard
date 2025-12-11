@@ -37,7 +37,7 @@
 
   <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…" />
 
-  <div class="note small">Vui lòng kiểm tra và nhập đúng thông tin. Bấm Copy để tránh sai sót.</div>
+  <div class="note small">Kiểm tra và nhập đúng thông tin. Bấm Copy để tránh sai sót. Sau khi đăng nhập lại vui lòng đổi mật khẩu mới để tránh lộ thông tin của bạn nhé!</div>
 
   <table>
     <thead>
@@ -89,7 +89,7 @@ async function loadRawData(){
     }
 
     // If still nothing
-    throw new Error("Không tìm thấy mảng JSON trong file raw.");
+    throw new Error("Không tìm thấy DATA trong file raw.");
   } catch(err){
     console.error("loadRawData error:", err);
     alert("Lỗi load dữ liệu: " + err.message + "\nKiểm tra RAW_URL hoặc file trên GitHub.");
