@@ -206,36 +206,40 @@ function setSensitiveVisibility(show){
 </script>
 
 
-<!-- ===================== THEME LOADER (FINAL) ===================== -->
-<script>
+// ===================== THEME LOADER (FINAL + UI COLOR FIX) =====================
 async function loadTheme() {
     try {
-        // Load danh sách theme
         const cfg = await fetch("theme/themeList.json?v=" + Date.now());
         const { activeTheme } = await cfg.json();
 
-        // Nếu đang dùng default → GIỮ NGUYÊN UI, KHÔNG OVERWRITE
-        if (activeTheme === "default") {
-            console.log("Theme: default → giữ nguyên giao diện gốc");
-            return;
-        }
+        // default → không override UI
+        if (activeTheme === "default") return;
 
-        // Load theme file (noel.json, tet.json, ...)
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
         const theme = await themeFile.json();
 
-        // Nếu theme không override → cũng không làm gì hết
-        if (!theme.override) {
-            console.log("Theme override = false → giữ nguyên layout gốc");
-            return;
-        }
+        if (!theme.override) return;
 
-        // ÁP DỤNG THEME
+        // áp dụng background + text
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
 
-        // Nhạc theme (nếu có)
+        // ========== THÊM PHẦN QUAN TRỌNG: UI COLOR OVERRIDE ==========
+        if (theme.uiColors) {
+            const s = document.createElement("style");
+            s.id = "theme-ui";
+            s.innerHTML = `
+                table { background:${theme.uiColors.tableBg || "inherit"} !important; }
+                table td, table th { color:${theme.uiColors.tableText || "inherit"} !important; }
+                th { background:${theme.uiColors.tableHeaderBg || "inherit"} !important; }
+                .chart-box { background:${theme.uiColors.cardBg || "inherit"} !important;
+                             border-color:${theme.uiColors.boxBorder || "inherit"} !important; }
+            `;
+            document.head.appendChild(s);
+        }
+
+        // nhạc
         if (theme.music) {
             const audio = document.createElement("audio");
             audio.src = "theme/" + theme.music;
@@ -246,15 +250,15 @@ async function loadTheme() {
             document.body.appendChild(audio);
         }
 
-        // Hiệu ứng (nếu có)
+        // hiệu ứng
         if (theme.effect) {
-            const effectScript = document.createElement("script");
-            effectScript.src = "theme/" + theme.effect;
-            document.body.appendChild(effectScript);
+            const script = document.createElement("script");
+            script.src = "theme/" + theme.effect;
+            document.body.appendChild(script);
         }
 
-    } catch (e) {
-        console.error("Theme load error:", e);
+    } catch (err) {
+        console.error("Theme load error:", err);
     }
 }
 
