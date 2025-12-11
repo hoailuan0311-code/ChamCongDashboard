@@ -1,0 +1,16 @@
+{
+  "override": true,
+  "name": "30/4 Giải phóng Miền Nam",
+  "background": "linear-gradient(180deg,#00331f,#004d2b,#008f45)",
+  "textColor": "#ffffff",
+  "effect": "effect_april30.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 4,
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.10)",
+    "tableText": "#ffffff",
+    "tableHeaderBg": "rgba(255,255,255,0.15)",
+    "cardBg": "rgba(255,255,255,0.08)",
+    "boxBorder": "rgba(255,255,255,0.25)"
+  }
+}
