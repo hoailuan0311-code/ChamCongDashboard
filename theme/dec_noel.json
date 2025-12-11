@@ -4,7 +4,7 @@
   "background": "linear-gradient(180deg,#00111f,#003049,#004d7a)",
   "textColor": "#ffffff",
   "music": "NhacGiangSinh.mp3",
-  "effect": "snow.js",
+  "effect": "effect-santa.js",
   "font": "\"Be Vietnam Pro\", sans-serif",
   "autoMonth": 12,
   "uiColors": {
@@ -12,6 +12,6 @@
     "tableText": "#ffffff",
     "tableHeaderBg": "rgba(255,255,255,0.15)",
     "cardBg": "rgba(255,255,255,0.05)",
-    "boxBorder": "rgba(255,255,255,0.25)"
+    "boxBorder": "rgba(255,255,255,0.3)"
   }
 }
