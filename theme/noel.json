@@ -1,4 +1,5 @@
 {
+  "override": true,
   "name": "Noel Christmas",
   "background": "linear-gradient(180deg,#00111f,#003049,#004d7a)",
   "textColor": "#ffffff",
