@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "Fireworks (July)",
+  "background": "linear-gradient(180deg,#0b3d91,#1e90ff)",
+  "textColor": "#ffffff",
+  "music": "NhacFireworks.mp3",
+  "effect": "firework.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 7,
+  "uiColors": {
+    "tableBg": "rgba(0,0,0,0.05)",
+    "tableText": "#ffffff",
+    "tableHeaderBg": "rgba(255,255,255,0.06)",
+    "cardBg": "rgba(255,255,255,0.02)",
+    "boxBorder": "rgba(255,255,255,0.06)"
+  }
+}
