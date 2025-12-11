@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "November / Remembrance",
+  "background": "linear-gradient(180deg,#2c3e50,#4ca1af)",
+  "textColor": "#ffffff",
+  "music": "NhacNovember.mp3",
+  "effect": "softparticles.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 11,
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.06)",
+    "tableText": "#ffffff",
+    "tableHeaderBg": "rgba(255,255,255,0.06)",
+    "cardBg": "rgba(255,255,255,0.02)",
+    "boxBorder": "rgba(255,255,255,0.06)"
+  }
+}
