@@ -1,10 +1,18 @@
 {
-    "activeTheme": "noel",
-    "themes": [
-        "default",
-        "noel",
-        "tet",
-        "firework",
-        "sakura"
-    ]
+  "activeTheme": "auto",
+  "themes": [
+    "default",
+    "jan_newyear",
+    "feb_valentine",
+    "mar_womenday",
+    "april30",
+    "may_workers",
+    "jun_summer",
+    "jul_fireworks",
+    "aug_sun",
+    "sept2",
+    "oct_halloween",
+    "nov_remember",
+    "dec_noel"
+  ]
 }
