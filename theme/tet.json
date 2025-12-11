@@ -1,4 +1,5 @@
 {
+  "override": true,
   "name": "Tet Vietnam",
   "background": "linear-gradient(180deg,#8B0000,#b30000,#ff9900)",
   "textColor": "#fff2cc",
@@ -6,4 +7,3 @@
   "effect": "firework.js",
   "font": "\"Be Vietnam Pro\", sans-serif"
 }
-
