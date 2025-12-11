@@ -1,0 +1,17 @@
+{
+  "override": true,
+  "name": "Valentine",
+  "background": "linear-gradient(180deg,#ff7ab6,#ff4d6d)",
+  "textColor": "#fff9fb",
+  "music": "NhacValentine.mp3",
+  "effect": "hearts.js",
+  "font": "\"Be Vietnam Pro\", sans-serif",
+  "autoMonth": 2,
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.06)",
+    "tableText": "#fff6f8",
+    "tableHeaderBg": "rgba(255,255,255,0.06)",
+    "cardBg": "rgba(255,255,255,0.02)",
+    "boxBorder": "rgba(255,255,255,0.08)"
+  }
+}
