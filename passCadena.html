@@ -206,26 +206,27 @@ function setSensitiveVisibility(show){
 </script>
 
 
+<script>
 // ===================== THEME LOADER (FINAL + UI COLOR FIX) =====================
 async function loadTheme() {
     try {
         const cfg = await fetch("theme/themeList.json?v=" + Date.now());
         const { activeTheme } = await cfg.json();
 
-        // default → không override UI
         if (activeTheme === "default") return;
 
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
         const theme = await themeFile.json();
 
+        // phải có override: true
         if (!theme.override) return;
 
-        // áp dụng background + text
+        // BACKGROUND + TEXT
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
 
-        // ========== THÊM PHẦN QUAN TRỌNG: UI COLOR OVERRIDE ==========
+        // UI COLORS FIX
         if (theme.uiColors) {
             const s = document.createElement("style");
             s.id = "theme-ui";
@@ -239,7 +240,7 @@ async function loadTheme() {
             document.head.appendChild(s);
         }
 
-        // nhạc
+        // MUSIC
         if (theme.music) {
             const audio = document.createElement("audio");
             audio.src = "theme/" + theme.music;
@@ -250,12 +251,22 @@ async function loadTheme() {
             document.body.appendChild(audio);
         }
 
-        // hiệu ứng
+        // EFFECT
         if (theme.effect) {
             const script = document.createElement("script");
             script.src = "theme/" + theme.effect;
             document.body.appendChild(script);
         }
+
+        // FIX Z-INDEX CHO TUYẾT / PHÁO HOA
+        const fixLayer = document.createElement("style");
+        fixLayer.innerHTML = `
+            body, table, th, td {
+                position: relative;
+                z-index: 1;
+            }
+        `;
+        document.head.appendChild(fixLayer);
 
     } catch (err) {
         console.error("Theme load error:", err);
