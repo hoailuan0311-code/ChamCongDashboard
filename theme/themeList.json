@@ -1,4 +1,10 @@
 {
-  "activeTheme": "noel"
+    "activeTheme": "default",
+    "themes": [
+        "default",
+        "noel",
+        "tet",
+        "firework",
+        "sakura"
+    ]
 }
-
