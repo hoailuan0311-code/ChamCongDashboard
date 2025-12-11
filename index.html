@@ -394,27 +394,67 @@ document.addEventListener("touchstart", ()=> bgMusic.play(), {once:true});
 </script>
 
 
+<!-- ===================== THEME LOADER (FINAL + AUTO MONTH) ===================== -->
 <script>
-// ===================== THEME LOADER (FINAL + UI COLOR FIX) =====================
 async function loadTheme() {
     try {
-        const cfg = await fetch("theme/themeList.json?v=" + Date.now());
-        const { activeTheme } = await cfg.json();
+        // Load cấu hình
+        const cfgResp = await fetch("theme/themeList.json?v=" + Date.now());
+        const cfg = await cfgResp.json();
 
-        if (activeTheme === "default") return;
+        let activeTheme = cfg.activeTheme || "default";
 
+        // ================== AUTO THEME THEO THÁNG ==================
+        // Tháng JS: 0 = Jan → 11 = Dec
+        const month = new Date().getMonth() + 1; // đổi về 1–12 cho khớp file bạn gửi
+
+        const map = {
+            1: "jan_newyear",       // tháng 1
+            2: "feb_valentine",     // tháng 2
+            3: "mar_womenday",      // tháng 3
+            4: "april30",           // tháng 4 – Giải phóng miền Nam
+            5: "may_workers",       // tháng 5 – Quốc tế Lao động
+            6: "jun_summer",        // tháng 6 – Mùa hè
+            7: "jul_fireworkers",   // tháng 7 – pháo hoa
+            8: "aug_sun",           // tháng 8 – nắng mùa thu
+            9: "sept2",             // tháng 9 – Quốc khánh
+            10: "oct_halloween",    // tháng 10
+            11: "nov_remember",     // tháng 11
+            12: "dec_noel"          // tháng 12 – Noel
+        };
+
+        // Nếu cấu hình ghi activeTheme = "auto" → kích hoạt auto theo tháng
+        if (activeTheme === "auto") {
+            activeTheme = map[month] || "default";
+            console.log("AUTO THEME:", "month =", month, "→ theme =", activeTheme);
+        }
+
+        // Nếu theme = default → giữ nguyên UI, thoát sớm
+        if (activeTheme === "default") {
+            console.log("Theme default → giữ giao diện gốc");
+            return;
+        }
+
+        // ================== LOAD FILE THEME ==================
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
+        if (!themeFile.ok) {
+            console.warn("Không tìm thấy theme:", activeTheme);
+            return;
+        }
+
         const theme = await themeFile.json();
 
-        // phải có override: true
-        if (!theme.override) return;
+        if (!theme.override) {
+            console.log("Theme override = false → giữ layout gốc");
+            return;
+        }
 
-        // BACKGROUND + TEXT
+        // ================== APPLY UI ==================
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
 
-        // UI COLORS FIX
+        // ================== UI COLOR OVERRIDE (table, card, header) ==================
         if (theme.uiColors) {
             const s = document.createElement("style");
             s.id = "theme-ui";
@@ -422,39 +462,37 @@ async function loadTheme() {
                 table { background:${theme.uiColors.tableBg || "inherit"} !important; }
                 table td, table th { color:${theme.uiColors.tableText || "inherit"} !important; }
                 th { background:${theme.uiColors.tableHeaderBg || "inherit"} !important; }
-                .chart-box { background:${theme.uiColors.cardBg || "inherit"} !important;
-                             border-color:${theme.uiColors.boxBorder || "inherit"} !important; }
+                .chart-box { 
+                    background:${theme.uiColors.cardBg || "inherit"} !important;
+                    border-color:${theme.uiColors.boxBorder || "inherit"} !important;
+                }
             `;
             document.head.appendChild(s);
         }
 
-        // MUSIC
+        // ================== MUSIC ==================
         if (theme.music) {
-            const audio = document.createElement("audio");
-            audio.src = "theme/" + theme.music;
-            audio.loop = true;
-            audio.autoplay = true;
-            audio.volume = 0.45;
-            audio.id = "themeMusic";
-            document.body.appendChild(audio);
-        }
-
-        // EFFECT
-        if (theme.effect) {
-            const script = document.createElement("script");
-            script.src = "theme/" + theme.effect;
-            document.body.appendChild(script);
-        }
-
-        // FIX Z-INDEX CHO TUYẾT / PHÁO HOA
-        const fixLayer = document.createElement("style");
-        fixLayer.innerHTML = `
-            body, table, th, td {
-                position: relative;
-                z-index: 1;
+            if (!document.getElementById("themeMusic")) {
+                const audio = document.createElement("audio");
+                audio.src = "theme/" + theme.music;
+                audio.id = "themeMusic";
+                audio.autoplay = true;
+                audio.loop = true;
+                audio.volume = 0.45;
+                audio.style.display = "none";
+                document.body.appendChild(audio);
             }
-        `;
-        document.head.appendChild(fixLayer);
+        }
+
+        // ================== EFFECT SCRIPT ==================
+        if (theme.effect) {
+            const eff = document.createElement("script");
+            eff.src = "theme/" + theme.effect;
+            eff.defer = true;
+            document.body.appendChild(eff);
+        }
+
+        console.log("✔ Theme applied:", activeTheme);
 
     } catch (err) {
         console.error("Theme load error:", err);
