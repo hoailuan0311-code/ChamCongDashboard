@@ -5,5 +5,13 @@
   "textColor": "#ffffff",
   "music": "NhacGiangSinh.mp3",
   "effect": "snow.js",
-  "font": "\"Be Vietnam Pro\", sans-serif"
+  "font": "\"Be Vietnam Pro\", sans-serif",
+
+  "uiColors": {
+    "tableBg": "rgba(255,255,255,0.08)",
+    "tableText": "#ffffff",
+    "tableHeaderBg": "rgba(255,255,255,0.15)",
+    "cardBg": "rgba(255,255,255,0.05)",
+    "boxBorder": "rgba(255,255,255,0.25)"
+  }
 }
