@@ -1,204 +1,270 @@
-/* ===========================================================
-   ❄ SNOW + SANTA SKI + REINDEER DRIFT + SNOW BUILDUP + GIFT EXPLOSION
-   =========================================================== */
+/* =======================================================================
+    NOEL SUPER EFFECT
+    ❄ Snowfall + Snow Accumulation
+    🎅 Santa snowboard + gift drop
+    🦌 Reindeer drift + light trail
+   ======================================================================= */
 
-const layer = document.createElement("div");
-layer.id = "theme-effect";
-Object.assign(layer.style, {
-    position: "fixed",
-    top: 0, left: 0,
-    width: "100%", height: "100%",
-    pointerEvents: "none",
-    zIndex: 999999
+// ===================== GLOBAL LAYERS =====================
+const layerTop = document.createElement("div");
+layerTop.style.position = "fixed";
+layerTop.style.top = 0;
+layerTop.style.left = 0;
+layerTop.style.width = "100%";
+layerTop.style.height = "100%";
+layerTop.style.pointerEvents = "none";
+layerTop.style.zIndex = 99990;
+document.body.appendChild(layerTop);
+
+// Canvas tuyết đọng
+const snowCanvas = document.createElement("canvas");
+snowCanvas.width = innerWidth;
+snowCanvas.height = 200; 
+snowCanvas.style.position = "fixed";
+snowCanvas.style.top = 0;
+snowCanvas.style.left = 0;
+snowCanvas.style.pointerEvents = "none";
+snowCanvas.style.zIndex = 99995;
+document.body.appendChild(snowCanvas);
+const snowCtx = snowCanvas.getContext("2d");
+
+let snowAcc = []; // tuyết đọng theo pixel
+
+
+// Resize sync
+window.addEventListener("resize", () => {
+    snowCanvas.width = innerWidth;
 });
-document.body.appendChild(layer);
 
-/* ===========================================================
-   ❄ TUYẾT RƠI
-   =========================================================== */
+
+// ===================== ❄ SNOW FALL + ACCUMULATION =====================
 function createSnow() {
-    const s = document.createElement("div");
-    s.innerHTML = "❄";
-    s.style.position = "absolute";
-    s.style.left = Math.random() * innerWidth + "px";
-    s.style.fontSize = (10 + Math.random() * 14) + "px";
-    s.style.opacity = 0.7;
-    s.style.animation = `fallSnow ${6 + Math.random()*4}s linear`;
-    s.style.color = "#fff";
-    layer.appendChild(s);
+    const flake = document.createElement("div");
+    flake.innerHTML = "❄";
+    flake.style.position = "absolute";
+    flake.style.left = Math.random() * innerWidth + "px";
+    flake.style.top = "-20px";
+    flake.style.fontSize = 10 + Math.random() * 18 + "px";
+    flake.style.opacity = 0.5 + Math.random() * 0.5;
+    flake.style.animation = `snowFall ${4 + Math.random() * 4}s linear`;
 
-    setTimeout(() => s.remove(), 12000);
-}
-setInterval(createSnow, 120);
+    layerTop.appendChild(flake);
 
-const snowFallCSS = document.createElement("style");
-snowFallCSS.innerHTML = `
-@keyframes fallSnow {
-    from { transform: translateY(-20px); }
-    to   { transform: translateY(100vh); }
-}`;
-document.head.appendChild(snowFallCSS);
-
-/* ===========================================================
-   ⛄ TUYẾT ĐÓNG THÀNH MẢNG Ở MÉP UI
-   =========================================================== */
-const snowEdges = document.createElement("div");
-snowEdges.style.position = "fixed";
-snowEdges.style.bottom = "0";
-snowEdges.style.left = "0";
-snowEdges.style.width = "100%";
-snowEdges.style.height = "0px";
-snowEdges.style.background = "rgba(255,255,255,0.9)";
-snowEdges.style.transition = "height 0.4s";
-snowEdges.style.pointerEvents = "none";
-snowEdges.style.zIndex = 999998;
-document.body.appendChild(snowEdges);
-
-let snowLevel = 0;
-setInterval(() => {
-    snowLevel += 2;
-    if (snowLevel > 80) {
-        snowLevel = 0;
-        snowEdges.style.height = "0px";
-        return;
-    }
-    snowEdges.style.height = snowLevel + "px";
-}, 3000);
-
-/* ===========================================================
-   🦌 NHÂN VẬT CHUYỂN ĐỘNG + DRIFT
-   =========================================================== */
-function createCharacter(src, size = 150, driftTrail = false) {
-    const img = document.createElement("img");
-    img.src = src;
-    Object.assign(img.style, {
-        position: "absolute",
-        bottom: "30px",
-        left: Math.random()*innerWidth + "px",
-        width: size + "px",
-        pointerEvents: "none"
-    });
-    layer.appendChild(img);
-
-    let x = parseFloat(img.style.left);
-    let y = 30;
-    let vx = 3 + Math.random()*2;
-    let vy = 0;
-    let flip = 1;
-
-    function update() {
-        x += vx;
-        y += vy;
-
-        if (x + size > innerWidth) { vx = -vx; flip = -1; }
-        if (x < 0) { vx = -vx; flip = 1; }
-
-        if (y > 30) y = 30;
-
-        img.style.left = x + "px";
-        img.style.bottom = y + "px";
-        img.style.transform = `scaleX(${flip})`;
-
-        // DRIFT EFFECT
-        if (driftTrail) {
-            const t = document.createElement("div");
-            t.style.position = "absolute";
-            t.style.left = (x + size/2) + "px";
-            t.style.bottom = (y + 10) + "px";
-            t.style.width = "20px";
-            t.style.height = "4px";
-            t.style.background = `hsl(${(Date.now()/10)%360},90%,75%)`;
-            t.style.opacity = "0.8";
-            t.style.borderRadius = "20px";
-            t.style.animation = "trailFade 0.4s linear";
-            layer.appendChild(t);
-            setTimeout(()=>t.remove(), 400);
-        }
-
-        requestAnimationFrame(update);
-    }
-    update();
-
-    return { img, getX:()=>x, getY:()=>y, setVy:(v)=>vy=v };
-}
-
-const trailCSS = document.createElement("style");
-trailCSS.innerHTML = `
-@keyframes trailFade {
-    from { transform: scaleX(1); opacity:0.8; }
-    to   { transform: scaleX(3); opacity:0; }
-}`;
-document.head.appendChild(trailCSS);
-
-/* ===========================================================
-   🎅 SANTA TRƯỢT VÁN TUYẾT
-   =========================================================== */
-const santa = createCharacter("theme/santa.png", 150, false);
-santa.img.style.transform += " rotate(-10deg)";
-
-/* ===========================================================
-   🦌 REINDEER DRIFT + VỆT SÁNG RAINBOW
-   =========================================================== */
-const deer = createCharacter("theme/reindeer.png", 160, true);
-
-/* BAY NHẸ RỒI HẠ CÁNH */
-setInterval(() => {
-    deer.setVy(5);
-    setTimeout(()=> deer.setVy(-5), 900);
-}, 14000);
-
-/* ===========================================================
-   🎁 QUÀ RƠI + NỔ LẤP LÁNH
-   =========================================================== */
-function dropGift() {
-    const g = document.createElement("div");
-    g.innerHTML = "🎁";
-    g.style.position = "absolute";
-    g.style.left = santa.getX() + 60 + "px";
-    g.style.bottom = santa.getY() + 120 + "px";
-    g.style.fontSize = "32px";
-    g.style.animation = "giftDrop 1.6s linear";
-    layer.appendChild(g);
+    const t = 4000;
+    const x = parseInt(flake.style.left);
+    const size = parseInt(flake.style.fontSize);
 
     setTimeout(() => {
-        g.remove();
-        explode(santa.getX() + 60, 30);
-    }, 1500);
+        accumulateSnow(x, size * 0.4);
+        flake.remove();
+    }, t);
 }
-setInterval(dropGift, 7000 + Math.random()*3000);
 
-const giftDropCSS = document.createElement("style");
-giftDropCSS.innerHTML = `
-@keyframes giftDrop {
-    from { transform: translateY(0) rotate(0deg); opacity:1; }
-    to   { transform: translateY(-150px) rotate(160deg); opacity:0; }
-}`;
-document.head.appendChild(giftDropCSS);
+setInterval(createSnow, 140);
 
-/* ===========================================================
-   💥 VỤ NỔ LẤP LÁNH
-   =========================================================== */
-function explode(x, y) {
-    for (let i=0; i<14; i++) {
-        const p = document.createElement("div");
-        p.style.position = "absolute";
-        p.style.left = x + "px";
-        p.style.bottom = y + "px";
-        p.style.width = "6px";
-        p.style.height = "6px";
-        p.style.borderRadius = "50%";
-        p.style.background = `hsl(${Math.random()*360},90%,70%)`;
-        p.style.opacity = 1;
 
-        const angle = Math.random()*Math.PI*2;
-        const dist = 40 + Math.random()*60;
+// accumulate
+function accumulateSnow(x, h) {
+    const index = Math.floor(x);
+    if (!snowAcc[index]) snowAcc[index] = 0;
 
-        p.animate([
-            { transform: "translate(0,0)", opacity:1 },
-            { transform: `translate(${Math.cos(angle)*dist}px, ${Math.sin(angle)*dist}px)`, opacity: 0 }
-        ], { duration: 800, easing: "ease-out" });
+    snowAcc[index] += h;
 
-        layer.appendChild(p);
-        setTimeout(()=>p.remove(), 900);
+    if (snowAcc[index] > 70) {
+        snowAcc[index] = 0;
+        dropChunk(index);
     }
+
+    drawSnowLayer();
+}
+
+function dropChunk(x) {
+    const chunk = document.createElement("div");
+    chunk.style.position = "fixed";
+    chunk.style.top = "0px";
+    chunk.style.left = x + "px";
+    chunk.style.width = "6px";
+    chunk.style.height = "6px";
+    chunk.style.background = "#fff";
+    chunk.style.borderRadius = "50%";
+    chunk.style.zIndex = 99998;
+    document.body.appendChild(chunk);
+
+    let y = 0;
+    function fall() {
+        y += 6;
+        chunk.style.top = y + "px";
+        if (y < innerHeight - 30) requestAnimationFrame(fall);
+        else chunk.remove();
+    }
+    fall();
+}
+
+
+function drawSnowLayer() {
+    snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+    snowCtx.fillStyle = "#fff";
+
+    for (let x = 0; x < snowCanvas.width; x++) {
+        if (snowAcc[x] > 0) {
+            snowCtx.fillRect(x, snowCanvas.height - snowAcc[x], 1, snowAcc[x]);
+        }
+    }
+}
+
+
+// CSS Animate
+const css = document.createElement("style");
+css.innerHTML = `
+@keyframes snowFall {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(110vh); }
+}
+`;
+document.head.appendChild(css);
+
+
+// ===================== 🎅 SANTA SNOWBOARD =====================
+const santa = document.createElement("img");
+santa.src = "theme/img/santa.png";
+santa.style.position = "fixed";
+santa.style.bottom = "40px";
+santa.style.left = "-200px";
+santa.style.width = "170px";
+santa.style.zIndex = 99991;
+santa.style.pointerEvents = "none";
+document.body.appendChild(santa);
+
+let santaX = -200;
+let santaSpeed = 4;
+
+function santaLoop() {
+    santaX += santaSpeed;
+    santa.style.left = santaX + "px";
+
+    if (santaX > innerWidth + 200) {
+        santaX = -200;
+    }
+
+    // random thả quà
+    if (Math.random() < 0.02) dropGift(santaX + 60);
+
+    requestAnimationFrame(santaLoop);
+}
+requestAnimationFrame(santaLoop);
+
+
+// 🎁 quà rơi
+function dropGift(x) {
+    const gift = document.createElement("div");
+    gift.style.position = "fixed";
+    gift.style.left = x + "px";
+    gift.style.top = "60px";
+    gift.style.width = "15px";
+    gift.style.height = "15px";
+    gift.style.background = "gold";
+    gift.style.borderRadius = "4px";
+    gift.style.zIndex = 99992;
+    document.body.appendChild(gift);
+
+    let y = 60;
+    function fall() {
+        y += 5;
+        gift.style.top = y + "px";
+
+        if (y < innerHeight - 30) requestAnimationFrame(fall);
+        else {
+            sparkle(x, y);
+            gift.remove();
+        }
+    }
+    fall();
+}
+
+// ✨ nổ lấp lánh
+function sparkle(x, y) {
+    for (let i = 0; i < 12; i++) {
+        const sp = document.createElement("div");
+        sp.style.position = "fixed";
+        sp.style.left = x + "px";
+        sp.style.top = y + "px";
+        sp.style.width = "4px";
+        sp.style.height = "4px";
+        sp.style.background = "yellow";
+        sp.style.borderRadius = "50%";
+        sp.style.zIndex = 99993;
+        sp.style.opacity = 1;
+
+        document.body.appendChild(sp);
+
+        let angle = Math.random() * Math.PI * 2;
+        let speed = 2 + Math.random() * 4;
+        let life = 0;
+
+        function anim() {
+            life++;
+            sp.style.left = x + Math.cos(angle) * life * speed + "px";
+            sp.style.top  = y + Math.sin(angle) * life * speed + "px";
+            sp.style.opacity = 1 - life / 30;
+
+            if (life < 30) requestAnimationFrame(anim);
+            else sp.remove();
+        }
+        anim();
+    }
+}
+
+
+// ===================== 🦌 REINDEER DRIFT =====================
+const deer = document.createElement("img");
+deer.src = "theme/img/reindeer.png";
+deer.style.position = "fixed";
+deer.style.top = "20px";
+deer.style.right = "-200px";
+deer.style.width = "150px";
+deer.style.zIndex = 99992;
+deer.style.pointerEvents = "none";
+document.body.appendChild(deer);
+
+let deerX = -150;
+let deerSpeed = 3;
+
+function deerLoop() {
+    deerX += deerSpeed;
+    deer.style.right = deerX + "px";
+
+    if (deerX > innerWidth + 200) {
+        deerX = -200;
+    }
+
+    // vệt sáng drift nhẹ
+    if (Math.random() < 0.3) lightTrail(parseInt(innerWidth - deerX + 40), 60);
+
+    requestAnimationFrame(deerLoop);
+}
+requestAnimationFrame(deerLoop);
+
+
+// vệt sáng
+function lightTrail(x, y) {
+    const dot = document.createElement("div");
+    dot.style.position = "fixed";
+    dot.style.left = x + "px";
+    dot.style.top = y + "px";
+    dot.style.width = "4px";
+    dot.style.height = "4px";
+    dot.style.background = "rgba(255,255,255,0.8)";
+    dot.style.borderRadius = "50%";
+    dot.style.zIndex = 99994;
+
+    document.body.appendChild(dot);
+
+    let opacity = 1;
+    function fade() {
+        opacity -= 0.03;
+        dot.style.opacity = opacity;
+        if (opacity > 0) requestAnimationFrame(fade);
+        else dot.remove();
+    }
+    fade();
 }
