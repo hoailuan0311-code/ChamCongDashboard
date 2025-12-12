@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<title>📅 Dashboard Phản Hồi Chấm CÔng – WAREHOUSE RYOBI</title>
+<title>📅 Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- Font tiếng Việt -->
@@ -13,7 +13,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <style>
-/* ===================== DARK MODE AUTO ===================== */
 :root {
     --bg: #f5f7fa;
     --text: #111;
@@ -29,16 +28,13 @@
     }
 }
 
-/* ===================== GLOBAL ===================== */
 body {
     background: var(--bg);
     color: var(--text);
     font-family: "Be Vietnam Pro", sans-serif;
     margin: 20px;
-    transition: background 0.3s, color 0.3s;
 }
 
-/* ===================== TITLE ===================== */
 h1 {
     text-align: center;
     font-size: 42px;
@@ -50,57 +46,60 @@ h1 {
     text-shadow: 0 0 12px rgba(0,255,255,0.25);
 }
 
-h2 { margin-top: 25px; }
-
-/* ===================== SEARCH ===================== */
-.search-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
-}
-
 .search-bar input {
-    padding: 10px 14px;
-    width: 260px;
-    border-radius: 8px;
+    padding: 8px;
+    width: 260px; /* THU NHỎ */
+    margin-right: 10px;
+    border-radius: 6px;
     border: 1px solid var(--box-border);
     background: var(--box);
     color: var(--text);
-    font-size: 15px;
 }
 
 .search-bar button {
-    padding: 10px 18px;
+    padding: 10px 16px;
     border-radius: 10px;
     cursor: pointer;
     border: none;
     font-weight: 600;
-    color: #fff;
-    background: linear-gradient(135deg, #8EC5FC, #E0C3FC);
-    box-shadow: 0 6px 14px rgba(142, 197, 252, 0.4);
+    color: white;
     transition: 0.25s;
 }
 
-.search-bar button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(224, 195, 252, 0.5);
-}
-
+/* Nút chính */
 .feedback-btn {
     background: linear-gradient(135deg, #06b6d4, #3b82f6);
-    color: white;
-    font-weight: 600;
+    box-shadow: 0 10px 20px rgba(59,130,246,0.35);
     margin-left: 6px;
-    box-shadow: 0 10px 20px rgba(59, 130, 246, 0.35);
 }
 
 .feedback-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 14px 30px rgba(59, 130, 246, 0.45);
+    box-shadow: 0 14px 28px rgba(59,130,246,0.45);
 }
 
-/* ===================== TABLE ===================== */
+/* Late Out Missing button */
+#lomBtn {
+    background: linear-gradient(135deg, #e63946, #d90429);
+    box-shadow: 0 10px 20px rgba(230,57,70,0.35);
+}
+
+#lomBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(230,57,70,0.45);
+}
+
+/* Xem Chốt Công */
+#viewClosingBtn {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    box-shadow: 0 10px 20px rgba(249,115,22,0.35);
+}
+
+#viewClosingBtn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(249,115,22,0.45);
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -109,114 +108,51 @@ table {
     border-radius: 12px;
     overflow: hidden;
 }
+th, td { padding: 10px; border-bottom: 1px solid var(--box-border); }
+th { background: rgba(0,0,0,0.05); cursor: pointer; }
 
-th, td {
-    padding: 10px;
-    border-bottom: 1px solid var(--box-border);
-}
-
-th {
-    background: rgba(0,0,0,0.05);
-    cursor: pointer;
-}
-
-/* Badge */
-.badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    color: #fff;
-}
+.badge { padding: 4px 12px; border-radius: 16px; font-size: 12px; color: white; }
 .confirm-none { background: #ff6b6b; }
 .confirm-done { background: #2ecc71; }
 
-/* ===================== CHART BOXES ===================== */
 .chart-box {
     background: var(--box);
     padding: 15px;
     border-radius: 12px;
-    margin-top: 20px;
     border: 1px solid var(--box-border);
+    margin-top: 20px;
 }
 
-.footer-layout {
-    display: grid;
-    gap: 20px;
-}
-
-.footer-row {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
-}
-
-.full-row { grid-column: 1 / -1; }
-
-/* ===================== AUDIO ===================== */
 audio { display: none; }
-
 </style>
 </head>
-
 <body>
 
 <h1>Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</h1>
-
 <p>🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
 
-<!-- ===================== SEARCH BAR ===================== -->
+<!-- SEARCH BAR (ĐÃ GỘP + THU NHỎ + XÓA CLEAR BUTTON) -->
 <div class="search-bar">
+    <input id="searchAll" placeholder="Tìm theo MSNV hoặc Họ Tên…">
 
-    <!-- GỘP 2 Ô TÌM KIẾM THÀNH 1 -->
-    <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…">
-
-    <!-- NÚT PHẢN HỒI -->
     <button id="feedbackBtn" class="feedback-btn">📝 Phản hồi chấm công</button>
 
-    <!-- NÚT QUÊN PASS -->
-    <button id="passBtn" class="feedback-btn" style="background:linear-gradient(135deg,#16a085,#27ae60);">
+    <button id="passBtn" class="feedback-btn" style="background:linear-gradient(135deg,#16a085,#27ae60)">
         🔐 Quên Pass CADENA
     </button>
 
-    <!-- NÚT XEM PASS -->
-    <button id="viewPassBtn" class="feedback-btn" style="background:linear-gradient(135deg,#8e44ad,#9b59b6);">
+    <button id="viewPassBtn" class="feedback-btn" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)">
         📁 Xem Pass CADENA
     </button>
 
-    <!-- ⭐ NÚT XEM CHỐT CÔNG -->
-    <button id="viewClosingBtn" class="feedback-btn" style="background:linear-gradient(135deg,#f39c12,#e67e22);">
-        📊 Xem Chốt Công
-    </button>
+    <button id="viewClosingBtn">📊 Xem Chốt Công</button>
 
-    <!-- ⭐ NÚT LATE OUT MISSING -->
-    <button id="lomBtn" class="feedback-btn" style="background:linear-gradient(135deg,#c0392b,#e74c3c);">
-        🕒 Late • Out • Missing
-    </button>
-
+    <button id="lomBtn">🔴 Late • Out • Missing</button>
 </div>
-
-<h2>Danh sách chi tiết</h2>
-
-<table id="dataTable">
-    <thead>
-        <tr>
-            <th onclick="sortBy('MSNV')">MSNV ⬍</th>
-            <th>Họ tên</th>
-            <th onclick="sortBy('NgayDieuChinh')">Ngày điều chỉnh ⬍</th>
-            <th>Nội dung</th>
-            <th>Confirm</th>
-            <th>BU</th>
-            <th>Team</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
-<!-- ===================== SCRIPT GỐC (đã chỉnh cho phù hợp SEARCH MỚI) ===================== -->
 <script>
 const jsonUrl = "https://hoailuan0311-code.github.io/ChamCongDashboard/data.json";
 let fullData = [];
 
-/* ================= LOAD DATA ================= */
 async function loadData(){
     let res = await fetch(jsonUrl + "?cache=" + Date.now());
     fullData = await res.json();
@@ -224,38 +160,30 @@ async function loadData(){
 }
 loadData();
 
-/* ================= FORMAT DATE ================= */
+/* FORMAT DATE */
 function excelDate(v){
     if (!v) return "";
     const d = new Date((v - 25569) * 86400 * 1000);
-    return isNaN(d) ? v : d.toLocaleDateString(
-        "en-GB",
-        {day:"2-digit",month:"short",year:"numeric"}
-    );
+    return isNaN(d) ? v : d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
-/* ================= SEARCH MỚI – 1 Ô DUY NHẤT ================= */
-document.getElementById("searchBox").addEventListener("input", applySearch);
-
-function applySearch(){
-    let q = searchBox.value.toLowerCase();
-
-    let filtered = fullData.filter(r =>
-        (!q)
-        || (r.MSNV + "").toLowerCase().includes(q)
-        || (r.FullName + "").toLowerCase().includes(q)
+/* SEARCH GỘP */
+document.getElementById("searchAll").addEventListener("input", ()=>{
+    let key = searchAll.value.toLowerCase();
+    let f = fullData.filter(r =>
+        (r.MSNV+"").includes(key) ||
+        (r.FullName+"").toLowerCase().includes(key)
     );
+    renderAll(f);
+});
 
-    renderAll(filtered);
-}
-
-/* ================= SORT ================= */
+/* SORT */
 function sortBy(col){
-    fullData.sort((a,b)=> (a[col] > b[col] ? 1 : -1));
+    fullData.sort((a,b)=>(a[col] > b[col] ? 1 : -1));
     renderAll(fullData);
 }
 
-/* ================= RENDER TABLE ================= */
+/* RENDER TABLE */
 function renderTable(data){
     let tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
@@ -267,20 +195,14 @@ function renderTable(data){
             <td>${r.FullName}</td>
             <td>${excelDate(r.NgayDieuChinh)}</td>
             <td>${r.NoiDung || ""}</td>
-
-            <td>
-                <span class="badge ${r.ConfirmAdmin ? "confirm-done" : "confirm-none"}">
-                    ${r.ConfirmAdmin || "Chưa phản hồi"}
-                </span>
-            </td>
-
+            <td><span class="badge ${r.ConfirmAdmin ? "confirm-done":"confirm-none"}">${r.ConfirmAdmin || "Chưa phản hồi"}</span></td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
         </tr>`;
     });
 }
 
-/* ================= RENDER ALL ================= */
+/* RENDER WRAPPER */
 function renderAll(data){
     renderTable(data);
     renderBU(data);
@@ -289,401 +211,10 @@ function renderAll(data){
     renderNgay(data);
 }
 
-/* ================= CHART FUNCTIONS ================= */
-Chart.register(ChartDataLabels);
-
-function renderBU(data){
-    const c = {};
-    data.forEach(r => c[r.BU] = (c[r.BU] || 0) + 1);
-
-    new Chart(chartBU, {
-        type: "pie",
-        data: { 
-            labels: Object.keys(c), 
-            datasets: [{ 
-                data:Object.values(c), 
-                backgroundColor:["#ff6384","#36a2eb","#ffcd56","#4bc0c0","#9966ff"] 
-            }]
-        },
-        plugins: [ChartDataLabels],
-        options:{
-            animation:{ duration:1200, easing:"easeOutBounce" },
-            plugins:{ datalabels:{ color:"#fff", font:{weight:"bold"} } }
-        }
-    });
-}
-
-function renderTeam(data){
-    const c = {};
-    data.forEach(r => c[r.Team] = (c[r.Team] || 0) + 1);
-
-    new Chart(chartTeam,{
-        type:"bar",
-        data:{
-            labels:Object.keys(c),
-            datasets:[{ 
-                data:Object.values(c), 
-                backgroundColor:"#ffa64d" 
-            }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1200, easing:"easeOutElastic" },
-            plugins:{ 
-                datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } 
-            }
-        }
-    });
-}
-
-function renderTop(data){
-    const c = {};
-    data.forEach(r => c[r.FullName] = (c[r.FullName]||0)+1);
-
-    let sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
-
-    new Chart(chartTop,{
-        type:"bar",
-        data:{
-            labels:sorted.map(x=>x[0]),
-            datasets:[{ 
-                data:sorted.map(x=>x[1]), 
-                backgroundColor:"#00c9ff" 
-            }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1400, easing:"easeOutQuad" },
-            plugins:{ 
-                datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } 
-            }
-        }
-    });
-}
-
-function renderNgay(data){
-    const c = {};
-    data.forEach(r => {
-        let d = excelDate(r.NgayDieuChinh);
-        c[d] = (c[d]||0)+1;
-    });
-
-    new Chart(chartNgay,{
-        type:"bar",
-        data:{
-            labels:Object.keys(c),
-            datasets:[{ 
-                data:Object.values(c), 
-                backgroundColor:"#9b59b6" 
-            }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1500, easing:"easeOutBounce" },
-            plugins:{ 
-                datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } 
-            }
-        }
-    });
-}
-<!-- ===================== PHẦN 3/4 — BUTTON ACTIONS + THEME LOADER ===================== -->
-<script>
-/* ---------- UTILS nhỏ (hiệu ứng nhấp nhẹ cho nút) ---------- */
-function pulseButton(el){
-    if(!el) return;
-    el.animate([
-        { transform: "translateY(0)" },
-        { transform: "translateY(-4px)" },
-        { transform: "translateY(0)" }
-    ], { duration: 220, easing: "ease-out" });
-}
-
-/* ---------- SAFE GET ELEMENT ---------- */
-const $ = id => document.getElementById ? document.getElementById(id) : null;
-
-/* ---------- Ẩn nút Clear Filter nếu còn (yêu cầu: xóa nút UI) ---------- */
-const clearBtn = $("clearFilterBtn");
-if(clearBtn){
-    clearBtn.style.display = "none";
-}
-
-/* ---------- BUTTONS (các id phải khớp với HTML) ---------- */
-const feedbackBtn = $("feedbackBtn");
-const passBtn     = $("passBtn");      // "Quên Pass CADENA" (HTML thay label)
-const viewPassBtn = $("viewPassBtn");
-const viewChotBtn = $("viewChotBtn"); // NEW - Xem Chốt Công (HTML phải có id này)
-const lateBtn     = $("lateBtn");     // NEW - Late&Out&Missing (HTML phải có id này)
-const searchBox   = $("searchBox");    // ô tìm kiếm duy nhất (đã gộp)
-const bgMusic     = $("bgMusic");      // nếu có
-// themeMusic sẽ được tạo bởi theme loader nếu theme có music
-
-/* ---------- LINKS (placeholder) ---------- */
-const LINKS = {
-    feedbackForm: "https://forms.office.com/r/wSm7WHpgCw",
-    passForm:     "https://forms.office.com/r/wMUXy1P6P1",
-    passPage:     "passCadena.html",
-    viewChot:     "#", // <-- bạn sẽ gắn link chốt công ở đây
-    lateMissing:  "#"  // <-- bạn sẽ gắn link Late&Out&Missing ở đây
-};
-
-/* ---------- GÁN SỰ KIỆN CHO NÚT ---------- */
-if(feedbackBtn){
-    feedbackBtn.addEventListener("click", () => {
-        pulseButton(feedbackBtn);
-        window.open(LINKS.feedbackForm, "_blank");
-    });
-}
-
-if(passBtn){
-    passBtn.addEventListener("click", () => {
-        pulseButton(passBtn);
-        window.open(LINKS.passForm, "_blank");
-    });
-}
-
-if(viewPassBtn){
-    viewPassBtn.addEventListener("click", () => {
-        pulseButton(viewPassBtn);
-        window.open(LINKS.passPage, "_blank");
-    });
-}
-
-/* NEW buttons — có thể chưa tồn tại trong HTML; kiểm tra an toàn */
-if(viewChotBtn){
-    viewChotBtn.addEventListener("click", () => {
-        pulseButton(viewChotBtn);
-        // placeholder — đổi sau
-        window.open(LINKS.viewChot, "_blank");
-    });
-} else {
-    // nếu HTML không có thì log để bạn biết
-    console.log("Note: element #viewChotBtn not found. Add it to HTML if needed.");
-}
-
-if(lateBtn){
-    lateBtn.addEventListener("click", () => {
-        pulseButton(lateBtn);
-        // placeholder — đổi sau
-        window.open(LINKS.lateMissing, "_blank");
-    });
-} else {
-    console.log("Note: element #lateBtn not found. Add it to HTML if needed.");
-}
-
-/* ---------- SEARCH BOX: phím Enter để focus / clear ---------- */
-if(searchBox){
-    // khi nhấn Escape => clear
-    searchBox.addEventListener("keydown", (e) => {
-        if(e.key === "Escape"){
-            searchBox.value = "";
-            searchBox.dispatchEvent(new Event('input'));
-        }
-    });
-}
-
-/* ---------- AUTOPLAY: bật nhạc theme hoặc bgMusic sau interaction ---------- */
-function tryPlayMusic(){
-    // ưu tiên themeMusic nếu có (theme loader tạo #themeMusic)
-    const tm = document.getElementById("themeMusic");
-    const target = tm || bgMusic || document.getElementById("themeMusic");
-    if(target && target.paused){
-        target.play().catch(()=>{/* some browsers block autoplay until gesture; ignore silently */});
-    }
-}
-document.addEventListener("click", tryPlayMusic, {once:true});
-document.addEventListener("touchstart", tryPlayMusic, {once:true});
-
-/* ---------- OPTIONAL: small visual focus when loading external page ---------- */
-function highlightButton(el){
-    if(!el) return;
-    el.style.boxShadow = "0 6px 22px rgba(0,0,0,0.18)";
-    setTimeout(()=> el.style.boxShadow = "", 700);
-}
-
-/* ---------- THEME LOADER (FINAL + AUTO MONTH) ---------- */
-async function loadTheme() {
-    try {
-        // Load cấu hình
-        const cfgResp = await fetch("theme/themeList.json?v=" + Date.now());
-        if(!cfgResp.ok) { console.warn("themeList.json not found"); return; }
-        const cfg = await cfgResp.json();
-
-        let activeTheme = cfg.activeTheme || "default";
-
-        // Nếu active = "auto" → chọn theo tháng (người dùng có thể set activeTheme = "april30" để cố định)
-        if (activeTheme === "auto") {
-            const month = new Date().getMonth() + 1; // 1..12
-            const map = {
-                1: "jan_newyear",
-                2: "feb_valentine",
-                3: "mar_womenday",
-                4: "april30",
-                5: "may_workers",
-                6: "jun_summer",
-                7: "jul_fireworks",
-                8: "aug_sun",
-                9: "sept2",
-                10: "oct_halloween",
-                11: "nov_remember",
-                12: "dec_noel"
-            };
-            activeTheme = map[month] || "default";
-            console.log("AUTO THEME:", "month =", month, "→ theme =", activeTheme);
-        }
-
-        // Default => giữ nguyên UI
-        if (activeTheme === "default") {
-            console.log("Theme default → giữ giao diện gốc");
-            return;
-        }
-
-        // load theme file
-        const themeResp = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
-        if(!themeResp.ok){
-            console.warn("Không tìm thấy theme file:", activeTheme);
-            return;
-        }
-        const theme = await themeResp.json();
-
-        if (!theme.override && theme.override !== true) {
-            console.log("Theme override = false → giữ layout gốc");
-            return;
-        }
-
-        // apply background / text / font (respect user original if not provided)
-        if (theme.background) document.body.style.background = theme.background;
-        if (theme.textColor) document.body.style.color = theme.textColor;
-        if (theme.font) document.body.style.fontFamily = theme.font;
-
-        // UI color overrides for table/cards (only if provided)
-        if (theme.uiColors) {
-            const prev = document.getElementById("theme-ui");
-            if(prev) prev.remove();
-            const s = document.createElement("style");
-            s.id = "theme-ui";
-            s.innerHTML = `
-                table { background: ${theme.uiColors.tableBg || "inherit"} !important; }
-                table td, table th { color: ${theme.uiColors.tableText || "inherit"} !important; }
-                th { background: ${theme.uiColors.tableHeaderBg || "inherit"} !important; }
-                .chart-box { background: ${theme.uiColors.cardBg || "inherit"} !important; border-color: ${theme.uiColors.boxBorder || "inherit"} !important; }
-                .search-bar input { background: ${theme.uiColors.inputBg || "inherit"} !important; color: ${theme.uiColors.inputText || "inherit"} !important; border-color: ${theme.uiColors.inputBorder || "inherit"} !important; }
-            `;
-            document.head.appendChild(s);
-        }
-
-        // add music (do not duplicate)
-        if (theme.music) {
-            if (!document.getElementById("themeMusic")) {
-                const audio = document.createElement("audio");
-                audio.src = "theme/" + theme.music;
-                audio.id = "themeMusic";
-                audio.autoplay = true;
-                audio.loop = true;
-                audio.volume = 0.45;
-                audio.style.display = "none";
-                document.body.appendChild(audio);
-                // try to play but may be blocked until user gesture
-                audio.play().catch(()=>{ /* silent */ });
-            }
-        }
-
-        // add effect script
-        if (theme.effect) {
-            const prevEff = document.getElementById("theme-effect-script");
-            if(prevEff) prevEff.remove();
-            const eff = document.createElement("script");
-            eff.id = "theme-effect-script";
-            eff.src = "theme/" + theme.effect;
-            eff.defer = true;
-            document.body.appendChild(eff);
-        }
-
-        console.log("✔ Theme applied:", activeTheme);
-    } catch (err) {
-        console.error("Theme load error:", err);
-    }
-}
-
-/* start theme loader (non-blocking) */
-loadTheme();
-</script>
-<!-- ===================== END PART 3/4 ===================== -->
-<!-- ===================== PART 4/4 — UI POLISH & FINAL HOOKS ===================== -->
-<script>
-/* ----------------------------------------------
-   Một chút hiệu ứng nhẹ cho Dashboard
-------------------------------------------------*/
-
-/* Highlight khi hover vào hàng table */
-document.addEventListener("mouseover", e => {
-    const row = e.target.closest("tr");
-    if (!row || row.parentNode.tagName !== "TBODY") return;
-    row.style.background = "rgba(150, 200, 255, 0.10)";
+/* NÚT MỚI */
+document.getElementById("viewClosingBtn").addEventListener("click", ()=>{
+    window.open("#", "_blank"); // Cris đặt link sau
 });
-document.addEventListener("mouseout", e => {
-    const row = e.target.closest("tr");
-    if (!row || row.parentNode.tagName !== "TBODY") return;
-    row.style.background = "transparent";
+document.getElementById("lomBtn").addEventListener("click", ()=>{
+    window.open("#", "_blank"); // Cris đặt link sau
 });
-
-/* Hiệu ứng click nhẹ trên tất cả button */
-document.querySelectorAll("button").forEach(btn => {
-    btn.addEventListener("mousedown", () => {
-        btn.style.transform = "scale(0.96)";
-    });
-    btn.addEventListener("mouseup", () => {
-        btn.style.transform = "scale(1)";
-    });
-});
-
-/* ----------------------------------------------
-   Prevent UI resize jump khi theme effect chạy
-------------------------------------------------*/
-const layoutFix = document.createElement("style");
-layoutFix.innerHTML = `
-    canvas, img, div, table, .chart-box {
-        transition: background 0.3s, color 0.3s, border-color 0.3s;
-    }
-`;
-document.head.appendChild(layoutFix);
-
-/* ----------------------------------------------
-   Giữ cho snow / santa / effect không che UI
-------------------------------------------------*/
-const topLayer = document.createElement("style");
-topLayer.innerHTML = `
-    body * {
-        position: relative;
-        z-index: 1;
-    }
-    .theme-effect-layer, #theme-effect-layer {
-        position: fixed !important;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        pointer-events: none !important;
-        z-index: 99999 !important;
-    }
-`;
-document.head.appendChild(topLayer);
-
-/* ----------------------------------------------
-   Chờ load xong → bật effect sau 300ms (mượt hơn)
-------------------------------------------------*/
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        document.body.classList.add("effect-ready");
-    }, 300);
-});
-
-/* ----------------------------------------------
-   Fix ChartJS clear memory khi re-render
-------------------------------------------------*/
-window.addEventListener("beforeunload", () => {
-    Chart.helpers.each(Chart.instances, function(instance) {
-        try { instance.destroy(); } catch {}
-    });
-});
-</script>
-
-</body>
-</html>
