@@ -5,86 +5,105 @@
 <title>Chốt Công — WAREHOUSE RYOBI</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
-
 <style>
 /* ========== THEME (dark auto) ========== */
 :root{
   --bg:#f5f7fa; --text:#111; --box:#fff; --muted:#666; --accent:#00bcd4; --border:#e6e6e6;
+  --table-text-light:#06212a; /* đen / xanh đen cho table trong light mode */
+  --table-text-dark:#ffffff;  /* table text khi ở dark mode */
 }
 @media (prefers-color-scheme: dark){
   :root{ --bg:#0f1113; --text:#e6eef6; --box:#141518; --muted:#9aa3ad; --accent:#2ec4d6; --border:#222427; }
 }
+
+/* Base */
 *{box-sizing:border-box}
 body{
   margin:18px; font-family:"Be Vietnam Pro",sans-serif; background:var(--bg); color:var(--text);
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 
-/* header */
-h1{ font-size:28px; margin:0 0 6px; font-weight:800; background:linear-gradient(90deg,#4facfe,#00f2fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+/* Header */
+h1{ font-size:32px; margin:0 0 6px; font-weight:800; background:linear-gradient(90deg,#4facfe,#00f2fe); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
 p.desc{ margin:4px 0 16px; color:var(--muted); font-size:13px; }
 
-/* toolbar */
-.toolbar{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
-.input, .select, .num { padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--box); color:var(--text); }
-.input{ min-width:220px; width:34%; font-size:14px; }
-.select{ min-width:160px; }
-.num{ width:120px; }
+/* Toolbar */
+.toolbar{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
+.input, .select { padding:12px 14px; border-radius:12px; border:1px solid var(--border); background:var(--box); color:var(--text); }
+.input{ min-width:260px; width:36%; font-size:15px; }
+.select{ min-width:160px; font-size:14px; }
 
-/* buttons */
-.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; color:#fff; background:linear-gradient(135deg,#16a085,#27ae60); }
+/* Buttons */
+.btn { padding:10px 14px; border-radius:12px; border:none; cursor:pointer; font-weight:700; color:#fff; background:linear-gradient(135deg,#16a085,#27ae60); }
 .btn.secondary { background:linear-gradient(135deg,#4facfe,#00f2fe); color:#022; }
 
-/* table */
-.table-wrap{ overflow:auto; border-radius:12px; background:var(--box); box-shadow:0 8px 30px rgba(0,0,0,0.04); border:1px solid var(--border); }
+/* Table container */
+.table-wrap{ overflow:auto; border-radius:12px; background:var(--box); box-shadow:0 12px 30px rgba(0,0,0,0.06); border:1px solid var(--border); transition:box-shadow .18s; }
+.table-wrap:focus-within{ box-shadow:0 18px 40px rgba(0,0,0,0.12); }
+
+/* Table */
 table{ width:100%; border-collapse:collapse; min-width:980px; }
-thead th{ position:sticky; top:0; background:rgba(0,0,0,0.03); padding:12px; text-align:left; cursor:pointer; font-size:13px; }
-tbody td{ padding:10px 12px; border-top:1px solid var(--border); font-size:13px; vertical-align:middle; }
-.row-muted{ color:var(--muted); font-size:12px; }
+thead th{ position:sticky; top:0; background:rgba(0,0,0,0.04); padding:12px; text-align:left; cursor:pointer; font-size:13px; z-index:2; }
+tbody td{ padding:12px; border-top:1px solid var(--border); font-size:13px; vertical-align:middle; transition:transform .18s, box-shadow .18s, background .12s; }
 
-/* small screens */
-@media (max-width:880px){
-  .input{ width:58%; min-width:120px; }
-  .select{ width:40%; }
-  .num{ width:44%; }
-  thead th, tbody td{ padding:8px; font-size:12px; }
-  table{ min-width:760px; }
-}
+/* Row hover effect (lift + shadow) */
+tbody tr:hover td { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(2,10,20,0.06); background: linear-gradient(90deg, rgba(255,255,255,0.015), rgba(0,0,0,0.01)); }
 
-/* loader */
+/* Loader */
 #loader{ display:flex; align-items:center; gap:12px; color:var(--muted); margin:14px 0; }
-.spinner{
-  width:18px;height:18px;border-radius:50%;border:3px solid rgba(0,0,0,0.08); border-top-color:var(--accent); animation:spin .9s linear infinite;
-}
+.spinner{ width:18px;height:18px;border-radius:50%;border:3px solid rgba(0,0,0,0.08); border-top-color:var(--accent); animation:spin .9s linear infinite; }
 @keyframes spin{ to{ transform:rotate(360deg); } }
 
-/* badge */
+/* Pagination */
+.pagination { display:flex; gap:8px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+.page-btn { padding:8px 12px; border-radius:10px; border:1px solid var(--border); background:var(--box); cursor:pointer; }
+.page-btn.active { background:var(--accent); color:#fff; border-color:transparent; box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+
+/* Fade animation for page change */
+.table-fade { animation: fadeIn .28s ease both; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0);} }
+
+/* Badge small */
 .badge{ display:inline-block; padding:6px 10px; border-radius:999px; font-size:12px; color:#fff; background:var(--accent); }
 
-/* footer small note */
+/* Footer */
 .footer-note{ margin-top:12px; color:var(--muted); font-size:12px; }
+
+/* ========== FORCE TABLE TEXT COLORS (override theme) ========== */
+/* We'll insert an override style via JS after theme loads to ensure priority.
+   However provide a baseline here: */
+@media (prefers-color-scheme: dark) {
+  #dataTable td, #dataTable th { color: var(--table-text-dark) !important; }
+}
+@media (prefers-color-scheme: light) {
+  #dataTable td, #dataTable th { color: var(--table-text-light) !important; }
+}
+
+/* Small screens */
+@media (max-width:880px){
+  .input{ width:58%; min-width:140px; }
+  .select{ width:40%; }
+  thead th, tbody td{ padding:10px; font-size:12px; }
+  table{ min-width:760px; }
+}
 </style>
 </head>
 <body>
 
 <h1>Chốt Công — WAREHOUSE RYOBI</h1>
-<p class="desc">Dữ liệu load từ <code>dataWorker.js</code> (raw array hoặc biến JS). Tìm kiếm MSNV / Họ tên • Lọc theo Month / Team / Total OT / Total Leave • Click header để sort.</p>
+<p class="desc">Dữ liệu load từ <code>dataWorker.js</code> (raw array hoặc biến JS). Tìm kiếm MSNV / Họ tên • Lọc theo Month / Team • Click header để sort.</p>
 
 <div class="toolbar">
   <input id="searchBox" class="input" placeholder="Tìm theo MSNV hoặc Họ Tên…" />
   <select id="filterMonth" class="select"><option value="">-- Lọc Month --</option></select>
   <select id="filterTeam" class="select"><option value="">-- Lọc Team --</option></select>
-  <input id="minOT" class="num" placeholder="Min TOTAL OT" type="number" />
-  <input id="maxOT" class="num" placeholder="Max TOTAL OT" type="number" />
-  <input id="minLeave" class="num" placeholder="Min TOTAL Leave" type="number" />
-  <input id="maxLeave" class="num" placeholder="Max TOTAL Leave" type="number" />
   <button id="clearFilters" class="btn secondary">Xóa lọc</button>
 </div>
 
 <div id="loader"><div class="spinner"></div><div>Đang tải dữ liệu…</div></div>
 
 <div class="table-wrap" id="tableWrap" style="display:none;">
-  <table id="dataTable" aria-describedby="footerNote">
+  <table id="dataTable" aria-describedby="footerNote" class="table-fade">
     <thead>
       <tr>
         <th data-col="MSNV">MSNV ⬍</th>
@@ -100,30 +119,34 @@ tbody td{ padding:10px 12px; border-top:1px solid var(--border); font-size:13px;
     </thead>
     <tbody></tbody>
   </table>
+
+  <div class="pagination" id="paginationControls" style="padding:12px;"></div>
 </div>
 
-<div class="footer-note" id="footerNote">* Lọc & tìm kiếm thực hiện trên dữ liệu đã tải. Nếu dữ liệu không hiển thị, kiểm tra file <code>dataWorker.js</code> trong cùng thư mục.</div>
+<div class="footer-note" id="footerNote">* Trang hiển thị tối đa 50 dòng / trang. Animation khi chuyển trang và hover từng hàng.</div>
 
-<!-- THEME LOADER (như bạn muốn: sẽ đọc theme/themeList.json nếu có) -->
+<!-- THEME LOADER (giữ nguyên khả năng auto theme; will call applyTableColorOverride afterwards) -->
 <script>
 async function loadTheme(){
   try{
     const r = await fetch("theme/themeList.json?v=" + Date.now());
-    if(!r.ok) return;
+    if(!r.ok) { applyTableColorOverride(); return; }
     const cfg = await r.json();
     let active = cfg.activeTheme || "default";
     if(active === "auto"){
       const map = {1:"jan_newyear",2:"feb_valentine",3:"mar_womenday",4:"april30",5:"may_workers",6:"jun_summer",7:"jul_fireworks",8:"aug_sun",9:"sept2",10:"oct_halloween",11:"nov_remember",12:"dec_noel"};
       active = map[new Date().getMonth()+1] || "default";
     }
-    if(active === "default") return;
+    if(active === "default") { applyTableColorOverride(); return; }
     const tf = await fetch("theme/"+active+".json?v="+Date.now());
-    if(!tf.ok) return;
+    if(!tf.ok) { applyTableColorOverride(); return; }
     const theme = await tf.json();
     if(theme.background) document.body.style.background = theme.background;
     if(theme.textColor) document.body.style.color = theme.textColor;
+    if(theme.font) document.body.style.fontFamily = theme.font;
     if(theme.uiColors){
       const s = document.createElement("style");
+      s.id = "theme-ui";
       s.innerHTML = `
         table{ background:${theme.uiColors.tableBg||"inherit"} !important; }
         table td, table th{ color:${theme.uiColors.tableText||"inherit"} !important; }
@@ -136,46 +159,83 @@ async function loadTheme(){
       a.src = "theme/" + theme.music; a.loop=true; a.autoplay=true; a.id="themeMusic"; a.style.display="none";
       document.body.appendChild(a);
     }
+    // effect
+    if(theme.effect){
+      const eff = document.createElement("script");
+      eff.src = "theme/" + theme.effect;
+      eff.defer = true;
+      document.body.appendChild(eff);
+    }
   }catch(e){ console.warn("Theme load:", e); }
+  // ensure our table color override is applied after theme
+  applyTableColorOverride();
 }
+
+// Apply a strong override style for table text AFTER theme loads so we keep readable colors
+function applyTableColorOverride(){
+  try{
+    // remove previous override if exists
+    const existed = document.getElementById("chotcong-table-override");
+    if(existed) existed.remove();
+
+    const s = document.createElement("style");
+    s.id = "chotcong-table-override";
+    // Use high specificity and !important to override theme styles.
+    s.innerHTML = `
+      @media (prefers-color-scheme: dark) {
+        #dataTable td, #dataTable th { color: #ffffff !important; }
+      }
+      @media (prefers-color-scheme: light) {
+        #dataTable td, #dataTable th { color: #06212a !important; }
+      }
+      /* if user forced dark via theme file but prefers light, still use the prefers-color-scheme media rule above.
+         For maximum safety, also handle body.dark-mode class */
+      body.dark-mode #dataTable td, body.dark-mode #dataTable th { color: #ffffff !important; }
+      body.light-mode #dataTable td, body.light-mode #dataTable th { color: #06212a !important; }
+    `;
+    document.head.appendChild(s);
+  } catch(e){ console.warn(e); }
+}
+
 loadTheme();
 </script>
 
-<!-- MAIN SCRIPT -->
+<!-- MAIN SCRIPT: load dataWorker.js (raw array or var), render, filter, sort, paginate -->
 <script>
-/*
-  Logic:
-  1) fetch("dataWorker.js") -> text
-     - if startsWith('[') => JSON.parse(text)
-     - else insert script text to head -> expect window.dataWorker (or other names)
-  2) render controls, fill select options
-  3) apply filters & sort
-*/
+/* CONFIG */
+const PAGE_SIZE = 50;
 
-// Global
+/* STATE */
 let RAW = [];
-let currentSort = { col:null, asc:true };
+let filtered = [];
+let currentSort = { col: null, asc: true };
+let currentPage = 1;
+let totalPages = 1;
 
-// UTIL helpers
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
+/* SELECTORS */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 
+/* UTIL */
+function escapeHtml(s){
+  if(s === null || s === undefined) return "";
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
 function safeNum(v){
   if(v === null || v === undefined || v === "") return NaN;
-  return Number(v);
+  return Number(String(v).replaceAll(",", ""));
 }
+function debounce(fn,t=200){ let h; return (...a)=>{ clearTimeout(h); h=setTimeout(()=>fn(...a),t); }; }
 
-// try to load dataWorker.js (raw array or var)
+/* LOAD dataWorker.js */
 async function loadDataWorker(){
   try {
     const resp = await fetch("dataWorker.js?v=" + Date.now());
     const text = await resp.text();
-
-    // clean BOM
-    const t = text.replace(/^\uFEFF/, "").trim();
+    const t = text.replace(/^\uFEFF/,"").trim();
 
     if(t.startsWith("[")) {
-      // raw JSON array
+      // raw JSON
       try {
         const arr = JSON.parse(t.replace(/;\s*$/,""));
         RAW = Array.isArray(arr) ? arr : [];
@@ -187,15 +247,13 @@ async function loadDataWorker(){
       }
     }
 
-    // else, try to evaluate as script but safely insert to DOM
-    // We don't eval; we insert script element so that author-defined var becomes global.
+    // else insert script into DOM to expose global var(s)
     try {
       const s = document.createElement("script");
       s.type = "text/javascript";
       s.text = t;
       document.head.appendChild(s);
-      // try common global names
-      RAW = window.dataWorker || window.data || window.dataWorkers || window.__DATA__ || window.DATA || [];
+      RAW = window.dataWorker || window.dataWorkerRaw || window.data || window.DATA || window.__DATA__ || [];
       if(!Array.isArray(RAW)) RAW = [];
     } catch(e){
       console.error("Insert script error:", e);
@@ -207,28 +265,94 @@ async function loadDataWorker(){
   }
 }
 
-// render table rows
-function renderTable(data){
+/* BUILD filter options */
+function buildFilterOptions(){
+  const months = new Set();
+  const teams = new Set();
+  RAW.forEach(r => {
+    if(r.Month) months.add(r.Month);
+    if(r.Team) teams.add(r.Team);
+  });
+  const monthSel = $("#filterMonth");
+  const teamSel = $("#filterTeam");
+  monthSel.innerHTML = `<option value="">-- Lọc Month --</option>`;
+  teamSel.innerHTML = `<option value="">-- Lọc Team --</option>`;
+  Array.from(months).sort().forEach(m => {
+    const o = document.createElement("option"); o.value = m; o.textContent = m; monthSel.appendChild(o);
+  });
+  Array.from(teams).sort().forEach(t => {
+    const o = document.createElement("option"); o.value = t; o.textContent = t; teamSel.appendChild(o);
+  });
+}
+
+/* APPLY filters & sort -> compute filtered[] and pagination */
+function applyFilters(){
+  const q = ($("#searchBox").value || "").toLowerCase().trim();
+  const fm = $("#filterMonth").value;
+  const ft = $("#filterTeam").value;
+
+  let data = RAW.slice();
+
+  if(q){
+    data = data.filter(r => {
+      const msnv = String(r.MSNV ?? r.MSN ?? "").toLowerCase();
+      const name = String(r.HoTen ?? r.FullName ?? r.Fullname ?? "").toLowerCase();
+      return msnv.includes(q) || name.includes(q);
+    });
+  }
+  if(fm) data = data.filter(r => (r.Month||"") === fm);
+  if(ft) data = data.filter(r => (r.Team||"") === ft);
+
+  // sort
+  if(currentSort.col){
+    const col = currentSort.col;
+    const asc = currentSort.asc ? 1 : -1;
+    data.sort((a,b)=>{
+      const va = (a[col] === undefined ? "" : a[col]);
+      const vb = (b[col] === undefined ? "" : b[col]);
+      const na = parseFloat(String(va).replaceAll(",",""));
+      const nb = parseFloat(String(vb).replaceAll(",",""));
+      if(!isNaN(na) && !isNaN(nb)) return (na - nb) * asc;
+      return String(va).localeCompare(String(vb),'vi') * asc;
+    });
+  }
+
+  filtered = data;
+  totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = totalPages;
+  renderTablePage();
+  renderPagination();
+}
+
+/* RENDER table for currentPage */
+function renderTablePage(){
   const tbody = $("#dataTable tbody");
+  tbody.classList.remove("table-fade");
+  // trigger reflow for restart animation
+  void tbody.offsetWidth;
+  tbody.classList.add("table-fade");
+
   tbody.innerHTML = "";
-  if(!data || data.length === 0){
+  if(!filtered || filtered.length === 0){
     tbody.innerHTML = `<tr><td colspan="9" class="row-muted">Không có dữ liệu</td></tr>`;
     return;
   }
-  // build rows
-  for(const r of data){
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = Math.min(filtered.length, start + PAGE_SIZE);
+  for(let i=start;i<end;i++){
+    const r = filtered[i];
     const msnv = r.MSNV ?? r.MSN ?? "";
-    const name = r.HoTen ?? r.FullName ?? r.Fullname ?? r.FullNameVN ?? "";
+    const name = r.HoTen ?? r.FullName ?? r.Fullname ?? "";
     const team = r.Team ?? "";
     const month = r.Month ?? "";
     const wkd = r.TotalWKD ?? r["Tổng Ngày làm việc"] ?? "";
-    const ot = r.TotalOT ?? r["TOTAL OT"] ?? r.TotalOT ?? "";
+    const ot = r.TotalOT ?? r["TOTAL OT"] ?? "";
     const leave = r.TotalLeave ?? r["TOTAL Leave"] ?? "";
     const from = r.FromDate ?? r["From date"] ?? "";
     const to = r.ToDate ?? r["To date"] ?? "";
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td>${escapeHtml(msnv)}</td>
       <td>${escapeHtml(name)}</td>
       <td>${escapeHtml(team)}</td>
@@ -239,109 +363,87 @@ function renderTable(data){
       <td>${escapeHtml(from)}</td>
       <td>${escapeHtml(to)}</td>
     `;
-    tbody.appendChild(row);
+    tbody.appendChild(tr);
   }
 }
 
-// escape to avoid injection
-function escapeHtml(s){
-  if(s === null || s === undefined) return "";
-  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
-}
+/* RENDER pagination controls */
+function renderPagination(){
+  const wrap = $("#paginationControls");
+  wrap.innerHTML = "";
+  if(totalPages <= 1) return;
 
-// build filter options from RAW
-function buildFilterOptions(){
-  const monthSet = new Set();
-  const teamSet = new Set();
-  RAW.forEach(r=>{
-    if(r.Month) monthSet.add(r.Month);
-    if(r.Team) teamSet.add(r.Team);
-  });
-  const monthSel = $("#filterMonth");
-  const teamSel = $("#filterTeam");
-  // clear
-  monthSel.innerHTML = `<option value="">-- Lọc Month --</option>`;
-  teamSel.innerHTML = `<option value="">-- Lọc Team --</option>`;
-  Array.from(monthSet).sort().forEach(m=> {
-    const o = document.createElement("option"); o.value = m; o.textContent = m; monthSel.appendChild(o);
-  });
-  Array.from(teamSet).sort().forEach(t=> {
-    const o = document.createElement("option"); o.value = t; o.textContent = t; teamSel.appendChild(o);
-  });
-}
+  const prev = document.createElement("button");
+  prev.className = "page-btn";
+  prev.textContent = "« Prev";
+  prev.disabled = currentPage === 1;
+  prev.addEventListener("click", ()=> { if(currentPage>1){ currentPage--; pageClickAnim(); } });
+  wrap.appendChild(prev);
 
-// apply filters & search & sort
-function applyFiltersAndRender(){
-  let data = RAW.slice();
+  // show limited page buttons if many pages
+  const maxButtons = 7;
+  let start = Math.max(1, currentPage - Math.floor(maxButtons/2));
+  let end = Math.min(totalPages, start + maxButtons - 1);
+  if(end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
 
-  // search
-  const q = ($("#searchBox").value || "").toLowerCase().trim();
-  if(q){
-    data = data.filter(r=>{
-      const msnv = String(r.MSNV ?? r.MSN ?? "").toLowerCase();
-      const name = String(r.HoTen ?? r.FullName ?? r.Fullname ?? "").toLowerCase();
-      return msnv.includes(q) || name.includes(q);
-    });
+  if(start > 1){
+    wrap.appendChild(pageButton(1));
+    if(start > 2) wrap.appendChild(ellipsis());
+  }
+  for(let p=start;p<=end;p++) wrap.appendChild(pageButton(p));
+  if(end < totalPages){
+    if(end < totalPages - 1) wrap.appendChild(ellipsis());
+    wrap.appendChild(pageButton(totalPages));
   }
 
-  // month filter
-  const fM = $("#filterMonth").value;
-  if(fM) data = data.filter(r => (r.Month||"") === fM);
-
-  // team filter
-  const fT = $("#filterTeam").value;
-  if(fT) data = data.filter(r => (r.Team||"") === fT);
-
-  // OT range
-  const minOT = safeNum($("#minOT").value);
-  const maxOT = safeNum($("#maxOT").value);
-  if(!isNaN(minOT)) data = data.filter(r => (safeNum(r.TotalOT) >= minOT));
-  if(!isNaN(maxOT)) data = data.filter(r => (safeNum(r.TotalOT) <= maxOT));
-
-  // Leave range
-  const minL = safeNum($("#minLeave").value);
-  const maxL = safeNum($("#maxLeave").value);
-  if(!isNaN(minL)) data = data.filter(r => (safeNum(r.TotalLeave) >= minL));
-  if(!isNaN(maxL)) data = data.filter(r => (safeNum(r.TotalLeave) <= maxL));
-
-  // sort
-  if(currentSort.col){
-    const col = currentSort.col;
-    const asc = currentSort.asc ? 1 : -1;
-    data.sort((a,b) => {
-      const va = (a[col] === undefined ? "" : a[col]);
-      const vb = (b[col] === undefined ? "" : b[col]);
-      // try numeric
-      const na = parseFloat(va);
-      const nb = parseFloat(vb);
-      if(!isNaN(na) && !isNaN(nb)) return (na - nb) * asc;
-      // string compare
-      return String(va).localeCompare(String(vb), "vi") * asc;
-    });
-  }
-
-  renderTable(data);
+  const next = document.createElement("button");
+  next.className = "page-btn";
+  next.textContent = "Next »";
+  next.disabled = currentPage === totalPages;
+  next.addEventListener("click", ()=> { if(currentPage<totalPages){ currentPage++; pageClickAnim(); } });
+  wrap.appendChild(next);
 }
 
-// wire events
+function pageButton(p){
+  const b = document.createElement("button");
+  b.className = "page-btn" + (p===currentPage ? " active":"");
+  b.textContent = p;
+  b.addEventListener("click", ()=> { if(p!==currentPage){ currentPage = p; pageClickAnim(); } });
+  return b;
+}
+function ellipsis(){
+  const s = document.createElement("span");
+  s.textContent = "...";
+  s.style.padding = "6px 8px";
+  s.style.color = "var(--muted)";
+  return s;
+}
+
+/* animation when clicking page: simple fade + small scroll to top of table */
+function pageClickAnim(){
+  const wrap = $("#tableWrap");
+  // fade out
+  wrap.style.opacity = 0.6;
+  setTimeout(()=> {
+    applyFilters(); // renderTablePage will be called by applyFilters after state set
+    wrap.style.opacity = 1;
+    // scroll into view a bit
+    wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, 160);
+}
+
+/* wire events */
 function wireEvents(){
-  $("#searchBox").addEventListener("input", debounce(applyFiltersAndRender, 220));
-  $("#filterMonth").addEventListener("change", applyFiltersAndRender);
-  $("#filterTeam").addEventListener("change", applyFiltersAndRender);
-  $("#minOT").addEventListener("input", debounce(applyFiltersAndRender, 200));
-  $("#maxOT").addEventListener("input", debounce(applyFiltersAndRender, 200));
-  $("#minLeave").addEventListener("input", debounce(applyFiltersAndRender, 200));
-  $("#maxLeave").addEventListener("input", debounce(applyFiltersAndRender, 200));
-  $("#clearFilters").addEventListener("click", () => {
+  $("#searchBox").addEventListener("input", debounce(()=> { currentPage = 1; applyFilters(); }, 220));
+  $("#filterMonth").addEventListener("change", ()=> { currentPage = 1; applyFilters(); });
+  $("#filterTeam").addEventListener("change", ()=> { currentPage = 1; applyFilters(); });
+  $("#clearFilters").addEventListener("click", ()=> {
     $("#searchBox").value = "";
     $("#filterMonth").value = "";
     $("#filterTeam").value = "";
-    $("#minOT").value = "";
-    $("#maxOT").value = "";
-    $("#minLeave").value = "";
-    $("#maxLeave").value = "";
-    currentSort = {col:null,asc:true};
-    applyFiltersAndRender();
+    currentSort = { col:null, asc:true };
+    currentPage = 1;
+    applyFilters();
   });
 
   // header sort
@@ -351,36 +453,37 @@ function wireEvents(){
       if(!col) return;
       if(currentSort.col === col) currentSort.asc = !currentSort.asc;
       else { currentSort.col = col; currentSort.asc = true; }
-      applyFiltersAndRender();
+      // visual hint (active header)
+      $$("#dataTable thead th").forEach(x=> x.style.opacity = 0.9);
+      th.style.opacity = 1;
+      currentPage = 1;
+      applyFilters();
     });
   });
 }
 
-// debounce
-function debounce(fn, t=200){ let h; return (...a)=>{ clearTimeout(h); h = setTimeout(()=>fn(...a), t); }; }
-
-// entry
+/* ENTRY */
 (async function init(){
-  // show loader
   $("#loader").style.display = "flex";
   await loadDataWorker();
-  // hide loader
-  $("#loader").style.display = "none";
-  // show table
-  $("#tableWrap").style.display = "block";
-
   buildFilterOptions();
   wireEvents();
-  applyFiltersAndRender();
+  // initial filtered/setup
+  filtered = RAW.slice();
+  totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  $("#loader").style.display = "none";
+  $("#tableWrap").style.display = "block";
+  applyFilters();
 })();
 
-// expose refresh for debug
+/* expose refresh */
 window.__refreshData = async function(){
   $("#loader").style.display = "flex";
   await loadDataWorker();
-  $("#loader").style.display = "none";
   buildFilterOptions();
-  applyFiltersAndRender();
+  currentPage = 1;
+  applyFilters();
+  $("#loader").style.display = "none";
 };
 </script>
 </body>
