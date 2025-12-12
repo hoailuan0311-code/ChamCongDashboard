@@ -185,24 +185,80 @@ const $ = s => document.querySelector(s);
 
 /* ---------- FORMAT FUNCTIONS ---------- */
 
+function parseHHMMToMinutes(t){
+  if(!t) return 0;
+  if(typeof t === "number") return Math.round(t * 60); // if provided as decimal hours maybe
+  const s = String(t).trim();
+  if(s === "0") return 0;
+  if(s.includes(":")){
+    const [hh,mm] = s.split(":").map(x=>parseInt(x||"0",10));
+    if(isNaN(hh)) hh=0;
+    if(isNaN(mm)) mm=0;
+    return (hh*60) + mm;
+  }
+  // sometimes TotalHour decimal or '0.001' given as string: not parse here
+  return 0;
+}
+
+function minutesToHHMM(min){
+  min = Math.max(0, Math.round(min));
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0");
+}
+
 function formatTime(t){
   if(!t || t==="0") return "00:00";
-  if(t.includes(":")) return t;
+  if(typeof t === "number"){
+    // if someone passes decimal hours, convert to hh:mm
+    return minutesToHHMM(Math.round(t * 60));
+  }
+  const s = String(t);
+  if(s.includes(":")) {
+    // normalize hh:mm (pad)
+    const [hh,mm] = s.split(":");
+    const H = String(parseInt(hh||"0",10)).padStart(2,"0");
+    const M = String(parseInt(mm||"0",10)).padStart(2,"0");
+    return `${H}:${M}`;
+  }
   return "00:00";
 }
 
-function decimalToHHMM(v){
-  if(!v || isNaN(v)) return "00:00";
-  let total = v * 60 * 60;
-  let h = Math.floor(total / 3600);
-  let m = Math.floor((total % 3600) / 60);
-  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+/* prefer to compute Total from LateIn + EarlyOut; fallback to TotalHour decimal */
+function computeTotalFromRow(r){
+  const lateMin = parseHHMMToMinutes(r.LateIn ?? r["LateIn"] ?? r["Late In"] ?? "");
+  const earlyMin = parseHHMMToMinutes(r.EarlyOut ?? r["EarlyOut"] ?? r["Early Out"] ?? "");
+  const sumMin = lateMin + earlyMin;
+  if(sumMin > 0) return minutesToHHMM(sumMin);
+
+  // fallback: if r.TotalHour exists as decimal (hours), convert to hh:mm
+  const rawTotal = r.TotalHour ?? r["Total Hour"] ?? r["TotalHour"];
+  if(rawTotal !== undefined && rawTotal !== null && String(rawTotal).trim() !== ""){
+    const num = Number(String(rawTotal).replaceAll(",",""));
+    if(!isNaN(num)){
+      return minutesToHHMM(Math.round(num * 60));
+    }
+  }
+  return "00:00";
 }
 
 function formatRecordDate(d){
   if(!d) return "";
-  if(typeof d === "string" && d.includes("/")) return d;
-  return "";
+  if(typeof d === "string" && d.includes("/")) {
+    // already dd/mm/yyyy - keep
+    return d;
+  }
+  if(typeof d === "number" && !isNaN(d)){
+    // maybe excel serial
+    const date = new Date((d - 25569) * 86400 * 1000);
+    if(!isNaN(date)) {
+      const dd = String(date.getDate()).padStart(2,"0");
+      const mm = String(date.getMonth()+1).padStart(2,"0");
+      const yy = date.getFullYear();
+      return `${dd}/${mm}/${yy}`;
+    }
+  }
+  return String(d || "");
 }
 
 /* ---------- LOAD JS ---------- */
@@ -220,7 +276,7 @@ async function loadData(){
     document.head.appendChild(s);
     RAW = window.dataLateEarly || [];
     if(!Array.isArray(RAW)) RAW=[];
-  }catch(e){ RAW=[]; }
+  }catch(e){ RAW=[]; console.error(e); }
 }
 
 /* ---------- ESCAPE ---------- */
@@ -259,8 +315,9 @@ function applyFilters(){
     const c=currentSort.col, asc=currentSort.asc?1:-1;
     data.sort((a,b)=>{
       let A=a[c], B=b[c];
-      const na=parseFloat(A), nb=parseFloat(B);
-      if(!isNaN(na)&&!isNaN(nb)) return (na-nb)*asc;
+      // if numeric string
+      const na=parseFloat(String(A).replaceAll(",","")), nb=parseFloat(String(B).replaceAll(",",""));
+      if(!isNaN(na) && !isNaN(nb)) return (na-nb)*asc;
       return String(A).localeCompare(String(B),"vi")*asc;
     });
   }
@@ -284,18 +341,25 @@ function loadMoreRows(){
     const tr = document.createElement("tr");
     tr.classList.add("fade-in");
 
-    if((r.Invalid||"").toLowerCase().includes("late")) tr.classList.add("late-row");
-    if((r.Invalid||"").toLowerCase().includes("early")) tr.classList.add("early-row");
+    const invalidLow = String((r.Invalid||"")).toLowerCase();
+    if(invalidLow.includes("late")) tr.classList.add("late-row");
+    if(invalidLow.includes("early")) tr.classList.add("early-row");
+
+    const recordDate = formatRecordDate(r.RecordDate ?? r["RecordDate"] ?? r["Record Date"] ?? "");
+    const late = formatTime(r.LateIn ?? r["LateIn"] ?? r["Late In"] ?? r.LateIn);
+    const early = formatTime(r.EarlyOut ?? r["EarlyOut"] ?? r["Early Out"] ?? r.EarlyOut);
+
+    const total = computeTotalFromRow(r);
 
     tr.innerHTML = `
       <td>${escapeHtml(r.MSNV)}</td>
       <td>${escapeHtml(r.HoTen||r.FullName||"")}</td>
       <td>${escapeHtml(r.Team)}</td>
       <td>${escapeHtml(r.Invalid)}</td>
-      <td>${formatRecordDate(r.RecordDate)}</td>
-      <td>${formatTime(r.LateIn)}</td>
-      <td>${formatTime(r.EarlyOut)}</td>
-      <td>${decimalToHHMM(r.TotalHour)}</td>
+      <td>${escapeHtml(recordDate)}</td>
+      <td>${escapeHtml(late)}</td>
+      <td>${escapeHtml(early)}</td>
+      <td>${escapeHtml(total)}</td>
     `;
 
     tbody.appendChild(tr);
