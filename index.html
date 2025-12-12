@@ -13,6 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <style>
+/* ===================== DARK MODE AUTO ===================== */
 :root {
     --bg: #f5f7fa;
     --text: #111;
@@ -28,13 +29,16 @@
     }
 }
 
+/* ===================== GLOBAL ===================== */
 body {
     background: var(--bg);
     color: var(--text);
     font-family: "Be Vietnam Pro", sans-serif;
     margin: 20px;
+    transition: background 0.3s, color 0.3s;
 }
 
+/* ===================== TITLE ===================== */
 h1 {
     text-align: center;
     font-size: 42px;
@@ -46,60 +50,58 @@ h1 {
     text-shadow: 0 0 12px rgba(0,255,255,0.25);
 }
 
+h2 { margin-top: 25px; }
+
+/* ===================== SEARCH / BUTTONS ===================== */
+.search-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+/* gộp 2 ô thành 1, thu gọn */
 .search-bar input {
-    padding: 8px;
-    width: 260px; /* THU NHỎ */
-    margin-right: 10px;
-    border-radius: 6px;
+    padding: 12px 14px;
+    width: 420px;                /* nhỏ lại theo yêu cầu — chỉnh nếu muốn */
+    max-width: calc(100% - 400px);
+    border-radius: 10px;
     border: 1px solid var(--box-border);
     background: var(--box);
     color: var(--text);
+    font-size: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
 }
 
-.search-bar button {
-    padding: 10px 16px;
-    border-radius: 10px;
+/* chung cho các nút hành động */
+.btn {
+    padding: 12px 18px;
+    border-radius: 12px;
     cursor: pointer;
     border: none;
-    font-weight: 600;
-    color: white;
-    transition: 0.25s;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-3px); }
+
+/* riêng các nút màu */
+.btn-feedback { background: linear-gradient(135deg,#9fbdfb,#d6bffd); color:#063; }
+.btn-qa { background: linear-gradient(135deg,#16a085,#27ae60); }
+.btn-pass { background: linear-gradient(135deg,#16a085,#27ae60); } /* Quên Pass */
+.btn-viewpass { background: linear-gradient(135deg,#8e44ad,#9b59b6); }
+.btn-chot { background: linear-gradient(135deg,#f59f00,#f08b00); } /* Xem Chốt Công */
+.btn-late { background: linear-gradient(135deg,#d43d2a,#c33a2a); box-shadow:0 14px 36px rgba(196,57,57,0.2); }
+
+/* tweak nhỏ cho hàng nút khi co nhỏ màn hình */
+@media (max-width: 880px) {
+    .search-bar input { width: 60%; }
+    .btn { padding: 10px 12px; font-size: 14px; }
 }
 
-/* Nút chính */
-.feedback-btn {
-    background: linear-gradient(135deg, #06b6d4, #3b82f6);
-    box-shadow: 0 10px 20px rgba(59,130,246,0.35);
-    margin-left: 6px;
-}
-
-.feedback-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 28px rgba(59,130,246,0.45);
-}
-
-/* Late Out Missing button */
-#lomBtn {
-    background: linear-gradient(135deg, #e63946, #d90429);
-    box-shadow: 0 10px 20px rgba(230,57,70,0.35);
-}
-
-#lomBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 30px rgba(230,57,70,0.45);
-}
-
-/* Xem Chốt Công */
-#viewClosingBtn {
-    background: linear-gradient(135deg, #f59e0b, #f97316);
-    box-shadow: 0 10px 20px rgba(249,115,22,0.35);
-}
-
-#viewClosingBtn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 14px 30px rgba(249,115,22,0.45);
-}
-
+/* ===================== TABLE ===================== */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -108,55 +110,147 @@ table {
     border-radius: 12px;
     overflow: hidden;
 }
-th, td { padding: 10px; border-bottom: 1px solid var(--box-border); }
-th { background: rgba(0,0,0,0.05); cursor: pointer; }
 
-.badge { padding: 4px 12px; border-radius: 16px; font-size: 12px; color: white; }
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid var(--box-border);
+}
+
+th {
+    background: rgba(0,0,0,0.05);
+    cursor: pointer;
+}
+
+/* Badge */
+.badge {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    color: #fff;
+}
 .confirm-none { background: #ff6b6b; }
 .confirm-done { background: #2ecc71; }
 
+/* ===================== CHART BOXES ===================== */
 .chart-box {
     background: var(--box);
     padding: 15px;
     border-radius: 12px;
-    border: 1px solid var(--box-border);
     margin-top: 20px;
+    border: 1px solid var(--box-border);
 }
 
+.footer-layout {
+    display: grid;
+    gap: 20px;
+}
+
+.footer-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+}
+
+.full-row { grid-column: 1 / -1; }
+
+/* ===================== AUDIO ===================== */
 audio { display: none; }
+
 </style>
 </head>
+
 <body>
 
 <h1>Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</h1>
+
 <p>🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
 
-<!-- SEARCH BAR (ĐÃ GỘP + THU NHỎ + XÓA CLEAR BUTTON) -->
+<!-- SEARCH + ACTIONS -->
 <div class="search-bar">
-    <input id="searchAll" placeholder="Tìm theo MSNV hoặc Họ Tên…">
+    <!-- Gộp 2 ô thành 1 -->
+    <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…">
 
-    <button id="feedbackBtn" class="feedback-btn">📝 Phản hồi chấm công</button>
+    <button id="feedbackBtn" class="btn btn-feedback">📝 Phản hồi chấm công</button>
 
-    <button id="passBtn" class="feedback-btn" style="background:linear-gradient(135deg,#16a085,#27ae60)">
-        🔐 Quên Pass CADENA
-    </button>
+    <!-- Quên Pass CADENA (rút gọn) -->
+    <button id="passBtn" class="btn btn-pass">🔐 Quên Pass CADENA</button>
 
-    <button id="viewPassBtn" class="feedback-btn" style="background:linear-gradient(135deg,#8e44ad,#9b59b6)">
-        📁 Xem Pass CADENA
-    </button>
+    <!-- Xem Pass CADENA -->
+    <button id="viewPassBtn" class="btn btn-viewpass">📁 Xem Pass CADENA</button>
 
-    <button id="viewClosingBtn">📊 Xem Chốt Công</button>
+    <!-- Xem Chốt Công (mới) -->
+    <button id="viewChotBtn" class="btn btn-chot">📊 Xem Chốt Công</button>
 
-    <button id="lomBtn">🔴 Late • Out • Missing</button>
+    <!-- Late / Out / Missing (mới) -->
+    <button id="lateBtn" class="btn btn-late">⏱️ Late • Out • Missing</button>
 </div>
+
+<h2>Danh sách chi tiết</h2>
+
+<table id="dataTable">
+    <thead>
+        <tr>
+            <th onclick="sortBy('MSNV')">MSNV ⬍</th>
+            <th>Họ tên</th>
+            <th onclick="sortBy('NgayDieuChinh')">Ngày điều chỉnh ⬍</th>
+            <th>Nội dung</th>
+            <th>Confirm</th>
+            <th>BU</th>
+            <th>Team</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<!-- FOOTER CHARTS -->
+<h2>Biểu đồ phụ</h2>
+
+<div class="footer-layout">
+    <div class="footer-row">
+        <div class="chart-box">
+            <h3>Theo BU</h3>
+            <canvas id="chartBU"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <h3>Theo Team</h3>
+            <canvas id="chartTeam"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-box full-row">
+        <h3>Top phản hồi</h3>
+        <canvas id="chartTop"></canvas>
+    </div>
+
+    <div class="chart-box full-row">
+        <h3>Theo ngày chỉnh</h3>
+        <canvas id="chartNgay"></canvas>
+    </div>
+</div>
+
+<!-- Background Music -->
+<audio id="bgMusic" loop>
+    <source src="NhacGiangSinh.mp3" type="audio/mpeg">
+</audio>
+
+
+<!-- ===================== SCRIPT gốc của bạn (không phá cấu trúc) ===================== -->
 <script>
 const jsonUrl = "https://hoailuan0311-code.github.io/ChamCongDashboard/data.json";
 let fullData = [];
 
+/* LOAD DATA */
 async function loadData(){
-    let res = await fetch(jsonUrl + "?cache=" + Date.now());
-    fullData = await res.json();
-    renderAll(fullData);
+    try {
+        let res = await fetch(jsonUrl + "?cache=" + Date.now());
+        fullData = await res.json();
+        renderAll(fullData);
+    } catch (e) {
+        console.error("Load data error:", e);
+        fullData = [];
+        renderAll(fullData);
+    }
 }
 loadData();
 
@@ -167,42 +261,60 @@ function excelDate(v){
     return isNaN(d) ? v : d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
-/* SEARCH GỘP */
-document.getElementById("searchAll").addEventListener("input", ()=>{
-    let key = searchAll.value.toLowerCase();
-    let f = fullData.filter(r =>
-        (r.MSNV+"").includes(key) ||
-        (r.FullName+"").toLowerCase().includes(key)
-    );
-    renderAll(f);
-});
+/* SEARCH (dùng ô gộp) */
+document.getElementById("searchBox").addEventListener("input", applySearch);
 
-/* SORT */
+function applySearch(){
+    const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
+
+    // nếu rỗng => hiển thị đầy đủ
+    if(!q){
+        renderAll(fullData);
+        return;
+    }
+
+    const f = fullData.filter(r =>
+        (("" + (r.MSNV||"")).toLowerCase().includes(q)) ||
+        (("" + (r.FullName||"")).toLowerCase().includes(q))
+    );
+
+    renderAll(f);
+}
+
+/* SORT (giữ nguyên) */
 function sortBy(col){
-    fullData.sort((a,b)=>(a[col] > b[col] ? 1 : -1));
+    fullData.sort((a,b)=> (a[col] > b[col] ? 1 : -1));
     renderAll(fullData);
 }
 
-/* RENDER TABLE */
+/* RENDER TABLE (giữ nguyên nhưng an toàn nếu data rỗng) */
 function renderTable(data){
     let tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
 
+    if(!data || data.length === 0){
+        // giữ header nhưng show hàng trống (như bản gốc)
+        return;
+    }
+
     data.forEach(r=>{
-        tbody.innerHTML += `
+        tbody.insertAdjacentHTML("beforeend", `
         <tr>
-            <td>${r.MSNV}</td>
-            <td>${r.FullName}</td>
+            <td>${r.MSNV || ""}</td>
+            <td>${r.FullName || ""}</td>
             <td>${excelDate(r.NgayDieuChinh)}</td>
             <td>${r.NoiDung || ""}</td>
-            <td><span class="badge ${r.ConfirmAdmin ? "confirm-done":"confirm-none"}">${r.ConfirmAdmin || "Chưa phản hồi"}</span></td>
+            <td><span class="badge ${r.ConfirmAdmin ? "confirm-done":"confirm-none"}">
+                ${r.ConfirmAdmin || "Chưa phản hồi"}
+            </span></td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
-        </tr>`;
+        </tr>
+        `);
     });
 }
 
-/* RENDER WRAPPER */
+/* RENDER ALL */
 function renderAll(data){
     renderTable(data);
     renderBU(data);
@@ -211,10 +323,232 @@ function renderAll(data){
     renderNgay(data);
 }
 
-/* NÚT MỚI */
-document.getElementById("viewClosingBtn").addEventListener("click", ()=>{
-    window.open("#", "_blank"); // Cris đặt link sau
+/* CHART FUNCTIONS (giữ nguyên) */
+Chart.register(ChartDataLabels);
+
+function renderBU(data){
+    const c = {};
+    data.forEach(r => c[r.BU] = (c[r.BU] || 0) + 1);
+
+    // cleanup old canvas if exists to avoid duplicates
+    if(window._chartBU) window._chartBU.destroy?.();
+
+    window._chartBU = new Chart(document.getElementById("chartBU"), {
+        type: "pie",
+        data: { labels: Object.keys(c), datasets: [{ data:Object.values(c), backgroundColor:["#ff6384","#36a2eb"] }]},
+        plugins: [ChartDataLabels],
+        options:{
+            animation:{ duration:1200, easing:"easeOutBounce" },
+            plugins:{ datalabels:{ color:"#fff", font:{weight:"bold"} } }
+        }
+    });
+}
+
+function renderTeam(data){
+    const c = {};
+    data.forEach(r => c[r.Team] = (c[r.Team] || 0) + 1);
+
+    if(window._chartTeam) window._chartTeam.destroy?.();
+
+    window._chartTeam = new Chart(document.getElementById("chartTeam"),{
+        type:"bar",
+        data:{
+            labels:Object.keys(c),
+            datasets:[{ data:Object.values(c), backgroundColor:"#ffa64d" }]
+        },
+        plugins:[ChartDataLabels],
+        options:{
+            animation:{ duration:1200, easing:"easeOutElastic" },
+            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
+        }
+    });
+}
+
+function renderTop(data){
+    const c = {};
+    data.forEach(r => c[r.FullName] = (c[r.FullName]||0)+1);
+
+    let sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+    if(window._chartTop) window._chartTop.destroy?.();
+
+    window._chartTop = new Chart(document.getElementById("chartTop"),{
+        type:"bar",
+        data:{
+            labels:sorted.map(x=>x[0]),
+            datasets:[{ data:sorted.map(x=>x[1]), backgroundColor:"#00c9ff" }]
+        },
+        plugins:[ChartDataLabels],
+        options:{
+            animation:{ duration:1400, easing:"easeOutQuad" },
+            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
+        }
+    });
+}
+
+function renderNgay(data){
+    const c = {};
+    data.forEach(r => {
+        let d = excelDate(r.NgayDieuChinh);
+        c[d] = (c[d]||0)+1;
+    });
+
+    if(window._chartNgay) window._chartNgay.destroy?.();
+
+    window._chartNgay = new Chart(document.getElementById("chartNgay"),{
+        type:"bar",
+        data:{
+            labels:Object.keys(c),
+            datasets:[{ data:Object.values(c), backgroundColor:"#9b59b6" }]
+        },
+        plugins:[ChartDataLabels],
+        options:{
+            animation:{ duration:1500, easing:"easeOutBounce" },
+            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
+        }
+    });
+}
+
+/* BUTTON ACTIONS (giữ các link gốc, 2 nút mới mở placeholder) */
+document.getElementById("feedbackBtn").addEventListener("click", () => {
+    window.open("https://forms.office.com/r/wSm7WHpgCw", "_blank");
 });
-document.getElementById("lomBtn").addEventListener("click", ()=>{
-    window.open("#", "_blank"); // Cris đặt link sau
+
+document.getElementById("passBtn").addEventListener("click", () => {
+    window.open("https://forms.office.com/r/wMUXy1P6P1", "_blank"); // chỉnh nếu muốn khác
 });
+
+document.getElementById("viewPassBtn").addEventListener("click", () => {
+    window.open("passCadena.html", "_blank");
+});
+
+// nút mới: Xem Chốt Công — bạn sẽ add link sau
+document.getElementById("viewChotBtn").addEventListener("click", () => {
+    // đặt URL thật ở đây khi có
+    window.open("#", "_blank");
+});
+
+// nút mới: Late • Out • Missing — bạn sẽ add link sau
+document.getElementById("lateBtn").addEventListener("click", () => {
+    window.open("#", "_blank");
+});
+
+/* MUSIC (giữ) */
+document.addEventListener("click", ()=> {
+    try { document.getElementById("bgMusic").play(); } catch(e){}
+}, {once:true});
+document.addEventListener("touchstart", ()=> {
+    try { document.getElementById("bgMusic").play(); } catch(e){}
+}, {once:true});
+</script>
+
+<!-- ===================== THEME LOADER (FINAL + AUTO MONTH) ===================== -->
+<script>
+async function loadTheme() {
+    try {
+        // Load cấu hình
+        const cfgResp = await fetch("theme/themeList.json?v=" + Date.now());
+        const cfg = await cfgResp.json();
+
+        let activeTheme = cfg.activeTheme || "default";
+
+        // ================== AUTO THEME THEO THÁNG ==================
+        // Tháng JS: 0 = Jan → 11 = Dec
+        const month = new Date().getMonth() + 1; // đổi về 1–12 cho khớp file bạn gửi
+
+        const map = {
+            1: "jan_newyear",
+            2: "feb_valentine",
+            3: "mar_womenday",
+            4: "april30",
+            5: "may_workers",
+            6: "jun_summer",
+            7: "jul_fireworks",
+            8: "aug_sun",
+            9: "sept2",
+            10: "oct_halloween",
+            11: "nov_remember",
+            12: "dec_noel"
+        };
+
+        // Nếu cấu hình ghi activeTheme = "auto" → kích hoạt auto theo tháng
+        if (activeTheme === "auto") {
+            activeTheme = map[month] || "default";
+            console.log("AUTO THEME:", "month =", month, "→ theme =", activeTheme);
+        }
+
+        // Nếu theme = default → giữ nguyên UI, thoát sớm
+        if (activeTheme === "default") {
+            console.log("Theme default → giữ giao diện gốc");
+            return;
+        }
+
+        // ================== LOAD FILE THEME ==================
+        const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
+        if (!themeFile.ok) {
+            console.warn("Không tìm thấy theme:", activeTheme);
+            return;
+        }
+
+        const theme = await themeFile.json();
+
+        if (!theme.override) {
+            console.log("Theme override = false → giữ layout gốc");
+            return;
+        }
+
+        // ================== APPLY UI ==================
+        if (theme.background) document.body.style.background = theme.background;
+        if (theme.textColor) document.body.style.color = theme.textColor;
+        if (theme.font) document.body.style.fontFamily = theme.font;
+
+        // ================== UI COLOR OVERRIDE (table, card, header) ==================
+        if (theme.uiColors) {
+            const s = document.createElement("style");
+            s.id = "theme-ui";
+            s.innerHTML = `
+                table { background:${theme.uiColors.tableBg || "inherit"} !important; }
+                table td, table th { color:${theme.uiColors.tableText || "inherit"} !important; }
+                th { background:${theme.uiColors.tableHeaderBg || "inherit"} !important; }
+                .chart-box { 
+                    background:${theme.uiColors.cardBg || "inherit"} !important;
+                    border-color:${theme.uiColors.boxBorder || "inherit"} !important;
+                }
+            `;
+            document.head.appendChild(s);
+        }
+
+        // ================== MUSIC ==================
+        if (theme.music) {
+            if (!document.getElementById("themeMusic")) {
+                const audio = document.createElement("audio");
+                audio.src = "theme/" + theme.music;
+                audio.id = "themeMusic";
+                audio.autoplay = true;
+                audio.loop = true;
+                audio.volume = 0.45;
+                audio.style.display = "none";
+                document.body.appendChild(audio);
+            }
+        }
+
+        // ================== EFFECT SCRIPT ==================
+        if (theme.effect) {
+            const eff = document.createElement("script");
+            eff.src = "theme/" + theme.effect;
+            eff.defer = true;
+            document.body.appendChild(eff);
+        }
+
+        console.log("✔ Theme applied:", activeTheme);
+
+    } catch (err) {
+        console.error("Theme load error:", err);
+    }
+}
+
+loadTheme();
+</script>
+
+</body>
+</html>
