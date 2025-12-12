@@ -109,6 +109,14 @@ tbody tr:hover td{
   to{ opacity:1; transform:translateY(0); }
 }
 
+/* Highlight Late / Early */
+tr.late-row td{
+  background:rgba(0,140,255,0.12) !important;
+}
+tr.early-row td{
+  background:rgba(255,140,0,0.15) !important;
+}
+
 /* Loader */
 #loader{
   display:flex; align-items:center; gap:12px;
@@ -173,21 +181,31 @@ let filtered = [];
 let loadedCount = 0;
 let currentSort = { col:null, asc:true };
 
-/* ---------- SHORTCUT ---------- */
 const $ = s => document.querySelector(s);
 
-/* ---------- FORMAT EXCEL SERIAL ---------- */
-function excelSerialToDate(v){
-  if(!v || isNaN(v)) return "";
-  const d = new Date((v - 25569) * 86400 * 1000);
-  if(isNaN(d)) return "";
-  let dd = String(d.getDate()).padStart(2,"0");
-  let mm = String(d.getMonth()+1).padStart(2,"0");
-  let yy = d.getFullYear();
-  return `${dd}-${mm}-${yy}`;
+/* ---------- FORMAT FUNCTIONS ---------- */
+
+function formatTime(t){
+  if(!t || t==="0") return "00:00";
+  if(t.includes(":")) return t;
+  return "00:00";
 }
 
-/* ---------- LOAD dataLateEarly.js ---------- */
+function decimalToHHMM(v){
+  if(!v || isNaN(v)) return "00:00";
+  let total = v * 60 * 60;
+  let h = Math.floor(total / 3600);
+  let m = Math.floor((total % 3600) / 60);
+  return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");
+}
+
+function formatRecordDate(d){
+  if(!d) return "";
+  if(typeof d === "string" && d.includes("/")) return d;
+  return "";
+}
+
+/* ---------- LOAD JS ---------- */
 async function loadData(){
   try{
     const txt = await (await fetch("dataLateEarly.js?v="+Date.now())).text();
@@ -197,15 +215,12 @@ async function loadData(){
       RAW = JSON.parse(t.replace(/;$/,""));
       return;
     }
-
     const s=document.createElement("script");
     s.text=t;
     document.head.appendChild(s);
     RAW = window.dataLateEarly || [];
     if(!Array.isArray(RAW)) RAW=[];
-  }catch(e){
-    RAW=[];
-  }
+  }catch(e){ RAW=[]; }
 }
 
 /* ---------- ESCAPE ---------- */
@@ -218,15 +233,12 @@ function escapeHtml(s){
 function buildFilters(){
   const ts = new Set();
   RAW.forEach(r => { if(r.Team) ts.add(r.Team); });
-
   const sel = $("#filterTeam");
   sel.innerHTML = `<option value="">-- Lọc Team --</option>`;
-  [...ts].sort().forEach(t=>{
-    sel.innerHTML += `<option>${t}</option>`;
-  });
+  [...ts].sort().forEach(t=> sel.innerHTML += `<option>${t}</option>`);
 }
 
-/* ---------- APPLY FILTERS ---------- */
+/* ---------- APPLY FILTER ---------- */
 function applyFilters(){
   const q = $("#searchBox").value.toLowerCase().trim();
   const ft = $("#filterTeam").value;
@@ -256,11 +268,11 @@ function applyFilters(){
   filtered=data;
   loadedCount=0;
   $("#dataTable tbody").innerHTML="";
-  $("#tableWrap").scrollTop = 0;   /* scroll-to-top */
+  $("#tableWrap").scrollTop=0;
   loadMoreRows();
 }
 
-/* ---------- LOAD ROWS (INFINITE BATCH) ---------- */
+/* ---------- LOAD BATCH ---------- */
 function loadMoreRows(){
   if(loadedCount >= filtered.length) return;
 
@@ -272,27 +284,30 @@ function loadMoreRows(){
     const tr = document.createElement("tr");
     tr.classList.add("fade-in");
 
+    if((r.Invalid||"").toLowerCase().includes("late")) tr.classList.add("late-row");
+    if((r.Invalid||"").toLowerCase().includes("early")) tr.classList.add("early-row");
+
     tr.innerHTML = `
       <td>${escapeHtml(r.MSNV)}</td>
       <td>${escapeHtml(r.HoTen||r.FullName||"")}</td>
       <td>${escapeHtml(r.Team)}</td>
       <td>${escapeHtml(r.Invalid)}</td>
-      <td>${excelSerialToDate(r.RecordDate)}</td>
-      <td>${escapeHtml(r.LateIn)}</td>
-      <td>${escapeHtml(r.EarlyOut)}</td>
-      <td>${escapeHtml(r.TotalHour)}</td>
+      <td>${formatRecordDate(r.RecordDate)}</td>
+      <td>${formatTime(r.LateIn)}</td>
+      <td>${formatTime(r.EarlyOut)}</td>
+      <td>${decimalToHHMM(r.TotalHour)}</td>
     `;
 
     tbody.appendChild(tr);
   }
 
-  loadedCount = end;
+  loadedCount=end;
 }
 
-/* ---------- INFINITE SCROLL ---------- */
+/* ---------- SCROLL ---------- */
 function setupInfiniteScroll(){
-  const wrap = $("#tableWrap");
-  wrap.addEventListener("scroll", ()=>{
+  const wrap=$("#tableWrap");
+  wrap.addEventListener("scroll",()=>{
     if(wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 120){
       loadMoreRows();
     }
@@ -302,11 +317,11 @@ function setupInfiniteScroll(){
 /* ---------- SORT ---------- */
 function setupSort(){
   document.querySelectorAll("#dataTable thead th").forEach(th=>{
-    th.addEventListener("click", ()=>{
-      const col = th.dataset.col;
+    th.addEventListener("click",()=>{
+      const col=th.dataset.col;
       if(!col) return;
-      if(currentSort.col === col) currentSort.asc = !currentSort.asc;
-      else{ currentSort.col = col; currentSort.asc = true; }
+      if(currentSort.col===col) currentSort.asc=!currentSort.asc;
+      else{ currentSort.col=col; currentSort.asc=true; }
       applyFilters();
     });
   });
@@ -314,9 +329,9 @@ function setupSort(){
 
 /* ---------- EVENTS ---------- */
 function setupEvents(){
-  $("#searchBox").addEventListener("input", ()=>applyFilters());
-  $("#filterTeam").addEventListener("change", ()=>applyFilters());
-  $("#clearFilters").addEventListener("click", ()=>{
+  $("#searchBox").addEventListener("input",()=>applyFilters());
+  $("#filterTeam").addEventListener("change",()=>applyFilters());
+  $("#clearFilters").addEventListener("click",()=>{
     $("#searchBox").value="";
     $("#filterTeam").value="";
     currentSort={col:null,asc:true};
