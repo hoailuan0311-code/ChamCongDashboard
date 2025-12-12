@@ -61,10 +61,27 @@ p.desc{ margin:4px 0 16px; color:var(--muted); }
 /* Table */
 table{ width:100%; border-collapse:collapse; min-width:980px; }
 
+/* HEADER GRADIENT + BORDER ĐẬM */
 thead th{
-  position:sticky; top:0; z-index:5;
-  background:rgba(0,0,0,0.04);
-  padding:12px; text-align:left; cursor:pointer; font-size:13px;
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:linear-gradient(90deg,#4facfe,#00d4ff,#00f2fe) !important;
+  color:#fff !important;
+  padding:12px;
+  text-align:left;
+  cursor:pointer;
+  font-size:13px;
+  font-weight:700;
+  border-bottom:3px solid rgba(0,0,0,0.15);
+  text-shadow:0 1px 2px rgba(0,0,0,0.25);
+}
+
+@media (prefers-color-scheme: dark){
+  thead th{
+    background:linear-gradient(90deg,#1d6fa5,#00aac0,#00ced6) !important;
+    border-bottom:3px solid rgba(255,255,255,0.15);
+  }
 }
 
 tbody td{
@@ -76,7 +93,6 @@ tbody td{
 
 @media (prefers-color-scheme: dark){
   tbody td{ color:var(--table-text-dark) !important; }
-  thead th{ color:#fff !important; }
 }
 
 tbody tr:hover td{
@@ -123,18 +139,12 @@ tbody tr:hover td{
 <body>
 
 <h1>Chốt Công — WAREHOUSE RYOBI</h1>
-<p class="desc">Infinite scroll • Serial date → dd-mm-yyyy • Sort • Filter • Search • Auto Theme</p>
+<p class="desc">Thông tin được lấy từ hệ thống CADENA, mọi thắc mắc vui lòng liên hệ Cris Nguyễn Hoài Luận</p>
 
 <div class="toolbar">
   <input id="searchBox" class="input" placeholder="Tìm theo MSNV hoặc Họ Tên…" />
-  <select id="filterMonth" class="select">
-    <option value="">-- Lọc Month --</option>
-  </select>
-
-  <select id="filterTeam" class="select">
-    <option value="">-- Lọc Team --</option>
-  </select>
-
+  <select id="filterMonth" class="select"><option value="">-- Lọc Month --</option></select>
+  <select id="filterTeam" class="select"><option value="">-- Lọc Team --</option></select>
   <button id="clearFilters" class="btn">Xóa lọc</button>
 </div>
 
@@ -206,8 +216,7 @@ async function loadTheme(){
     if(theme.music){
       const a=document.createElement("audio");
       a.src="theme/"+theme.music;
-      a.autoplay=true; a.loop=true; a.volume=0.45;
-      a.style.display="none";
+      a.autoplay=true; a.loop=true; a.volume=0.45; a.style.display="none";
       document.body.appendChild(a);
     }
 
@@ -234,24 +243,21 @@ let currentSort = { col:null, asc:true };
 
 const $ = s => document.querySelector(s);
 
-/* Convert Excel serial → dd-mm-yyyy */
 function excelSerialToDate(serial){
   if(!serial || isNaN(serial)) return "";
   const date = new Date((serial - 25569) * 86400 * 1000);
   if(isNaN(date)) return "";
-  let d = String(date.getDate()).padStart(2,"0");
-  let m = String(date.getMonth()+1).padStart(2,"0");
-  let y = date.getFullYear();
+  let d=String(date.getDate()).padStart(2,"0");
+  let m=String(date.getMonth()+1).padStart(2,"0");
+  let y=date.getFullYear();
   return `${d}-${m}-${y}`;
 }
 
-/* Escape HTML */
 function escapeHtml(s){
   if(s==null) return "";
   return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;");
 }
 
-/* Load dataWorker.js */
 async function loadDataWorker(){
   try{
     const txt = await (await fetch("dataWorker.js?v="+Date.now())).text();
@@ -269,77 +275,70 @@ async function loadDataWorker(){
     RAW = window.dataWorker || window.data || window.DATA || [];
     if(!Array.isArray(RAW)) RAW=[];
   }catch(e){
-    console.error("Load data error:",e);
     RAW=[];
   }
 }
 
-/* Build filters */
 function buildFilters(){
-  const mSet=new Set(), tSet=new Set();
+  const ms=new Set(), ts=new Set();
   RAW.forEach(r=>{
-    if(r.Month) mSet.add(r.Month);
-    if(r.Team) tSet.add(r.Team);
+    if(r.Month) ms.add(r.Month);
+    if(r.Team) ts.add(r.Team);
   });
 
   const mSel=$("#filterMonth"), tSel=$("#filterTeam");
   mSel.innerHTML=`<option value="">-- Lọc Month --</option>`;
   tSel.innerHTML=`<option value="">-- Lọc Team --</option>`;
-
-  [...mSet].sort().forEach(x=>mSel.innerHTML+=`<option>${x}</option>`);
-  [...tSet].sort().forEach(x=>tSel.innerHTML+=`<option>${x}</option>`);
+  [...ms].sort().forEach(x=>mSel.innerHTML+=`<option>${x}</option>`);
+  [...ts].sort().forEach(x=>tSel.innerHTML+=`<option>${x}</option>`);
 }
 
-/* Apply filter + sort */
 function applyFilters(){
-  const q = $("#searchBox").value.toLowerCase().trim();
+  const q=$("#searchBox").value.toLowerCase().trim();
   const fm=$("#filterMonth").value;
   const ft=$("#filterTeam").value;
 
-  let data = RAW.slice();
+  let data=RAW.slice();
 
   if(q){
-    data = data.filter(r=>{
+    data=data.filter(r=>{
       const ms=String(r.MSNV||"").toLowerCase();
       const nm=String(r.HoTen||r.FullName||"").toLowerCase();
-      return ms.includes(q) || nm.includes(q);
+      return ms.includes(q)||nm.includes(q);
     });
   }
 
-  if(fm) data = data.filter(r=>r.Month===fm);
-  if(ft) data = data.filter(r=>r.Team===ft);
+  if(fm) data=data.filter(r=>r.Month===fm);
+  if(ft) data=data.filter(r=>r.Team===ft);
 
   if(currentSort.col){
-    const col=currentSort.col, asc=currentSort.asc?1:-1;
+    const c=currentSort.col, asc=currentSort.asc?1:-1;
     data.sort((a,b)=>{
-      let va=a[col], vb=b[col];
+      let va=a[c], vb=b[c];
       const na=parseFloat(va), nb=parseFloat(vb);
       if(!isNaN(na)&&!isNaN(nb)) return (na-nb)*asc;
       return String(va).localeCompare(String(vb),'vi')*asc;
     });
   }
 
-  filtered = data;
-  loadedCount = 0;
-
+  filtered=data;
+  loadedCount=0;
   $("#dataTable tbody").innerHTML="";
   loadMoreRows();
 }
 
-/* Load more rows when scrolling */
 function loadMoreRows(){
   if(loadedCount >= filtered.length) return;
 
   const tbody=$("#dataTable tbody");
-  const end = Math.min(loadedCount + BATCH, filtered.length);
+  const end=Math.min(loadedCount+BATCH,filtered.length);
 
-  for(let i=loadedCount; i<end; i++){
-    const r = filtered[i];
-
+  for(let i=loadedCount;i<end;i++){
+    const r=filtered[i];
     const tr=document.createElement("tr");
     tr.classList.add("fade-in");
 
-    tr.innerHTML = `
+    tr.innerHTML=`
       <td>${escapeHtml(r.MSNV)}</td>
       <td>${escapeHtml(r.HoTen||r.FullName||"")}</td>
       <td>${escapeHtml(r.Team)}</td>
@@ -353,10 +352,9 @@ function loadMoreRows(){
     tbody.appendChild(tr);
   }
 
-  loadedCount = end;
+  loadedCount=end;
 }
 
-/* Infinite scroll */
 function setupInfiniteScroll(){
   const wrap=$("#tableWrap");
   wrap.addEventListener("scroll",()=>{
@@ -366,7 +364,6 @@ function setupInfiniteScroll(){
   });
 }
 
-/* Sorting */
 function setupSort(){
   document.querySelectorAll("#dataTable thead th").forEach(th=>{
     th.addEventListener("click",()=>{
@@ -379,12 +376,10 @@ function setupSort(){
   });
 }
 
-/* Events */
 function setupEvents(){
   $("#searchBox").addEventListener("input",()=>applyFilters());
   $("#filterMonth").addEventListener("change",()=>applyFilters());
   $("#filterTeam").addEventListener("change",()=>applyFilters());
-
   $("#clearFilters").addEventListener("click",()=>{
     $("#searchBox").value="";
     $("#filterMonth").value="";
@@ -394,7 +389,6 @@ function setupEvents(){
   });
 }
 
-/* INIT */
 (async function init(){
   await loadDataWorker();
   buildFilters();
@@ -404,6 +398,7 @@ function setupEvents(){
 
   $("#loader").style.display="none";
   $("#tableWrap").style.display="block";
+
   applyFilters();
 })();
 </script>
