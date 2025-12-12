@@ -95,10 +95,32 @@ tbody td{
   tbody td{ color:var(--table-text-dark) !important; }
 }
 
+/* ZEBRA ROWS */
+tbody tr:nth-child(odd) td {
+  background: rgba(0,0,0,0.025);
+}
+tbody tr:nth-child(even) td {
+  background: rgba(255,255,255,0.03);
+}
+@media (prefers-color-scheme: dark){
+  tbody tr:nth-child(odd) td {
+    background: rgba(255,255,255,0.04);
+  }
+  tbody tr:nth-child(even) td {
+    background: rgba(255,255,255,0.08);
+  }
+}
+
+/* Hover: keep higher contrast than zebra */
 tbody tr:hover td{
   transform:translateY(-4px);
-  background:rgba(255,255,255,0.03);
+  background:rgba(255,255,255,0.12) !important;
   box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+@media (prefers-color-scheme: dark){
+  tbody tr:hover td{
+    background:rgba(255,255,255,0.18) !important;
+  }
 }
 
 /* Loader */
@@ -114,10 +136,11 @@ tbody tr:hover td{
 }
 @keyframes spin{ to{ transform:rotate(360deg);} }
 
-.fade-in{
-  animation:fadeIn .35s ease;
+/* Fade-in rows when appended (per-row delay set in JS) */
+.fade-row{
+  animation:fadeRow .35s ease both;
 }
-@keyframes fadeIn{
+@keyframes fadeRow{
   from{ opacity:0; transform:translateY(8px); }
   to{ opacity:1; transform:translateY(0); }
 }
@@ -324,6 +347,8 @@ function applyFilters(){
   filtered=data;
   loadedCount=0;
   $("#dataTable tbody").innerHTML="";
+  // scroll to top of tableWrap when filters/sort change
+  try{ document.getElementById("tableWrap").scrollTo({ top: 0, behavior: "smooth" }); }catch(e){}
   loadMoreRows();
 }
 
@@ -336,7 +361,9 @@ function loadMoreRows(){
   for(let i=loadedCount;i<end;i++){
     const r=filtered[i];
     const tr=document.createElement("tr");
-    tr.classList.add("fade-in");
+    tr.classList.add("fade-row");
+    // stagger animation delay for cascading effect
+    tr.style.animationDelay = ((i - loadedCount) * 0.015) + "s";
 
     tr.innerHTML=`
       <td>${escapeHtml(r.MSNV)}</td>
@@ -352,7 +379,7 @@ function loadMoreRows(){
     tbody.appendChild(tr);
   }
 
-  loadedCount=end;
+  loadedCount = end;
 }
 
 function setupInfiniteScroll(){
@@ -396,8 +423,8 @@ function setupEvents(){
   setupEvents();
   setupInfiniteScroll();
 
-  $("#loader").style.display="none";
-  $("#tableWrap").style.display="block";
+  $("#loader").style.display = "none";
+  $("#tableWrap").style.display = "block";
 
   applyFilters();
 })();
