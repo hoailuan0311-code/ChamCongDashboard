@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<title>Late • Early – WAREHOUSE RYOBI</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#f5f7fa; --text:#111; --box:#fff; --muted:#666; --accent:#00bcd4; --border:#e6e6e6;
+  --table-text-light:#06212a;
+  --table-text-dark:#ffffff;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1113; --text:#e6eef6; --box:#141518; --muted:#9aa3ad; --accent:#2ec4d6; --border:#222427; }
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:18px; font-family:"Be Vietnam Pro",sans-serif;
+  background:var(--bg); color:var(--text);
+}
+
+/* Title */
+h1{
+  font-size:32px; font-weight:800; margin:0 0 6px;
+  background:linear-gradient(90deg,#4facfe,#00f2fe);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+p.desc{ margin:4px 0 16px; color:var(--muted); }
+
+/* Toolbar */
+.toolbar{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+.input,.select{
+  padding:12px 14px; border-radius:12px; border:1px solid var(--border);
+  background:var(--box); color:var(--text);
+}
+.input{ min-width:260px; width:36%; font-size:15px; }
+.select{ min-width:160px; font-size:14px; }
+
+.btn{
+  padding:10px 14px; border-radius:12px; border:none; cursor:pointer;
+  font-weight:700; color:#022;
+  background:linear-gradient(135deg,#4facfe,#00f2fe);
+}
+
+/* Table container */
+.table-wrap{
+  overflow:auto; border-radius:12px; border:1px solid var(--border);
+  background:var(--box); height:70vh;
+  box-shadow:0 12px 30px rgba(0,0,0,0.06);
+}
+
+/* Table */
+table{ width:100%; border-collapse:collapse; min-width:980px; }
+
+/* Header gradient */
+thead th{
+  position:sticky; top:0; z-index:10;
+  background:linear-gradient(90deg,#4facfe,#00d4ff,#00f2fe) !important;
+  color:#fff !important;
+  padding:12px; text-align:left; cursor:pointer;
+  font-size:13px; font-weight:700;
+  border-bottom:3px solid rgba(0,0,0,0.15);
+  text-shadow:0 1px 2px rgba(0,0,0,0.25);
+}
+@media (prefers-color-scheme: dark){
+  thead th{
+    background:linear-gradient(90deg,#1d6fa5,#00aac0,#00ced6) !important;
+    border-bottom:3px solid rgba(255,255,255,0.15);
+  }
+}
+
+/* Zebra row */
+tbody tr:nth-child(odd) td{
+  background:rgba(0,0,0,0.015);
+}
+@media (prefers-color-scheme: dark){
+  tbody tr:nth-child(odd) td{
+    background:rgba(255,255,255,0.03);
+  }
+}
+
+/* Table cells */
+tbody td{
+  padding:12px; border-top:1px solid var(--border);
+  font-size:13px; color:var(--table-text-light);
+  transition:transform .18s, background .12s, box-shadow .18s;
+}
+
+@media (prefers-color-scheme: dark){
+  tbody td{ color:var(--table-text-dark) !important; }
+}
+
+/* Hover effect */
+tbody tr:hover td{
+  transform:translateY(-4px);
+  background:rgba(255,255,255,0.04);
+  box-shadow:0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* Fade-in rows */
+.fade-in{
+  animation:fadeIn .35s ease;
+}
+@keyframes fadeIn{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+/* Loader */
+#loader{
+  display:flex; align-items:center; gap:12px;
+  margin:14px 0; color:var(--muted);
+}
+.spinner{
+  width:18px; height:18px; border-radius:50%;
+  border:3px solid rgba(0,0,0,0.08);
+  border-top-color:var(--accent);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* Footer */
+.footer-note{ margin-top:12px; font-size:12px; color:var(--muted); }
+</style>
+</head>
+
+<body>
+
+<h1>Đi trể • Về sớm – WAREHOUSE RYOBI</h1>
+<p class="desc">Thông tin lấy tự động từ hệ thống CADENA • Liên hệ Cris Nguyễn Hoài Luận khi cần hỗ trợ.</p>
+
+<div class="toolbar">
+  <input id="searchBox" class="input" placeholder="Tìm theo MSNV hoặc Họ Tên…">
+  <select id="filterTeam" class="select">
+    <option value="">-- Lọc Team --</option>
+  </select>
+  <button id="clearFilters" class="btn">Xóa lọc</button>
+</div>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <div>Đang tải dữ liệu…</div>
+</div>
+
+<div class="table-wrap" id="tableWrap" style="display:none;">
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th data-col="MSNV">MSNV</th>
+        <th data-col="HoTen">Họ Tên</th>
+        <th data-col="Team">Team</th>
+        <th data-col="Invalid">Loại </th>
+        <th data-col="RecordDate">Ngày Ghi Nhận</th>
+        <th data-col="LateIn">Late In</th>
+        <th data-col="EarlyOut">Early Out</th>
+        <th data-col="TotalHour">Total Hour</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<div class="footer-note">Tự động tải thêm khi cuộn • 50 dòng mỗi batch</div>
+
+<script>
+/* ---------- CONFIG ---------- */
+const BATCH = 50;
+let RAW = [];
+let filtered = [];
+let loadedCount = 0;
+let currentSort = { col:null, asc:true };
+
+/* ---------- SHORTCUT ---------- */
+const $ = s => document.querySelector(s);
+
+/* ---------- FORMAT EXCEL SERIAL ---------- */
+function excelSerialToDate(v){
+  if(!v || isNaN(v)) return "";
+  const d = new Date((v - 25569) * 86400 * 1000);
+  if(isNaN(d)) return "";
+  let dd = String(d.getDate()).padStart(2,"0");
+  let mm = String(d.getMonth()+1).padStart(2,"0");
+  let yy = d.getFullYear();
+  return `${dd}-${mm}-${yy}`;
+}
+
+/* ---------- LOAD dataLateEarly.js ---------- */
+async function loadData(){
+  try{
+    const txt = await (await fetch("dataLateEarly.js?v="+Date.now())).text();
+    const t = txt.trim();
+
+    if(t.startsWith("[")){
+      RAW = JSON.parse(t.replace(/;$/,""));
+      return;
+    }
+
+    const s=document.createElement("script");
+    s.text=t;
+    document.head.appendChild(s);
+    RAW = window.dataLateEarly || [];
+    if(!Array.isArray(RAW)) RAW=[];
+  }catch(e){
+    RAW=[];
+  }
+}
+
+/* ---------- ESCAPE ---------- */
+function escapeHtml(s){
+  if(s==null) return "";
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;");
+}
+
+/* ---------- BUILD FILTERS ---------- */
+function buildFilters(){
+  const ts = new Set();
+  RAW.forEach(r => { if(r.Team) ts.add(r.Team); });
+
+  const sel = $("#filterTeam");
+  sel.innerHTML = `<option value="">-- Lọc Team --</option>`;
+  [...ts].sort().forEach(t=>{
+    sel.innerHTML += `<option>${t}</option>`;
+  });
+}
+
+/* ---------- APPLY FILTERS ---------- */
+function applyFilters(){
+  const q = $("#searchBox").value.toLowerCase().trim();
+  const ft = $("#filterTeam").value;
+
+  let data = RAW.slice();
+
+  if(q){
+    data = data.filter(r=>{
+      const ms = String(r.MSNV||"").toLowerCase();
+      const nm = String(r.HoTen||r.FullName||"").toLowerCase();
+      return ms.includes(q) || nm.includes(q);
+    });
+  }
+
+  if(ft) data = data.filter(r => r.Team === ft);
+
+  if(currentSort.col){
+    const c=currentSort.col, asc=currentSort.asc?1:-1;
+    data.sort((a,b)=>{
+      let A=a[c], B=b[c];
+      const na=parseFloat(A), nb=parseFloat(B);
+      if(!isNaN(na)&&!isNaN(nb)) return (na-nb)*asc;
+      return String(A).localeCompare(String(B),"vi")*asc;
+    });
+  }
+
+  filtered=data;
+  loadedCount=0;
+  $("#dataTable tbody").innerHTML="";
+  $("#tableWrap").scrollTop = 0;   /* scroll-to-top */
+  loadMoreRows();
+}
+
+/* ---------- LOAD ROWS (INFINITE BATCH) ---------- */
+function loadMoreRows(){
+  if(loadedCount >= filtered.length) return;
+
+  const tbody = $("#dataTable tbody");
+  const end = Math.min(loadedCount + BATCH, filtered.length);
+
+  for(let i=loadedCount; i<end; i++){
+    const r = filtered[i];
+    const tr = document.createElement("tr");
+    tr.classList.add("fade-in");
+
+    tr.innerHTML = `
+      <td>${escapeHtml(r.MSNV)}</td>
+      <td>${escapeHtml(r.HoTen||r.FullName||"")}</td>
+      <td>${escapeHtml(r.Team)}</td>
+      <td>${escapeHtml(r.Invalid)}</td>
+      <td>${excelSerialToDate(r.RecordDate)}</td>
+      <td>${escapeHtml(r.LateIn)}</td>
+      <td>${escapeHtml(r.EarlyOut)}</td>
+      <td>${escapeHtml(r.TotalHour)}</td>
+    `;
+
+    tbody.appendChild(tr);
+  }
+
+  loadedCount = end;
+}
+
+/* ---------- INFINITE SCROLL ---------- */
+function setupInfiniteScroll(){
+  const wrap = $("#tableWrap");
+  wrap.addEventListener("scroll", ()=>{
+    if(wrap.scrollTop + wrap.clientHeight >= wrap.scrollHeight - 120){
+      loadMoreRows();
+    }
+  });
+}
+
+/* ---------- SORT ---------- */
+function setupSort(){
+  document.querySelectorAll("#dataTable thead th").forEach(th=>{
+    th.addEventListener("click", ()=>{
+      const col = th.dataset.col;
+      if(!col) return;
+      if(currentSort.col === col) currentSort.asc = !currentSort.asc;
+      else{ currentSort.col = col; currentSort.asc = true; }
+      applyFilters();
+    });
+  });
+}
+
+/* ---------- EVENTS ---------- */
+function setupEvents(){
+  $("#searchBox").addEventListener("input", ()=>applyFilters());
+  $("#filterTeam").addEventListener("change", ()=>applyFilters());
+  $("#clearFilters").addEventListener("click", ()=>{
+    $("#searchBox").value="";
+    $("#filterTeam").value="";
+    currentSort={col:null,asc:true};
+    applyFilters();
+  });
+}
+
+/* ---------- INIT ---------- */
+(async function init(){
+  await loadData();
+  buildFilters();
+  setupSort();
+  setupEvents();
+  setupInfiniteScroll();
+
+  $("#loader").style.display="none";
+  $("#tableWrap").style.display="block";
+
+  applyFilters();
+})();
+</script>
+
+</body>
+</html>
