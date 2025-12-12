@@ -1,270 +1,231 @@
-/* =======================================================================
-    NOEL SUPER EFFECT
-    ❄ Snowfall + Snow Accumulation
-    🎅 Santa snowboard + gift drop
-    🦌 Reindeer drift + light trail
-   ======================================================================= */
+/* ===========================================================
+   NOEL EXTREME EDITION 🎄 
+   - Santa Parkour Snowboard
+   - Reindeer Front/Back Flip
+   - Snow Accumulation on UI Corners
+   - LED Noel Blinking Border
+   =========================================================== */
 
-// ===================== GLOBAL LAYERS =====================
-const layerTop = document.createElement("div");
-layerTop.style.position = "fixed";
-layerTop.style.top = 0;
-layerTop.style.left = 0;
-layerTop.style.width = "100%";
-layerTop.style.height = "100%";
-layerTop.style.pointerEvents = "none";
-layerTop.style.zIndex = 99990;
-document.body.appendChild(layerTop);
+// ===================== LAYERS =====================
+const topLayer = document.createElement("div");
+topLayer.style.position = "fixed";
+topLayer.style.top = 0;
+topLayer.style.left = 0;
+topLayer.style.width = "100%";
+topLayer.style.height = "100%";
+topLayer.style.pointerEvents = "none";
+topLayer.style.zIndex = 99990;
+document.body.appendChild(topLayer);
 
-// Canvas tuyết đọng
-const snowCanvas = document.createElement("canvas");
-snowCanvas.width = innerWidth;
-snowCanvas.height = 200; 
-snowCanvas.style.position = "fixed";
-snowCanvas.style.top = 0;
-snowCanvas.style.left = 0;
-snowCanvas.style.pointerEvents = "none";
-snowCanvas.style.zIndex = 99995;
-document.body.appendChild(snowCanvas);
-const snowCtx = snowCanvas.getContext("2d");
+// Canvas tuyết đọng UI
+const uiSnowCanvas = document.createElement("canvas");
+uiSnowCanvas.style.position = "fixed";
+uiSnowCanvas.style.top = "0";
+uiSnowCanvas.style.left = "0";
+uiSnowCanvas.style.pointerEvents = "none";
+uiSnowCanvas.style.zIndex = 99992;
+document.body.appendChild(uiSnowCanvas);
+const uiCtx = uiSnowCanvas.getContext("2d");
 
-let snowAcc = []; // tuyết đọng theo pixel
+function resizeCanvas(){
+    uiSnowCanvas.width = window.innerWidth;
+    uiSnowCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
+let uiSnow = []; // tuyết bám UI
 
 
-// Resize sync
-window.addEventListener("resize", () => {
-    snowCanvas.width = innerWidth;
-});
-
-
-// ===================== ❄ SNOW FALL + ACCUMULATION =====================
-function createSnow() {
+// ===================== ❄ SNOWFALL + UI ACCUMULATION =====================
+function createSnow(){
     const flake = document.createElement("div");
     flake.innerHTML = "❄";
     flake.style.position = "absolute";
     flake.style.left = Math.random() * innerWidth + "px";
-    flake.style.top = "-20px";
-    flake.style.fontSize = 10 + Math.random() * 18 + "px";
-    flake.style.opacity = 0.5 + Math.random() * 0.5;
-    flake.style.animation = `snowFall ${4 + Math.random() * 4}s linear`;
+    flake.style.top = "-30px";
+    flake.style.fontSize = 10 + Math.random() * 20 + "px";
+    flake.style.opacity = 0.6 + Math.random() * 0.4;
+    flake.style.animation = `fall ${4 + Math.random()*4}s linear`;
+    topLayer.appendChild(flake);
 
-    layerTop.appendChild(flake);
-
-    const t = 4000;
     const x = parseInt(flake.style.left);
     const size = parseInt(flake.style.fontSize);
 
     setTimeout(() => {
-        accumulateSnow(x, size * 0.4);
+        accumulateUI(x, size * 0.4);
         flake.remove();
-    }, t);
+    }, 5000);
+}
+setInterval(createSnow, 120);
+
+
+// UI snow accumulate
+function accumulateUI(x, h){
+    if (!uiSnow[x]) uiSnow[x] = 0;
+
+    uiSnow[x] += h;
+    if (uiSnow[x] > 50) uiSnow[x] = 50;
+
+    drawUISnow();
 }
 
-setInterval(createSnow, 140);
+function drawUISnow(){
+    uiCtx.clearRect(0, 0, uiSnowCanvas.width, uiSnowCanvas.height);
+    uiCtx.fillStyle = "#fff";
 
-
-// accumulate
-function accumulateSnow(x, h) {
-    const index = Math.floor(x);
-    if (!snowAcc[index]) snowAcc[index] = 0;
-
-    snowAcc[index] += h;
-
-    if (snowAcc[index] > 70) {
-        snowAcc[index] = 0;
-        dropChunk(index);
-    }
-
-    drawSnowLayer();
-}
-
-function dropChunk(x) {
-    const chunk = document.createElement("div");
-    chunk.style.position = "fixed";
-    chunk.style.top = "0px";
-    chunk.style.left = x + "px";
-    chunk.style.width = "6px";
-    chunk.style.height = "6px";
-    chunk.style.background = "#fff";
-    chunk.style.borderRadius = "50%";
-    chunk.style.zIndex = 99998;
-    document.body.appendChild(chunk);
-
-    let y = 0;
-    function fall() {
-        y += 6;
-        chunk.style.top = y + "px";
-        if (y < innerHeight - 30) requestAnimationFrame(fall);
-        else chunk.remove();
-    }
-    fall();
-}
-
-
-function drawSnowLayer() {
-    snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
-    snowCtx.fillStyle = "#fff";
-
-    for (let x = 0; x < snowCanvas.width; x++) {
-        if (snowAcc[x] > 0) {
-            snowCtx.fillRect(x, snowCanvas.height - snowAcc[x], 1, snowAcc[x]);
+    // tuyết bám HEADER + TABLE
+    for (let x=0; x<uiSnowCanvas.width; x++){
+        if (uiSnow[x] > 0){
+            uiCtx.fillRect(x, 0, 1, uiSnow[x]);                  // đọng trên đầu màn hình
+            uiCtx.fillRect(x, 80, 1, uiSnow[x] * 0.4);           // đọng trên header
+            uiCtx.fillRect(x, innerHeight - 50, 1, uiSnow[x]*0.2); // đọng cuối UI
         }
     }
 }
 
 
-// CSS Animate
-const css = document.createElement("style");
-css.innerHTML = `
-@keyframes snowFall {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(110vh); }
-}
-`;
-document.head.appendChild(css);
-
-
-// ===================== 🎅 SANTA SNOWBOARD =====================
+// ===================== 🎅 SANTA PARKOUR STYLE =====================
 const santa = document.createElement("img");
 santa.src = "theme/img/santa.png";
 santa.style.position = "fixed";
-santa.style.bottom = "40px";
-santa.style.left = "-200px";
+santa.style.bottom = "20px";
+santa.style.left = "-180px";
 santa.style.width = "170px";
-santa.style.zIndex = 99991;
+santa.style.zIndex = 99995;
 santa.style.pointerEvents = "none";
 document.body.appendChild(santa);
 
 let santaX = -200;
-let santaSpeed = 4;
+let santaSpeed = 6;
 
-function santaLoop() {
+function santaLoop(){
     santaX += santaSpeed;
     santa.style.left = santaX + "px";
 
-    if (santaX > innerWidth + 200) {
-        santaX = -200;
-    }
+    // Parkour random
+    const r = Math.random();
+    if (r < 0.01) santaFlip360();
+    else if (r < 0.02) santaJump();
+    else if (r < 0.03) santaTilt();
 
-    // random thả quà
-    if (Math.random() < 0.02) dropGift(santaX + 60);
+    // reset
+    if (santaX > innerWidth + 300) santaReset();
 
     requestAnimationFrame(santaLoop);
 }
 requestAnimationFrame(santaLoop);
 
-
-// 🎁 quà rơi
-function dropGift(x) {
-    const gift = document.createElement("div");
-    gift.style.position = "fixed";
-    gift.style.left = x + "px";
-    gift.style.top = "60px";
-    gift.style.width = "15px";
-    gift.style.height = "15px";
-    gift.style.background = "gold";
-    gift.style.borderRadius = "4px";
-    gift.style.zIndex = 99992;
-    document.body.appendChild(gift);
-
-    let y = 60;
-    function fall() {
-        y += 5;
-        gift.style.top = y + "px";
-
-        if (y < innerHeight - 30) requestAnimationFrame(fall);
-        else {
-            sparkle(x, y);
-            gift.remove();
-        }
-    }
-    fall();
+function santaReset(){
+    santaX = -200;
+    santa.style.transform = "rotate(0deg) scaleX(1)";
 }
 
-// ✨ nổ lấp lánh
-function sparkle(x, y) {
-    for (let i = 0; i < 12; i++) {
-        const sp = document.createElement("div");
-        sp.style.position = "fixed";
-        sp.style.left = x + "px";
-        sp.style.top = y + "px";
-        sp.style.width = "4px";
-        sp.style.height = "4px";
-        sp.style.background = "yellow";
-        sp.style.borderRadius = "50%";
-        sp.style.zIndex = 99993;
-        sp.style.opacity = 1;
+function santaFlip360(){
+    santa.style.transition = "transform 0.9s ease";
+    santa.style.transform = "rotate(360deg)";
+    setTimeout(()=>{ santa.style.transform = "rotate(0deg)"; }, 900);
+}
 
-        document.body.appendChild(sp);
+function santaJump(){
+    santa.style.transition = "transform 0.4s ease";
+    santa.style.transform = "translateY(-40px)";
+    setTimeout(()=> santa.style.transform = "translateY(0)", 400);
+}
 
-        let angle = Math.random() * Math.PI * 2;
-        let speed = 2 + Math.random() * 4;
-        let life = 0;
-
-        function anim() {
-            life++;
-            sp.style.left = x + Math.cos(angle) * life * speed + "px";
-            sp.style.top  = y + Math.sin(angle) * life * speed + "px";
-            sp.style.opacity = 1 - life / 30;
-
-            if (life < 30) requestAnimationFrame(anim);
-            else sp.remove();
-        }
-        anim();
-    }
+function santaTilt(){
+    santa.style.transition = "transform 0.3s ease";
+    santa.style.transform = "rotate(20deg)";
+    setTimeout(()=> santa.style.transform = "rotate(0deg)", 300);
 }
 
 
-// ===================== 🦌 REINDEER DRIFT =====================
+// ===================== 🦌 REINDEER FLIP =====================
 const deer = document.createElement("img");
 deer.src = "theme/img/reindeer.png";
 deer.style.position = "fixed";
-deer.style.top = "20px";
+deer.style.top = "60px";
 deer.style.right = "-200px";
-deer.style.width = "150px";
-deer.style.zIndex = 99992;
+deer.style.width = "160px";
+deer.style.zIndex = 99994;
 deer.style.pointerEvents = "none";
 document.body.appendChild(deer);
 
-let deerX = -150;
-let deerSpeed = 3;
+let deerPos = -200;
+let deerSpeed = 5;
 
-function deerLoop() {
-    deerX += deerSpeed;
-    deer.style.right = deerX + "px";
+function deerLoop(){
+    deerPos += deerSpeed;
+    deer.style.right = deerPos + "px";
 
-    if (deerX > innerWidth + 200) {
-        deerX = -200;
-    }
+    // random flip
+    const r = Math.random();
+    if (r < 0.015) deerFlipForward();
+    else if (r < 0.03) deerFlipBack();
 
-    // vệt sáng drift nhẹ
-    if (Math.random() < 0.3) lightTrail(parseInt(innerWidth - deerX + 40), 60);
+    if (deerPos > innerWidth + 300) deerReset();
 
     requestAnimationFrame(deerLoop);
 }
 requestAnimationFrame(deerLoop);
 
-
-// vệt sáng
-function lightTrail(x, y) {
-    const dot = document.createElement("div");
-    dot.style.position = "fixed";
-    dot.style.left = x + "px";
-    dot.style.top = y + "px";
-    dot.style.width = "4px";
-    dot.style.height = "4px";
-    dot.style.background = "rgba(255,255,255,0.8)";
-    dot.style.borderRadius = "50%";
-    dot.style.zIndex = 99994;
-
-    document.body.appendChild(dot);
-
-    let opacity = 1;
-    function fade() {
-        opacity -= 0.03;
-        dot.style.opacity = opacity;
-        if (opacity > 0) requestAnimationFrame(fade);
-        else dot.remove();
-    }
-    fade();
+function deerReset(){
+    deerPos = -200;
+    deer.style.transform = "rotate(0deg)";
 }
+
+function deerFlipForward(){
+    deer.style.transition = "transform 0.6s ease";
+    deer.style.transform = "rotateX(360deg)";
+    setTimeout(()=> deer.style.transform = "rotateX(0deg)", 600);
+}
+
+function deerFlipBack(){
+    deer.style.transition = "transform 0.6s ease";
+    deer.style.transform = "rotateY(360deg)";
+    setTimeout(()=> deer.style.transform = "rotateY(0deg)", 600);
+}
+
+
+// ===================== 🎄 LED BORDER AROUND UI =====================
+const led = document.createElement("div");
+led.style.position = "fixed";
+led.style.top = 0;
+led.style.left = 0;
+led.style.width = "100%";
+led.style.height = "100%";
+led.style.pointerEvents = "none";
+led.style.zIndex = 99999;
+document.body.appendChild(led);
+
+const ledStyle = document.createElement("style");
+ledStyle.innerHTML = `
+@keyframes blink {
+  0% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+.noel-led {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #ff0000, #aa0000);
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+`;
+document.head.appendChild(ledStyle);
+
+function createLED(){
+    const dot = document.createElement("div");
+    dot.className = "noel-led";
+    dot.style.top = Math.random() < 0.5 ? "0px" : (innerHeight - 10) + "px";
+    dot.style.left = Math.random() * innerWidth + "px";
+
+    // đổi màu ngẫu nhiên
+    const c = ["red", "yellow", "cyan", "green"];
+    dot.style.background = c[Math.floor(Math.random()*4)];
+
+    led.appendChild(dot);
+}
+setInterval(createLED, 150);
