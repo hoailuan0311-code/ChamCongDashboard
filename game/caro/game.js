@@ -5,7 +5,7 @@
 
 /* ========== CONFIG ========== */
 
-const COLS = 30, ROWS = 20, WIN = 5;
+const COLS = 40, ROWS = 30, WIN = 5;
 const TURN_TIMEOUT = 60;
 
 /* ========== FIREBASE CONFIG (CRIS) ========== */
