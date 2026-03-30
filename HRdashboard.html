@@ -5,7 +5,6 @@
 <title>HR Dashboard</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="dataHRdashboard.js"></script>
 
 <style>
 body { font-family: 'Segoe UI'; background:#0e1117; color:#e8eaf0; padding:20px; }
@@ -13,7 +12,7 @@ body { font-family: 'Segoe UI'; background:#0e1117; color:#e8eaf0; padding:20px;
 .card { background:#1e2535; padding:15px; border-radius:10px; margin-bottom:10px; }
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
 select { padding:6px; margin-right:5px; }
-canvas { background:#1e2535; padding:10px; border-radius:10px; }
+canvas { background:#1e2535; padding:10px; border-radius:10px; margin-top:10px; }
 .viewer { font-size:12px; color:#aaa; margin-bottom:10px; }
 table { width:100%; border-collapse: collapse; }
 td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
@@ -38,8 +37,6 @@ td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
 
 <div class="viewer">👀 Online: <span id="viewerList"></span></div>
 
-<div id="updated"></div>
-
 <!-- FILTER -->
 <div style="margin:10px 0">
   <select id="filterBU"></select>
@@ -51,8 +48,8 @@ td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
 <div class="grid" id="metrics"></div>
 
 <!-- CHARTS -->
-<canvas id="buChart"></canvas><br>
-<canvas id="mgrChart"></canvas><br>
+<canvas id="buChart"></canvas>
+<canvas id="mgrChart"></canvas>
 <canvas id="supChart"></canvas>
 
 <!-- TABLE TITLE -->
@@ -60,7 +57,12 @@ td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
   <h3>Headcount theo Title</h3>
   <table>
     <thead>
-      <tr><th>Title</th><th>Total</th><th>Permanent</th><th>Outsource</th></tr>
+      <tr>
+        <th>Title</th>
+        <th>Total</th>
+        <th>Permanent</th>
+        <th>Outsource</th>
+      </tr>
     </thead>
     <tbody id="titleTable"></tbody>
   </table>
@@ -69,6 +71,7 @@ td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
 </div>
 
 <script>
+
 // ================= LOGIN =================
 const USER="admin", PASS="123456";
 
@@ -79,7 +82,11 @@ function login(){
     location.reload();
   } else alert("Sai tài khoản");
 }
-function logout(){ localStorage.clear(); location.reload(); }
+
+function logout(){
+  localStorage.clear();
+  location.reload();
+}
 
 if(localStorage.getItem("auth")==="ok"){
   loginBox.classList.add("hidden");
@@ -87,32 +94,58 @@ if(localStorage.getItem("auth")==="ok"){
   init();
 }
 
+// ================= DATA =================
+let RAW_DATA = [];
+
+async function loadData() {
+  try {
+    const res = await fetch('dataHRdashboard.js?t=' + Date.now());
+    const text = await res.text();
+
+    RAW_DATA = JSON.parse(text);
+
+    console.log("DATA:", RAW_DATA);
+
+    initFilters(RAW_DATA);
+    renderAll();
+
+  } catch (err) {
+    console.error("Load lỗi:", err);
+    metrics.innerHTML = "<div class='card'>Load data failed</div>";
+  }
+}
+
 // ================= VIEWER =================
 function updateViewer(){
   const key="VIEWERS";
   let v=JSON.parse(localStorage.getItem(key)||"{}");
-  v[localStorage.getItem("viewer")]=Date.now();
+
+  v[localStorage.getItem("viewer")] = Date.now();
 
   Object.keys(v).forEach(k=>{
     if(Date.now()-v[k]>10000) delete v[k];
   });
 
   localStorage.setItem(key,JSON.stringify(v));
-  viewerList.innerText=Object.keys(v).length;
+  viewerList.innerText = Object.keys(v).length;
 }
 
 // ================= FILTER =================
 function initFilters(data){
+
   fill(filterBU, [...new Set(data.map(e=>e.bu))]);
   fill(filterMgr, [...new Set(data.map(e=>e.manager))]);
   fill(filterSup, [...new Set(data.map(e=>e.sup))]);
+
 }
-function fill(el,arr){
-  el.innerHTML='<option value="">All</option>' + arr.map(v=>`<option>${v}</option>`).join('');
+
+function fill(el, arr){
+  el.innerHTML = '<option value="">All</option>' +
+    arr.map(v=>`<option value="${v}">${v}</option>`).join('');
 }
 
 function getFiltered(data){
-  return data.filter(e=>
+  return data.filter(e =>
     (!filterBU.value || e.bu===filterBU.value) &&
     (!filterMgr.value || e.manager===filterMgr.value) &&
     (!filterSup.value || e.sup===filterSup.value)
@@ -121,68 +154,107 @@ function getFiltered(data){
 
 // ================= PROCESS =================
 function process(data){
-  const res={total:data.length, permanent:0, outsource:0, bu:{}, mgr:{}, sup:{}};
+
+  const res = {
+    total: data.length,
+    permanent: 0,
+    outsource: 0,
+    bu:{}, mgr:{}, sup:{}
+  };
 
   data.forEach(e=>{
-    if(e.check==='TTI') res.permanent++; else res.outsource++;
 
-    res.bu[e.bu]=(res.bu[e.bu]||0)+1;
-    res.mgr[e.manager]=(res.mgr[e.manager]||0)+1;
+    if(e.check === 'TTI') res.permanent++;
+    else res.outsource++;
+
+    res.bu[e.bu] = (res.bu[e.bu]||0)+1;
+    res.mgr[e.manager] = (res.mgr[e.manager]||0)+1;
 
     if(!res.sup[e.sup]) res.sup[e.sup]={total:0};
     res.sup[e.sup].total++;
+
   });
 
   return res;
 }
 
 // ================= RENDER =================
+let chartBU, chartMgr, chartSup;
+
 function renderAll(){
 
-  const raw=HR_RAW.employees;
-  const data=getFiltered(raw);
-  const r=process(data);
+  if (!RAW_DATA || RAW_DATA.length === 0) {
+    metrics.innerHTML = "<div class='card'>No data</div>";
+    return;
+  }
 
-  updated.innerText="Updated: "+HR_RAW.updated;
+  const data = getFiltered(RAW_DATA);
+  const r = process(data);
 
   // metrics
-  metrics.innerHTML=`
+  metrics.innerHTML = `
     <div class="card">Total: ${r.total}</div>
     <div class="card">Permanent: ${r.permanent}</div>
     <div class="card">Outsource: ${r.outsource}</div>
-    <div class="card">Resign (demo)</div>
+    <div class="card">Filtered: ${data.length}</div>
   `;
 
-  // charts
-  new Chart(buChart,{type:'doughnut',data:{labels:Object.keys(r.bu),datasets:[{data:Object.values(r.bu)}]}});
-  new Chart(mgrChart,{type:'doughnut',data:{labels:Object.keys(r.mgr),datasets:[{data:Object.values(r.mgr)}]}});
-  new Chart(supChart,{type:'bar',data:{labels:Object.keys(r.sup),datasets:[{data:Object.values(r.sup).map(s=>s.total)}]}});
+  // destroy old chart
+  chartBU && chartBU.destroy();
+  chartMgr && chartMgr.destroy();
+  chartSup && chartSup.destroy();
 
-  // table title
-  const map={};
-  data.forEach(e=>{
-    if(!map[e.title]) map[e.title]={t:0,p:0,o:0};
-    map[e.title].t++;
-    if(e.check==='TTI') map[e.title].p++; else map[e.title].o++;
+  // BU
+  chartBU = new Chart(buChart, {
+    type:'doughnut',
+    data:{labels:Object.keys(r.bu), datasets:[{data:Object.values(r.bu)}]}
   });
 
-  titleTable.innerHTML=Object.entries(map).map(([k,v])=>`
-    <tr><td>${k}</td><td>${v.t}</td><td>${v.p}</td><td>${v.o}</td></tr>
+  // Manager
+  chartMgr = new Chart(mgrChart, {
+    type:'doughnut',
+    data:{labels:Object.keys(r.mgr), datasets:[{data:Object.values(r.mgr)}]}
+  });
+
+  // Supervisor
+  chartSup = new Chart(supChart, {
+    type:'bar',
+    data:{labels:Object.keys(r.sup), datasets:[{data:Object.values(r.sup).map(s=>s.total)}]}
+  });
+
+  // TABLE TITLE
+  const map = {};
+  data.forEach(e=>{
+    if(!map[e.title]) map[e.title]={t:0,p:0,o:0};
+
+    map[e.title].t++;
+    if(e.check==='TTI') map[e.title].p++;
+    else map[e.title].o++;
+  });
+
+  titleTable.innerHTML = Object.entries(map).map(([k,v])=>`
+    <tr>
+      <td>${k}</td>
+      <td>${v.t}</td>
+      <td>${v.p}</td>
+      <td>${v.o}</td>
+    </tr>
   `).join('');
 }
 
 // ================= INIT =================
 function init(){
-  const raw=HR_RAW.employees;
 
-  initFilters(raw);
-  renderAll();
+  loadData();
   updateViewer();
 
-  [filterBU,filterMgr,filterSup].forEach(f=>f.onchange=renderAll);
+  [filterBU,filterMgr,filterSup].forEach(f=>{
+    f.onchange = renderAll;
+  });
 
   setInterval(updateViewer,5000);
 }
+
 </script>
 
 </body>
