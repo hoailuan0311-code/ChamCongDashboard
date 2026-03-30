@@ -4,173 +4,218 @@
 <meta charset="UTF-8">
 <title>HR Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <style>
-body { font-family:'Be Vietnam Pro'; background:#0e1117; color:#e8eaf0; padding:20px; }
-.section { margin:20px 0; }
+body { background:#0e1117; color:#e8eaf0; font-family:Arial; padding:20px; }
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
 .card { background:#1e2535; padding:15px; border-radius:10px; }
-.sup-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.bar { height:6px; background:#333; border-radius:4px; overflow:hidden; }
-.fill { height:100%; background:#34d399; }
-.small { font-size:12px; color:#aaa; }
-.red { color:#f87171; }
-.yellow { color:#fbbf24; }
+select { margin-right:5px; padding:5px; }
+canvas { background:#1e2535; padding:10px; border-radius:10px; margin-top:10px; }
+
+/* modal */
+#modal {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,.7);
+  display:none; align-items:center; justify-content:center;
+}
+.modal-box {
+  background:#1e2535; padding:20px; border-radius:10px;
+  max-height:80vh; overflow:auto; width:600px;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Warehouse Headcount Dashboard</h2>
+<h2>Warehouse Dashboard</h2>
+
+<!-- FILTER -->
+<select id="fBU"></select>
+<select id="fMgr"></select>
+<select id="fSup"></select>
 
 <!-- METRICS -->
-<div class="section grid" id="metrics"></div>
+<div class="grid" id="metrics"></div>
 
 <!-- CHART -->
-<div class="section">
-  <canvas id="buChart"></canvas>
-</div>
+<canvas id="buChart"></canvas>
+<canvas id="supChart"></canvas>
+<canvas id="resignChart"></canvas>
 
-<!-- SUP -->
-<div class="section">
-  <div class="sup-grid" id="supGrid"></div>
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
 </div>
 
 <script>
+
 // ================= LOAD =================
 let RAW = [];
 
-async function loadData(){
+async function load(){
   const res = await fetch('dataHRdashboard.js?t='+Date.now());
   RAW = JSON.parse(await res.text());
+
   init();
 }
 
-// ================= PROCESS =================
-function process(data){
+// ================= NORMALIZE =================
+function norm(d){
+  return d.map(e=>({
+    bu:e.bu,
+    name:e.name,
+    sup:e.sup,
+    manager:e.manager,
+    title:e.title,
+    check:e.check,
+    lwd: e.lwd && e.lwd!=="0" ? new Date((e.lwd-25569)*86400*1000) : null
+  }));
+}
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
+// ================= FILTER =================
+function applyFilter(data){
+  return data.filter(e =>
+    (!fBU.value || e.bu===fBU.value) &&
+    (!fMgr.value || e.manager===fMgr.value) &&
+    (!fSup.value || e.sup===fSup.value)
+  );
+}
 
-  const map = {};
+// ================= BUILD =================
+function build(data){
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const bu={}, sup={}, resign={already:[], upcoming:[]};
 
   data.forEach(e=>{
+    bu[e.bu]=(bu[e.bu]||0)+1;
 
-    if(!map[e.sup]){
-      map[e.sup] = {
-        name:e.sup,
-        mgr:e.manager,
-        total:0,
-        perm:0,
-        out:0,
-        wsk:0,
-        already:0,
-        upcoming:0,
-        res:[]
-      };
+    if(!sup[e.sup]) sup[e.sup]={total:0};
+    sup[e.sup].total++;
+
+    if(e.lwd){
+      if(e.lwd < today) resign.already.push(e);
+      else resign.upcoming.push(e);
     }
-
-    const s = map[e.sup];
-    s.total++;
-
-    if(e.check==='TTI') s.perm++;
-    else s.out++;
-
-    if(e.title==='Warehouse Shift Keeper') s.wsk++;
-
-    if(e.lwd && e.lwd !== "0"){
-      const d = new Date(e.lwd);
-      if(d < today){
-        s.already++;
-        s.res.push({name:e.name,lwd:e.lwd,type:'red'});
-      } else {
-        s.upcoming++;
-        s.res.push({name:e.name,lwd:e.lwd,type:'yellow'});
-      }
-    }
-
   });
 
-  return Object.values(map).sort((a,b)=>b.total-a.total);
+  return {bu,sup,resign};
 }
 
 // ================= RENDER =================
-function init(){
+let chartBU, chartSup, chartResign;
 
-  if(!RAW.length){
-    document.body.innerHTML="No data";
-    return;
-  }
+function render(){
 
-  const sups = process(RAW);
+  const data = applyFilter(norm(RAW));
+  const r = build(data);
 
-  // ===== METRICS =====
-  const total = RAW.length;
-  const perm = RAW.filter(e=>e.check==='TTI').length;
-  const out = total - perm;
-
+  // metrics
   metrics.innerHTML = `
-    <div class="card">Total<br><b>${total}</b></div>
-    <div class="card">Permanent<br><b>${perm}</b></div>
-    <div class="card">Outsource<br><b>${out}</b></div>
-    <div class="card">Supervisor<br><b>${sups.length}</b></div>
+    <div class="card">Total: ${data.length}</div>
+    <div class="card">Resigned: ${r.resign.already.length}</div>
+    <div class="card">Upcoming: ${r.resign.upcoming.length}</div>
+    <div class="card">Sup: ${Object.keys(r.sup).length}</div>
   `;
 
-  // ===== BU CHART =====
-  const buMap = {};
-  RAW.forEach(e=>buMap[e.bu]=(buMap[e.bu]||0)+1);
+  // destroy
+  chartBU && chartBU.destroy();
+  chartSup && chartSup.destroy();
+  chartResign && chartResign.destroy();
 
-  new Chart(buChart,{
+  // BU chart
+  chartBU = new Chart(buChart,{
     type:'doughnut',
-    data:{labels:Object.keys(buMap),datasets:[{data:Object.values(buMap)}]}
+    data:{labels:Object.keys(r.bu),datasets:[{data:Object.values(r.bu)}]},
+    options:{
+      onClick:(e,el)=>{
+        if(!el.length) return;
+        const label = chartBU.data.labels[el[0].index];
+        showModal("BU: "+label, data.filter(x=>x.bu===label));
+      }
+    }
   });
 
-  // ===== SUP CARD =====
-  supGrid.innerHTML = sups.map(s=>{
+  // SUP chart
+  chartSup = new Chart(supChart,{
+    type:'bar',
+    data:{
+      labels:Object.keys(r.sup),
+      datasets:[{data:Object.values(r.sup).map(s=>s.total)}]
+    },
+    options:{
+      onClick:(e,el)=>{
+        if(!el.length) return;
+        const label = chartSup.data.labels[el[0].index];
+        showModal("SUP: "+label, data.filter(x=>x.sup===label));
+      }
+    }
+  });
 
-    const permPct = Math.round(s.perm/s.total*100);
-
-    return `
-      <div class="card">
-
-        <b>${s.name}</b><br>
-        <span class="small">Mgr: ${s.mgr}</span><br><br>
-
-        Total: ${s.total} | Perm: ${s.perm} | Out: ${s.out}<br><br>
-
-        <div class="small">Permanent ${permPct}%</div>
-        <div class="bar"><div class="fill" style="width:${permPct}%"></div></div>
-
-        <div class="small" style="margin-top:8px">
-          Shift Keeper: ${s.wsk}
-        </div>
-
-        <div style="margin-top:10px">
-          <span class="yellow">Upcoming: ${s.upcoming}</span> |
-          <span class="red">Resigned: ${s.already}</span>
-        </div>
-
-        <div style="margin-top:8px">
-          ${
-            s.res.length===0
-            ? '<span class="small">No resignation</span>'
-            : s.res.map(r=>`
-              <div class="small ${r.type}">
-                ${r.name} - ${r.lwd}
-              </div>
-            `).join('')
-          }
-        </div>
-
-      </div>
-    `;
-  }).join('');
+  // RESIGN chart
+  chartResign = new Chart(resignChart,{
+    type:'doughnut',
+    data:{
+      labels:['Already','Upcoming'],
+      datasets:[{data:[r.resign.already.length, r.resign.upcoming.length]}]
+    },
+    options:{
+      onClick:(e,el)=>{
+        if(!el.length) return;
+        const idx = el[0].index;
+        const list = idx===0 ? r.resign.already : r.resign.upcoming;
+        showModal(idx===0?"Đã nghỉ":"Sắp nghỉ", list);
+      }
+    }
+  });
 
 }
 
-loadData();
+// ================= MODAL =================
+function showModal(title, list){
+
+  modal.style.display="flex";
+  modalTitle.innerText = title;
+
+  modalBody.innerHTML = list.map(e=>`
+    <div style="border-bottom:1px solid #333;padding:6px 0">
+      ${e.name} | ${e.sup} | ${e.bu}
+    </div>
+  `).join('');
+
+}
+
+modal.onclick = ()=> modal.style.display="none";
+
+// ================= FILTER INIT =================
+function initFilter(data){
+
+  const set = (arr)=> [...new Set(arr)];
+
+  fBU.innerHTML = '<option value="">BU</option>' + set(data.map(e=>e.bu)).map(v=>`<option>${v}</option>`).join('');
+  fMgr.innerHTML = '<option value="">Manager</option>' + set(data.map(e=>e.manager)).map(v=>`<option>${v}</option>`).join('');
+  fSup.innerHTML = '<option value="">Sup</option>' + set(data.map(e=>e.sup)).map(v=>`<option>${v}</option>`).join('');
+
+}
+
+// ================= INIT =================
+function init(){
+
+  const data = norm(RAW);
+
+  initFilter(data);
+
+  [fBU,fMgr,fSup].forEach(x=>x.onchange=render);
+
+  render();
+}
+
+load();
 
 </script>
 
