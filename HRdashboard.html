@@ -2,507 +2,188 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Dashboard — Warehouse Headcount</title>
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>HR Dashboard</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="dataHRdashboard.js"></script>
+
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0e1117;
-    --bg2: #161b25;
-    --bg3: #1e2535;
-    --border: rgba(255,255,255,0.07);
-    --border2: rgba(255,255,255,0.12);
-    --text: #e8eaf0;
-    --text2: #8b92a8;
-    --text3: #555e72;
-    --blue: #4f8ef7;
-    --green: #34d399;
-    --amber: #fbbf24;
-    --red: #f87171;
-    --purple: #a78bfa;
-    --teal: #2dd4bf;
-    --accent: #4f8ef7;
-    --radius: 12px;
-    --radius-sm: 8px;
-  }
-  body {
-    font-family: 'Be Vietnam Pro', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 28px 32px 48px;
-  }
-
-  /* Header */
-  .header { margin-bottom: 28px; }
-  .header-top { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 6px; }
-  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -.3px; }
-  .header h1 span { color: var(--blue); }
-  .header-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
-  .header-sub { font-size: 13px; color: var(--text2); }
-
-  /* Divider */
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-  /* Section label */
-  .section-label {
-    font-size: 10px; font-weight: 600; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--text3); margin-bottom: 12px;
-  }
-
-  /* Metric cards */
-  .metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 24px; }
-  .metric {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px 20px;
-    position: relative; overflow: hidden;
-    transition: border-color .2s;
-  }
-  .metric:hover { border-color: var(--border2); }
-  .metric::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0;
-    height: 2px; background: var(--accent-color, var(--blue));
-    border-radius: var(--radius) var(--radius) 0 0;
-  }
-  .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 10px; font-weight: 500; }
-  .metric-value { font-size: 30px; font-weight: 700; line-height: 1; color: var(--text); margin-bottom: 5px; }
-  .metric-sub { font-size: 11px; color: var(--text3); }
-  .metric-icon {
-    position: absolute; top: 16px; right: 16px;
-    width: 30px; height: 30px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--icon-bg, rgba(79,142,247,.12));
-    font-size: 14px;
-  }
-
-  /* Charts row */
-  .charts-row { display: grid; grid-template-columns: 1fr 1fr 1.6fr 1.6fr; gap: 12px; margin-bottom: 24px; }
-  .chart-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px;
-  }
-  .chart-card-title { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 14px; text-transform: uppercase; letter-spacing: .06em; }
-  .donut-wrap { display: flex; flex-direction: column; align-items: center; }
-  .donut-canvas { position: relative; width: 140px; height: 140px; margin-bottom: 12px; }
-  .donut-legend { display: flex; flex-direction: column; gap: 6px; width: 100%; }
-  .legend-item { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; flex-shrink: 0; }
-  .legend-name { color: var(--text2); display: flex; align-items: center; }
-  .legend-val { font-weight: 600; color: var(--text); font-family: 'DM Mono', monospace; font-size: 12px; }
-
-  /* Supervisor bar charts */
-  .sup-charts { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; margin-bottom: 24px; }
-  .bar-canvas-wrap { position: relative; }
-
-  /* Supervisor detail cards */
-  .sup-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
-  .sup-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 18px;
-    transition: border-color .2s;
-  }
-  .sup-card:hover { border-color: var(--border2); }
-  .sup-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .avatar {
-    width: 38px; height: 38px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; flex-shrink: 0;
-  }
-  .sup-info { flex: 1; min-width: 0; }
-  .sup-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .sup-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .badge-row { display: flex; gap: 5px; flex-wrap: wrap; }
-  .badge {
-    font-size: 10px; font-weight: 600; padding: 3px 8px;
-    border-radius: 99px; letter-spacing: .02em;
-  }
-  .badge-yellow { background: rgba(251,191,36,.15); color: var(--amber); border: 1px solid rgba(251,191,36,.25); }
-  .badge-red    { background: rgba(248,113,113,.15); color: var(--red);   border: 1px solid rgba(248,113,113,.25); }
-  .badge-blue   { background: rgba(79,142,247,.12);  color: var(--blue);  border: 1px solid rgba(79,142,247,.2); }
-
-  .sup-stats { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 7px; margin-bottom: 12px; }
-  .stat { background: var(--bg3); border-radius: var(--radius-sm); padding: 8px 10px; }
-  .stat-label { font-size: 9px; color: var(--text3); margin-bottom: 4px; text-transform: uppercase; letter-spacing: .06em; font-weight: 500; }
-  .stat-val { font-size: 16px; font-weight: 700; color: var(--text); font-family: 'DM Mono', monospace; }
-  .stat-val.yellow { color: var(--amber); }
-  .stat-val.red    { color: var(--red); }
-
-  .bar-section { display: flex; flex-direction: column; gap: 8px; }
-  .bar-row { display: flex; align-items: center; gap: 8px; }
-  .bar-label-text { font-size: 10px; color: var(--text3); min-width: 78px; }
-  .bar-track { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-  .bar-pct { font-size: 10px; color: var(--text3); min-width: 30px; text-align: right; font-family: 'DM Mono', monospace; }
-
-  /* Resignation table inside sup card */
-  .res-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
-  .res-table th { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--text3); font-weight: 600; padding: 0 0 6px; text-align: left; }
-  .res-table td { padding: 5px 0; border-top: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
-  .res-table td:last-child { text-align: right; }
-  .pill-yellow { display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: rgba(251,191,36,.15); color: var(--amber); border: 1px solid rgba(251,191,36,.25); }
-  .pill-red    { display: inline-block; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 99px; background: rgba(248,113,113,.15); color: var(--red);   border: 1px solid rgba(248,113,113,.25); }
-
-  /* Empty state */
-  .no-res { font-size: 11px; color: var(--text3); font-style: italic; padding: 6px 0; }
+body { font-family: 'Segoe UI'; background:#0e1117; color:#e8eaf0; padding:20px; }
+.hidden { display:none; }
+.card { background:#1e2535; padding:15px; border-radius:10px; margin-bottom:10px; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+select { padding:6px; margin-right:5px; }
+canvas { background:#1e2535; padding:10px; border-radius:10px; }
+.viewer { font-size:12px; color:#aaa; margin-bottom:10px; }
+table { width:100%; border-collapse: collapse; }
+td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
 </style>
 </head>
+
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <h1>Warehouse <span>Headcount</span> Dashboard</h1>
-    <span class="header-date">Cập nhật: 30/03/2026</span>
-  </div>
-  <div class="header-sub">Tổng hợp nhân sự theo BU · Manager · Supervisor</div>
+<!-- LOGIN -->
+<div id="loginBox">
+  <h3>Login</h3>
+  <input id="user" placeholder="User">
+  <input id="pass" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
 </div>
 
-<!-- METRIC CARDS -->
-<div class="section-label">Tổng quan</div>
-<div class="metrics">
-  <div class="metric" style="--accent-color: var(--blue); --icon-bg: rgba(79,142,247,.1)">
-    <div class="metric-icon">👥</div>
-    <div class="metric-label">Tổng nhân viên</div>
-    <div class="metric-value">599</div>
-    <div class="metric-sub">583 đang làm · 16 có LWD</div>
-  </div>
-  <div class="metric" style="--accent-color: var(--green); --icon-bg: rgba(52,211,153,.1)">
-    <div class="metric-icon">✅</div>
-    <div class="metric-label">Nhân viên chính thức</div>
-    <div class="metric-value">398</div>
-    <div class="metric-sub">66.4% tổng số</div>
-  </div>
-  <div class="metric" style="--accent-color: var(--amber); --icon-bg: rgba(251,191,36,.1)">
-    <div class="metric-icon">🏢</div>
-    <div class="metric-label">Nhân viên Outsource</div>
-    <div class="metric-value">201</div>
-    <div class="metric-sub">33.6% tổng số · 14 đơn vị</div>
-  </div>
-  <div class="metric" style="--accent-color: var(--red); --icon-bg: rgba(248,113,113,.1)">
-    <div class="metric-icon">⚠️</div>
-    <div class="metric-label">Sẽ nghỉ trong tháng 3/2026</div>
-    <div class="metric-value" style="color: var(--red)">8</div>
-    <div class="metric-sub">5 đã nghỉ · 3 sắp nghỉ (đến 31/3)</div>
-  </div>
+<!-- APP -->
+<div id="app" class="hidden">
+
+<h2>Warehouse Dashboard</h2>
+<button onclick="logout()">Logout</button>
+
+<div class="viewer">👀 Online: <span id="viewerList"></span></div>
+
+<div id="updated"></div>
+
+<!-- FILTER -->
+<div style="margin:10px 0">
+  <select id="filterBU"></select>
+  <select id="filterMgr"></select>
+  <select id="filterSup"></select>
 </div>
 
-<!-- DONUT + BAR CHARTS -->
-<div class="section-label">Phân bổ nhân sự</div>
-<div class="charts-row">
-  <!-- BU Donut -->
-  <div class="chart-card">
-    <div class="chart-card-title">Theo BU</div>
-    <div class="donut-wrap">
-      <div class="donut-canvas"><canvas id="buChart"></canvas></div>
-      <div class="donut-legend">
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#4f8ef7"></span>OP</span><span class="legend-val">299</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#34d399"></span>CPT</span><span class="legend-val">281</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#fbbf24"></span>D2</span><span class="legend-val">13</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#f87171"></span>CPT-OP</span><span class="legend-val">6</span></div>
-      </div>
-    </div>
-  </div>
+<!-- METRICS -->
+<div class="grid" id="metrics"></div>
 
-  <!-- Manager Donut -->
-  <div class="chart-card">
-    <div class="chart-card-title">Theo Manager</div>
-    <div class="donut-wrap">
-      <div class="donut-canvas"><canvas id="mgrChart"></canvas></div>
-      <div class="donut-legend">
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#a78bfa"></span>Sharp</span><span class="legend-val">317</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#2dd4bf"></span>Siva</span><span class="legend-val">157</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#fbbf24"></span>FGs OP</span><span class="legend-val">58</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#4f8ef7"></span>FGs TP4</span><span class="legend-val">43</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#f87171"></span>Razel</span><span class="legend-val">21</span></div>
-        <div class="legend-item"><span class="legend-name"><span class="legend-dot" style="background:#555e72"></span>Raki</span><span class="legend-val">3</span></div>
-      </div>
-    </div>
-  </div>
+<!-- CHARTS -->
+<canvas id="buChart"></canvas><br>
+<canvas id="mgrChart"></canvas><br>
+<canvas id="supChart"></canvas>
 
-  <!-- Sup Headcount Bar -->
-  <div class="chart-card">
-    <div class="chart-card-title">Headcount theo Supervisor</div>
-    <div class="bar-canvas-wrap" style="position:relative;height:200px"><canvas id="supBarChart"></canvas></div>
-  </div>
-
-  <!-- Perm vs Outsource Stacked -->
-  <div class="chart-card">
-    <div class="chart-card-title">Permanent vs Outsource</div>
-    <div class="bar-canvas-wrap" style="position:relative;height:200px"><canvas id="typeChart"></canvas></div>
-  </div>
+<!-- TABLE TITLE -->
+<div class="card">
+  <h3>Headcount theo Title</h3>
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Total</th><th>Permanent</th><th>Outsource</th></tr>
+    </thead>
+    <tbody id="titleTable"></tbody>
+  </table>
 </div>
 
-<!-- SUPERVISOR DETAIL -->
-<div class="section-label">Chi tiết theo Supervisor</div>
-<div class="sup-grid" id="supGrid"></div>
+</div>
 
 <script>
-// ---- DATA ----
-const sups = [
-  {
-    name: 'Đặng Đức Tần', bu: 'CPT, OP', mgr: 'Sharp',
-    total: 112, permanent: 71, outsource: 41,
-    wsk: 82,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Bùi Xuân Nam', bu: 'CPT, OP', mgr: 'Sharp',
-    total: 97, permanent: 68, outsource: 29,
-    wsk: 73,
-    already: 1, upcoming: 1, total_month: 2,
-    resignees: [
-      { name: 'Hồ Minh Trong',  lwd: '21/03/2026', type: 'red' },
-      { name: 'Lê Tấn Lộc',     lwd: '31/03/2026', type: 'yellow' },
-    ]
-  },
-  {
-    name: 'Trần Quốc Phương', bu: 'OP', mgr: 'FGs OP',
-    total: 58, permanent: 37, outsource: 21,
-    wsk: 47,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Lê Tài', bu: 'OP', mgr: 'Siva',
-    total: 56, permanent: 42, outsource: 14,
-    wsk: 37,
-    already: 3, upcoming: 0, total_month: 2,
-    resignees: [
-      { name: 'Đoàn Thanh Hùng', lwd: '20/04/2025', type: 'red' },
-      { name: 'Lư Khải Đăng',    lwd: '25/03/2026', type: 'red' },
-      { name: 'Tô Hữu Duy',      lwd: '26/03/2026', type: 'red' },
-      { name: 'Trần Hữu Vinh',   lwd: '20/04/2026', type: 'yellow' },
-      { name: 'Phan Văn Tài',    lwd: '04/04/2026', type: 'yellow' },
-    ]
-  },
-  {
-    name: 'Nguyễn Văn Thọ', bu: 'OP', mgr: 'Siva',
-    total: 54, permanent: 38, outsource: 16,
-    wsk: 40,
-    already: 0, upcoming: 2, total_month: 2,
-    resignees: [
-      { name: 'Trần Anh Đức',    lwd: '31/03/2026', type: 'yellow' },
-      { name: 'Nguyễn Công Vũ',  lwd: '31/03/2026', type: 'yellow' },
-      { name: 'Nông Văn Quý',    lwd: '20/04/2026', type: 'yellow' },
-    ]
-  },
-  {
-    name: 'Tsần Đạt Thành', bu: 'OP', mgr: 'Siva',
-    total: 47, permanent: 25, outsource: 22,
-    wsk: 38,
-    already: 1, upcoming: 1, total_month: 2,
-    resignees: [
-      { name: 'Phan Duy Khang',  lwd: '24/03/2026', type: 'red' },
-      { name: 'Hồ Phát Triển',   lwd: '31/03/2026', type: 'yellow' },
-    ]
-  },
-  {
-    name: 'Ding Jia Lai', bu: 'CPT', mgr: 'Sharp',
-    total: 46, permanent: 30, outsource: 16,
-    wsk: 38,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Danh Bình Phú', bu: 'CPT', mgr: 'FGs TP4',
-    total: 43, permanent: 31, outsource: 12,
-    wsk: 33,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: [
-      { name: 'Lê Thanh Phương', lwd: '06/04/2026', type: 'yellow' },
-    ]
-  },
-  {
-    name: 'Mike Liu Yuan Jun', bu: 'CPT, CPT-OP, OP', mgr: 'Sharp',
-    total: 42, permanent: 29, outsource: 13,
-    wsk: 26,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Hà Văn Tính', bu: 'CPT, OP', mgr: 'Razel',
-    total: 21, permanent: 10, outsource: 11,
-    wsk: 15,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Lê Đình Minh', bu: 'D2', mgr: 'Sharp',
-    total: 13, permanent: 7, outsource: 6,
-    wsk: 9,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Sharp Lu Hao Lin', bu: 'CPT, OP', mgr: 'Sharp',
-    total: 5, permanent: 5, outsource: 0,
-    wsk: 0,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Luces Raquel Rubis', bu: 'CPT, OP', mgr: 'Raki',
-    total: 3, permanent: 3, outsource: 0,
-    wsk: 0,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-  {
-    name: 'Taylor Nguyễn Minh Thư', bu: 'CPT', mgr: 'Sharp',
-    total: 2, permanent: 2, outsource: 0,
-    wsk: 0,
-    already: 0, upcoming: 0, total_month: 0,
-    resignees: []
-  },
-];
+// ================= LOGIN =================
+const USER="admin", PASS="123456";
 
-const avatarColors = [
-  ['#1e3a5f','#4f8ef7'], ['#1a3d2e','#34d399'], ['#3b2569','#a78bfa'],
-  ['#3d2b00','#fbbf24'], ['#3b1515','#f87171'], ['#1a3535','#2dd4bf'],
-  ['#1f3060','#60a5fa'], ['#2e1f3d','#c084fc'], ['#1e3830','#6ee7b7'],
-  ['#2d2000','#f59e0b'], ['#1f1f3d','#818cf8'], ['#2d1515','#fca5a5'],
-  ['#1a2d1a','#86efac'], ['#2d1f00','#fdba74'],
-];
+function login(){
+  if(user.value===USER && pass.value===PASS){
+    localStorage.setItem("auth","ok");
+    localStorage.setItem("viewer",Date.now());
+    location.reload();
+  } else alert("Sai tài khoản");
+}
+function logout(){ localStorage.clear(); location.reload(); }
 
-function initials(name) {
-  const p = name.trim().split(' ');
-  return (p[0][0] + p[p.length - 1][0]).toUpperCase();
+if(localStorage.getItem("auth")==="ok"){
+  loginBox.classList.add("hidden");
+  app.classList.remove("hidden");
+  init();
 }
 
-// ---- CHARTS ----
-Chart.defaults.color = '#555e72';
-Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
+// ================= VIEWER =================
+function updateViewer(){
+  const key="VIEWERS";
+  let v=JSON.parse(localStorage.getItem(key)||"{}");
+  v[localStorage.getItem("viewer")]=Date.now();
 
-new Chart(document.getElementById('buChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['OP','CPT','D2','CPT-OP'],
-    datasets: [{ data: [299,281,13,6], backgroundColor: ['#4f8ef7','#34d399','#fbbf24','#f87171'], borderWidth: 0, hoverOffset: 4 }]
-  },
-  options: { responsive: true, maintainAspectRatio: true, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.raw} NV` } } } }
-});
+  Object.keys(v).forEach(k=>{
+    if(Date.now()-v[k]>10000) delete v[k];
+  });
 
-new Chart(document.getElementById('mgrChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Sharp','Siva','FGs OP','FGs TP4','Razel','Raki'],
-    datasets: [{ data: [317,157,58,43,21,3], backgroundColor: ['#a78bfa','#2dd4bf','#fbbf24','#4f8ef7','#f87171','#555e72'], borderWidth: 0, hoverOffset: 4 }]
-  },
-  options: { responsive: true, maintainAspectRatio: true, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => ` ${c.label}: ${c.raw} NV` } } } }
-});
+  localStorage.setItem(key,JSON.stringify(v));
+  viewerList.innerText=Object.keys(v).length;
+}
 
-const supLabels = sups.map(s => s.name.split(' ').slice(-1)[0]);
-new Chart(document.getElementById('supBarChart'), {
-  type: 'bar',
-  data: {
-    labels: supLabels,
-    datasets: [{ data: sups.map(s => s.total), backgroundColor: '#4f8ef7', borderRadius: 4, borderSkipped: false }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { title: (i) => sups[i[0].dataIndex].name } } },
-    scales: {
-      x: { ticks: { font: { size: 10 }, maxRotation: 40 }, grid: { color: 'rgba(255,255,255,.05)', drawBorder: false } },
-      y: { ticks: { font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } }
-    }
-  }
-});
+// ================= FILTER =================
+function initFilters(data){
+  fill(filterBU, [...new Set(data.map(e=>e.bu))]);
+  fill(filterMgr, [...new Set(data.map(e=>e.manager))]);
+  fill(filterSup, [...new Set(data.map(e=>e.sup))]);
+}
+function fill(el,arr){
+  el.innerHTML='<option value="">All</option>' + arr.map(v=>`<option>${v}</option>`).join('');
+}
 
-new Chart(document.getElementById('typeChart'), {
-  type: 'bar',
-  data: {
-    labels: supLabels,
-    datasets: [
-      { label: 'Permanent', data: sups.map(s => s.permanent), backgroundColor: '#34d399', borderRadius: 0, stack: 's' },
-      { label: 'Outsource',  data: sups.map(s => s.outsource), backgroundColor: '#fbbf24', borderRadius: 4, stack: 's' }
-    ]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: { callbacks: { title: (i) => sups[i[0].dataIndex].name } } },
-    scales: {
-      x: { stacked: true, ticks: { font: { size: 10 }, maxRotation: 40 }, grid: { color: 'rgba(255,255,255,.05)' } },
-      y: { stacked: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(255,255,255,.05)' } }
-    }
-  }
-});
+function getFiltered(data){
+  return data.filter(e=>
+    (!filterBU.value || e.bu===filterBU.value) &&
+    (!filterMgr.value || e.manager===filterMgr.value) &&
+    (!filterSup.value || e.sup===filterSup.value)
+  );
+}
 
-// ---- SUPERVISOR CARDS ----
-const grid = document.getElementById('supGrid');
-sups.forEach((s, i) => {
-  const [bg, fg] = avatarColors[i];
-  const permPct = Math.round(s.permanent / s.total * 100);
-  const wskPct = s.total > 0 ? Math.round(s.wsk / s.total * 100) : 0;
+// ================= PROCESS =================
+function process(data){
+  const res={total:data.length, permanent:0, outsource:0, bu:{}, mgr:{}, sup:{}};
 
-  // Badge: total resign this month
-  let badge = '';
-  if (s.total_month > 0) {
-    const parts = [];
-    if (s.upcoming > 0) parts.push(`<span class="badge badge-yellow">Sắp nghỉ: ${s.upcoming}</span>`);
-    if (s.already > 0)  parts.push(`<span class="badge badge-red">Đã nghỉ: ${s.already}</span>`);
-    badge = `<span class="badge badge-blue">Tháng này: ${s.total_month}</span>` + parts.join('');
-  }
+  data.forEach(e=>{
+    if(e.check==='TTI') res.permanent++; else res.outsource++;
 
-  // Resignation rows
-  let resRows = '';
-  if (s.resignees.length === 0) {
-    resRows = '<div class="no-res">Không có nghỉ việc trong kỳ này</div>';
-  } else {
-    const rows = s.resignees.map(r =>
-      `<tr>
-        <td>${r.name}</td>
-        <td>${r.lwd}</td>
-        <td><span class="pill-${r.type}">${r.type === 'red' ? 'Đã nghỉ' : 'Sắp nghỉ'}</span></td>
-      </tr>`
-    ).join('');
-    resRows = `<table class="res-table">
-      <thead><tr><th>Họ tên</th><th>LWD</th><th>Trạng thái</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  }
+    res.bu[e.bu]=(res.bu[e.bu]||0)+1;
+    res.mgr[e.manager]=(res.mgr[e.manager]||0)+1;
 
-  const card = document.createElement('div');
-  card.className = 'sup-card';
-  card.innerHTML = `
-    <div class="sup-card-header">
-      <div class="avatar" style="background:${bg};color:${fg}">${initials(s.name)}</div>
-      <div class="sup-info">
-        <div class="sup-name">${s.name}</div>
-        <div class="sup-meta">Mgr: ${s.mgr} · BU: ${s.bu}</div>
-      </div>
-      <div class="badge-row">${badge}</div>
-    </div>
+    if(!res.sup[e.sup]) res.sup[e.sup]={total:0};
+    res.sup[e.sup].total++;
+  });
 
-    <div class="sup-stats">
-      <div class="stat"><div class="stat-label">Tổng NV</div><div class="stat-val">${s.total}</div></div>
-      <div class="stat"><div class="stat-label">Permanent</div><div class="stat-val">${s.permanent}</div></div>
-      <div class="stat"><div class="stat-label">Outsource</div><div class="stat-val">${s.outsource}</div></div>
-      <div class="stat"><div class="stat-label">Sắp nghỉ</div><div class="stat-val yellow">${s.upcoming}</div></div>
-      <div class="stat"><div class="stat-label">Đã nghỉ</div><div class="stat-val red">${s.already}</div></div>
-    </div>
+  return res;
+}
 
-    <div class="bar-section">
-      <div class="bar-row">
-        <span class="bar-label-text">Permanent</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${permPct}%;background:#34d399"></div></div>
-        <span class="bar-pct">${permPct}%</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label-text">Shift Keeper</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${wskPct}%;background:#4f8ef7"></div></div>
-        <span class="bar-pct">${s.wsk} HC</span>
-      </div>
-    </div>
+// ================= RENDER =================
+function renderAll(){
 
-    <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
-      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;color:var(--text3);margin-bottom:8px">Resignation</div>
-      ${resRows}
-    </div>
+  const raw=HR_RAW.employees;
+  const data=getFiltered(raw);
+  const r=process(data);
+
+  updated.innerText="Updated: "+HR_RAW.updated;
+
+  // metrics
+  metrics.innerHTML=`
+    <div class="card">Total: ${r.total}</div>
+    <div class="card">Permanent: ${r.permanent}</div>
+    <div class="card">Outsource: ${r.outsource}</div>
+    <div class="card">Resign (demo)</div>
   `;
-  grid.appendChild(card);
-});
+
+  // charts
+  new Chart(buChart,{type:'doughnut',data:{labels:Object.keys(r.bu),datasets:[{data:Object.values(r.bu)}]}});
+  new Chart(mgrChart,{type:'doughnut',data:{labels:Object.keys(r.mgr),datasets:[{data:Object.values(r.mgr)}]}});
+  new Chart(supChart,{type:'bar',data:{labels:Object.keys(r.sup),datasets:[{data:Object.values(r.sup).map(s=>s.total)}]}});
+
+  // table title
+  const map={};
+  data.forEach(e=>{
+    if(!map[e.title]) map[e.title]={t:0,p:0,o:0};
+    map[e.title].t++;
+    if(e.check==='TTI') map[e.title].p++; else map[e.title].o++;
+  });
+
+  titleTable.innerHTML=Object.entries(map).map(([k,v])=>`
+    <tr><td>${k}</td><td>${v.t}</td><td>${v.p}</td><td>${v.o}</td></tr>
+  `).join('');
+}
+
+// ================= INIT =================
+function init(){
+  const raw=HR_RAW.employees;
+
+  initFilters(raw);
+  renderAll();
+  updateViewer();
+
+  [filterBU,filterMgr,filterSup].forEach(f=>f.onchange=renderAll);
+
+  setInterval(updateViewer,5000);
+}
 </script>
+
 </body>
 </html>
