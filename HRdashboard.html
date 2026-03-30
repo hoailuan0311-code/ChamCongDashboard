@@ -7,40 +7,117 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <style>
-body { background:#0e1117; color:#e8eaf0; font-family:Arial; padding:20px; }
-.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-.card { background:#1e2535; padding:15px; border-radius:10px; }
-.bar { height:6px; background:#333; border-radius:4px; overflow:hidden; margin:6px 0; }
-.fill { height:100%; background:#34d399; }
-canvas { background:#1e2535; border-radius:10px; padding:10px; }
+:root{
+  --bg:#0e1117;
+  --card:#1e2535;
+  --text:#e8eaf0;
+  --sub:#8b92a8;
+  --blue:#4f8ef7;
+  --green:#34d399;
+  --yellow:#fbbf24;
+  --red:#f87171;
+}
 
-/* top charts */
-.top { display:grid; grid-template-columns:200px 200px 1fr; gap:15px; }
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Segoe UI';
+  padding:24px;
+}
 
-/* modal */
-#modal {
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+.header h1{font-size:22px;}
+.header small{color:var(--sub);}
+
+/* KPI */
+.kpi{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+.kpi-card{
+  background:var(--card);
+  padding:15px;
+  border-radius:12px;
+}
+.kpi-title{font-size:12px;color:var(--sub);}
+.kpi-value{font-size:26px;font-weight:700;}
+
+/* CHART AREA */
+.charts{
+  display:grid;
+  grid-template-columns:220px 220px 1fr;
+  gap:12px;
+  margin-bottom:20px;
+}
+canvas{
+  background:var(--card);
+  border-radius:12px;
+  padding:10px;
+}
+
+/* SUP GRID */
+.sup-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.sup-card{
+  background:var(--card);
+  padding:16px;
+  border-radius:12px;
+  transition:.2s;
+}
+.sup-card:hover{transform:translateY(-2px);}
+
+.bar{
+  height:6px;background:#333;border-radius:4px;margin:6px 0;
+}
+.fill{height:100%;background:var(--green);}
+
+/* MODAL */
+#modal{
   position:fixed; inset:0;
   background:rgba(0,0,0,.7);
   display:none; align-items:center; justify-content:center;
 }
-.modal-box {
-  background:#1e2535; padding:20px; border-radius:10px;
-  width:600px; max-height:80vh; overflow:auto;
+.modal-box{
+  background:var(--card);
+  padding:20px;
+  border-radius:12px;
+  width:650px;
+  max-height:80vh;
+  overflow:auto;
 }
 </style>
 </head>
 
 <body>
 
-<h2>Warehouse Dashboard</h2>
+<div class="header">
+  <h1>Warehouse Headcount Dashboard</h1>
+  <small id="updateTime"></small>
+</div>
 
-<div class="top">
+<!-- KPI -->
+<div class="kpi" id="kpi"></div>
+
+<!-- CHART -->
+<div class="charts">
   <canvas id="buChart"></canvas>
   <canvas id="mgrChart"></canvas>
   <canvas id="supChart"></canvas>
 </div>
 
-<div class="grid" id="supGrid"></div>
+<!-- SUP -->
+<div class="sup-grid" id="supGrid"></div>
 
 <!-- MODAL -->
 <div id="modal">
@@ -57,15 +134,14 @@ let RAW=[];
 fetch('dataHRdashboard.js?t='+Date.now())
 .then(r=>r.text())
 .then(t=>{
-  RAW = JSON.parse(t);
+  RAW=JSON.parse(t);
   init();
 });
 
 // ===== DATE =====
 function formatDate(n){
-  if(!n || n==="0") return '';
-  const d = new Date((Number(n)-25569)*86400*1000);
-  return d.toLocaleDateString('vi-VN');
+  if(!n||n==="0") return '';
+  return new Date((n-25569)*86400*1000).toLocaleDateString('vi-VN');
 }
 
 // ===== BUILD =====
@@ -73,31 +149,25 @@ function build(data){
 
   const today=new Date(); today.setHours(0,0,0,0);
 
-  const supMap={}, buMap={}, mgrMap={};
+  const bu={}, mgr={}, sup={};
 
   data.forEach(e=>{
 
-    buMap[e.bu]=(buMap[e.bu]||0)+1;
-    mgrMap[e.manager]=(mgrMap[e.manager]||0)+1;
+    bu[e.bu]=(bu[e.bu]||0)+1;
+    mgr[e.manager]=(mgr[e.manager]||0)+1;
 
-    if(!supMap[e.sup]){
-      supMap[e.sup]={
-        name:e.sup,
-        manager:e.manager,
-        total:0, perm:0, out:0, wsk:0, res:[]
-      };
+    if(!sup[e.sup]){
+      sup[e.sup]={name:e.sup,manager:e.manager,total:0,perm:0,out:0,res:[]};
     }
 
-    const s=supMap[e.sup];
+    const s=sup[e.sup];
     s.total++;
 
     if(e.check==='TTI') s.perm++;
     else s.out++;
 
-    if(e.title==='Warehouse Shift Keeper') s.wsk++;
-
     if(e.lwd && e.lwd!=="0"){
-      const d=new Date((Number(e.lwd)-25569)*86400*1000);
+      const d=new Date((e.lwd-25569)*86400*1000);
       s.res.push({
         id:e.id,
         name:e.name,
@@ -109,8 +179,8 @@ function build(data){
   });
 
   return {
-    sups:Object.values(supMap).sort((a,b)=>b.total-a.total),
-    buMap, mgrMap
+    bu,mgr,
+    sups:Object.values(sup).sort((a,b)=>b.total-a.total)
   };
 }
 
@@ -130,91 +200,82 @@ modal.onclick=()=>modal.style.display='none';
 // ===== INIT =====
 function init(){
 
-  const {sups,buMap,mgrMap}=build(RAW);
+  updateTime.innerText = "Updated: " + new Date().toLocaleString('vi-VN');
 
-  // ===== BU DONUT =====
+  const {bu,mgr,sups}=build(RAW);
+
+  // KPI
+  const total=RAW.length;
+  const perm=RAW.filter(x=>x.check==='TTI').length;
+
+  kpi.innerHTML=`
+    <div class="kpi-card"><div class="kpi-title">Total HC</div><div class="kpi-value">${total}</div></div>
+    <div class="kpi-card"><div class="kpi-title">Permanent</div><div class="kpi-value">${perm}</div></div>
+    <div class="kpi-card"><div class="kpi-title">Outsource</div><div class="kpi-value">${total-perm}</div></div>
+    <div class="kpi-card"><div class="kpi-title">Supervisor</div><div class="kpi-value">${sups.length}</div></div>
+  `;
+
+  // BU
   new Chart(buChart,{
     type:'doughnut',
-    data:{labels:Object.keys(buMap),datasets:[{data:Object.values(buMap)}]},
+    data:{labels:Object.keys(bu),datasets:[{data:Object.values(bu)}]},
     options:{
       onClick:(e,el)=>{
         if(!el.length)return;
-        const k=Object.keys(buMap)[el[0].index];
+        const k=Object.keys(bu)[el[0].index];
         show("BU: "+k, RAW.filter(x=>x.bu===k));
       }
     }
   });
 
-  // ===== MANAGER DONUT =====
+  // MGR
   new Chart(mgrChart,{
     type:'doughnut',
-    data:{labels:Object.keys(mgrMap),datasets:[{data:Object.values(mgrMap)}]},
+    data:{labels:Object.keys(mgr),datasets:[{data:Object.values(mgr)}]},
     options:{
       onClick:(e,el)=>{
         if(!el.length)return;
-        const k=Object.keys(mgrMap)[el[0].index];
+        const k=Object.keys(mgr)[el[0].index];
         show("Manager: "+k, RAW.filter(x=>x.manager===k));
       }
     }
   });
 
-  // ===== SUP BAR =====
+  // SUP BAR
   new Chart(supChart,{
     type:'bar',
     data:{
       labels:sups.map(s=>s.name),
-      datasets:[{
-        data:sups.map(s=>s.total)
-      }]
+      datasets:[{data:sups.map(s=>s.total)}]
     },
     options:{
-      plugins:{
-        legend:{display:false}
-      },
+      plugins:{legend:{display:false}},
       onClick:(e,el)=>{
         if(!el.length)return;
-        const sup=sups[el[0].index];
-        show("SUP: "+sup.name, RAW.filter(x=>x.sup===sup.name));
-      },
-      animation:{
-        onComplete:function(){
-          const chart=this.chart;
-          const ctx=chart.ctx;
-          chart.data.datasets.forEach((dataset,i)=>{
-            const meta=chart.getDatasetMeta(i);
-            meta.data.forEach((bar,index)=>{
-              ctx.fillStyle="#fff";
-              ctx.fillText(dataset.data[index], bar.x-5, bar.y-5);
-            });
-          });
-        }
+        const s=sups[el[0].index];
+        show("SUP: "+s.name, RAW.filter(x=>x.sup===s.name));
       }
     }
   });
 
-  // ===== SUP CARD =====
+  // SUP CARD
   supGrid.innerHTML=sups.map(s=>{
 
     const pct=Math.round(s.perm/s.total*100);
 
     return `
-    <div class="card">
-
+    <div class="sup-card">
       <b>${s.name}</b><br>
-      <small>Manager: ${s.manager}</small><br><br>
+      <small style="color:#8b92a8">Manager: ${s.manager}</small><br><br>
 
       Total: ${s.total} | Permanent: ${s.perm} | Outsource: ${s.out}
 
-      <div class="bar">
-        <div class="fill" style="width:${pct}%"></div>
-      </div>
-
-      <small>Permanent ${pct}%</small><br>
-      <small>Shift Keeper: ${s.wsk}</small><br><br>
+      <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
+      <small>Permanent ${pct}%</small><br><br>
 
       ${
         s.res.length===0
-        ? '<small>No resignation</small>'
+        ? '<small style="color:#8b92a8">No resignation</small>'
         : s.res.map(r=>`
           <div style="color:${r.type==='red'?'#f87171':'#fbbf24'};font-size:12px">
             ${r.id} - ${r.name} - ${r.lwd}
@@ -225,7 +286,6 @@ function init(){
     </div>
     `;
   }).join('');
-
 }
 </script>
 
