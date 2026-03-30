@@ -4,256 +4,156 @@
 <meta charset="UTF-8">
 <title>HR Dashboard</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <style>
-body { font-family: 'Segoe UI'; background:#0e1117; color:#e8eaf0; padding:20px; }
-.hidden { display:none; }
-.card { background:#1e2535; padding:15px; border-radius:10px; margin-bottom:10px; }
-.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-select { padding:6px; margin-right:5px; }
-canvas { background:#1e2535; padding:10px; border-radius:10px; margin-top:10px; }
-.viewer { font-size:12px; color:#aaa; margin-bottom:10px; }
-table { width:100%; border-collapse: collapse; }
-td,th { padding:6px; border-bottom:1px solid #333; font-size:12px; }
+/* ===== GIỮ NGUYÊN STYLE CỦA BẠN ===== */
+body { font-family: 'Be Vietnam Pro'; background:#0e1117; color:#e8eaf0; padding:20px; }
+.section-label { font-size:12px; margin:10px 0; color:#888; }
+.metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.metric { background:#1e2535; padding:15px; border-radius:10px; }
+.chart-card { background:#1e2535; padding:15px; border-radius:10px; }
+.sup-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:20px; }
+.sup-card { background:#1e2535; padding:15px; border-radius:10px; }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginBox">
-  <h3>Login</h3>
-  <input id="user" placeholder="User">
-  <input id="pass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
+<h2>Warehouse Headcount Dashboard</h2>
+
+<div class="section-label">Tổng quan</div>
+<div class="metrics" id="metrics"></div>
+
+<div class="section-label">Phân bổ</div>
+<div style="display:grid;grid-template-columns:1fr 1fr; gap:10px;">
+  <div class="chart-card"><canvas id="buChart"></canvas></div>
+  <div class="chart-card"><canvas id="mgrChart"></canvas></div>
 </div>
 
-<!-- APP -->
-<div id="app" class="hidden">
-
-<h2>Warehouse Dashboard</h2>
-<button onclick="logout()">Logout</button>
-
-<div class="viewer">👀 Online: <span id="viewerList"></span></div>
-
-<!-- FILTER -->
-<div style="margin:10px 0">
-  <select id="filterBU"></select>
-  <select id="filterMgr"></select>
-  <select id="filterSup"></select>
+<div class="chart-card" style="margin-top:10px">
+  <canvas id="supChart"></canvas>
 </div>
 
-<!-- METRICS -->
-<div class="grid" id="metrics"></div>
-
-<!-- CHARTS -->
-<canvas id="buChart"></canvas>
-<canvas id="mgrChart"></canvas>
-<canvas id="supChart"></canvas>
-
-<!-- TABLE TITLE -->
-<div class="card">
-  <h3>Headcount theo Title</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Total</th>
-        <th>Permanent</th>
-        <th>Outsource</th>
-      </tr>
-    </thead>
-    <tbody id="titleTable"></tbody>
-  </table>
-</div>
-
-</div>
+<div class="section-label">Supervisor</div>
+<div class="sup-grid" id="supGrid"></div>
 
 <script>
 
-// ================= LOGIN =================
-const USER="admin", PASS="123456";
+// ================= LOAD DATA =================
+let RAW = [];
 
-function login(){
-  if(user.value===USER && pass.value===PASS){
-    localStorage.setItem("auth","ok");
-    localStorage.setItem("viewer",Date.now());
-    location.reload();
-  } else alert("Sai tài khoản");
-}
-
-function logout(){
-  localStorage.clear();
-  location.reload();
-}
-
-if(localStorage.getItem("auth")==="ok"){
-  loginBox.classList.add("hidden");
-  app.classList.remove("hidden");
-  init();
-}
-
-// ================= DATA =================
-let RAW_DATA = [];
-
-async function loadData() {
-  try {
-    const res = await fetch('dataHRdashboard.js?t=' + Date.now());
+async function loadData(){
+  try{
+    const res = await fetch('dataHRdashboard.js?t='+Date.now());
     const text = await res.text();
+    RAW = JSON.parse(text);
 
-    RAW_DATA = JSON.parse(text);
+    console.log("DATA:", RAW);
 
-    console.log("DATA:", RAW_DATA);
+    initDashboard();
 
-    initFilters(RAW_DATA);
-    renderAll();
-
-  } catch (err) {
-    console.error("Load lỗi:", err);
-    metrics.innerHTML = "<div class='card'>Load data failed</div>";
+  }catch(e){
+    console.error(e);
+    document.body.innerHTML = "Load data failed";
   }
 }
 
-// ================= VIEWER =================
-function updateViewer(){
-  const key="VIEWERS";
-  let v=JSON.parse(localStorage.getItem(key)||"{}");
-
-  v[localStorage.getItem("viewer")] = Date.now();
-
-  Object.keys(v).forEach(k=>{
-    if(Date.now()-v[k]>10000) delete v[k];
-  });
-
-  localStorage.setItem(key,JSON.stringify(v));
-  viewerList.innerText = Object.keys(v).length;
-}
-
-// ================= FILTER =================
-function initFilters(data){
-
-  fill(filterBU, [...new Set(data.map(e=>e.bu))]);
-  fill(filterMgr, [...new Set(data.map(e=>e.manager))]);
-  fill(filterSup, [...new Set(data.map(e=>e.sup))]);
-
-}
-
-function fill(el, arr){
-  el.innerHTML = '<option value="">All</option>' +
-    arr.map(v=>`<option value="${v}">${v}</option>`).join('');
-}
-
-function getFiltered(data){
-  return data.filter(e =>
-    (!filterBU.value || e.bu===filterBU.value) &&
-    (!filterMgr.value || e.manager===filterMgr.value) &&
-    (!filterSup.value || e.sup===filterSup.value)
-  );
-}
-
 // ================= PROCESS =================
-function process(data){
+function buildSups(data){
 
-  const res = {
-    total: data.length,
-    permanent: 0,
-    outsource: 0,
-    bu:{}, mgr:{}, sup:{}
-  };
+  const map = {};
 
-  data.forEach(e=>{
+  data.forEach(e => {
 
-    if(e.check === 'TTI') res.permanent++;
-    else res.outsource++;
+    if (!map[e.sup]) {
+      map[e.sup] = {
+        name: e.sup,
+        mgr: e.manager,
+        total: 0,
+        permanent: 0,
+        outsource: 0
+      };
+    }
 
-    res.bu[e.bu] = (res.bu[e.bu]||0)+1;
-    res.mgr[e.manager] = (res.mgr[e.manager]||0)+1;
+    const s = map[e.sup];
 
-    if(!res.sup[e.sup]) res.sup[e.sup]={total:0};
-    res.sup[e.sup].total++;
+    s.total++;
+    if(e.check === 'TTI') s.permanent++;
+    else s.outsource++;
 
   });
 
-  return res;
+  return Object.values(map).sort((a,b)=>b.total-a.total);
 }
 
 // ================= RENDER =================
 let chartBU, chartMgr, chartSup;
 
-function renderAll(){
+function initDashboard(){
 
-  if (!RAW_DATA || RAW_DATA.length === 0) {
-    metrics.innerHTML = "<div class='card'>No data</div>";
+  if(!RAW || RAW.length===0){
+    document.body.innerHTML="No data";
     return;
   }
 
-  const data = getFiltered(RAW_DATA);
-  const r = process(data);
+  const sups = buildSups(RAW);
 
-  // metrics
+  // ===== METRICS =====
+  const total = RAW.length;
+  const perm = RAW.filter(e=>e.check==='TTI').length;
+  const out = total - perm;
+
   metrics.innerHTML = `
-    <div class="card">Total: ${r.total}</div>
-    <div class="card">Permanent: ${r.permanent}</div>
-    <div class="card">Outsource: ${r.outsource}</div>
-    <div class="card">Filtered: ${data.length}</div>
+    <div class="metric">Total: ${total}</div>
+    <div class="metric">Permanent: ${perm}</div>
+    <div class="metric">Outsource: ${out}</div>
+    <div class="metric">Supervisor: ${sups.length}</div>
   `;
 
-  // destroy old chart
-  chartBU && chartBU.destroy();
-  chartMgr && chartMgr.destroy();
-  chartSup && chartSup.destroy();
+  // ===== BU =====
+  const buMap = {};
+  RAW.forEach(e=> buMap[e.bu]=(buMap[e.bu]||0)+1);
 
-  // BU
-  chartBU = new Chart(buChart, {
+  chartBU = new Chart(buChart,{
     type:'doughnut',
-    data:{labels:Object.keys(r.bu), datasets:[{data:Object.values(r.bu)}]}
+    data:{labels:Object.keys(buMap),datasets:[{data:Object.values(buMap)}]}
   });
 
-  // Manager
-  chartMgr = new Chart(mgrChart, {
+  // ===== MANAGER =====
+  const mgrMap = {};
+  RAW.forEach(e=> mgrMap[e.manager]=(mgrMap[e.manager]||0)+1);
+
+  chartMgr = new Chart(mgrChart,{
     type:'doughnut',
-    data:{labels:Object.keys(r.mgr), datasets:[{data:Object.values(r.mgr)}]}
+    data:{labels:Object.keys(mgrMap),datasets:[{data:Object.values(mgrMap)}]}
   });
 
-  // Supervisor
-  chartSup = new Chart(supChart, {
+  // ===== SUP =====
+  chartSup = new Chart(supChart,{
     type:'bar',
-    data:{labels:Object.keys(r.sup), datasets:[{data:Object.values(r.sup).map(s=>s.total)}]}
+    data:{
+      labels:sups.map(s=>s.name),
+      datasets:[{data:sups.map(s=>s.total)}]
+    }
   });
 
-  // TABLE TITLE
-  const map = {};
-  data.forEach(e=>{
-    if(!map[e.title]) map[e.title]={t:0,p:0,o:0};
-
-    map[e.title].t++;
-    if(e.check==='TTI') map[e.title].p++;
-    else map[e.title].o++;
-  });
-
-  titleTable.innerHTML = Object.entries(map).map(([k,v])=>`
-    <tr>
-      <td>${k}</td>
-      <td>${v.t}</td>
-      <td>${v.p}</td>
-      <td>${v.o}</td>
-    </tr>
+  // ===== SUP CARD =====
+  supGrid.innerHTML = sups.map(s=>`
+    <div class="sup-card">
+      <b>${s.name}</b><br>
+      Mgr: ${s.mgr}<br><br>
+      Total: ${s.total}<br>
+      Permanent: ${s.permanent}<br>
+      Outsource: ${s.outsource}
+    </div>
   `).join('');
+
 }
 
 // ================= INIT =================
-function init(){
-
-  loadData();
-  updateViewer();
-
-  [filterBU,filterMgr,filterSup].forEach(f=>{
-    f.onchange = renderAll;
-  });
-
-  setInterval(updateViewer,5000);
-}
+loadData();
 
 </script>
 
