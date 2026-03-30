@@ -8,20 +8,21 @@
 
 <style>
 body { background:#0e1117; color:#e8eaf0; font-family:Arial; padding:20px; }
-.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
 .card { background:#1e2535; padding:15px; border-radius:10px; }
-select { margin-right:5px; padding:5px; }
-canvas { background:#1e2535; padding:10px; border-radius:10px; margin-top:10px; }
+.bar { height:6px; background:#333; border-radius:4px; overflow:hidden; margin:6px 0; }
+.fill { height:100%; background:#34d399; }
+canvas { background:#1e2535; border-radius:10px; padding:10px; }
 
 /* modal */
 #modal {
-  position:fixed; top:0; left:0; right:0; bottom:0;
+  position:fixed; inset:0;
   background:rgba(0,0,0,.7);
   display:none; align-items:center; justify-content:center;
 }
 .modal-box {
   background:#1e2535; padding:20px; border-radius:10px;
-  max-height:80vh; overflow:auto; width:600px;
+  width:600px; max-height:80vh; overflow:auto;
 }
 </style>
 </head>
@@ -30,18 +31,11 @@ canvas { background:#1e2535; padding:10px; border-radius:10px; margin-top:10px; 
 
 <h2>Warehouse Dashboard</h2>
 
-<!-- FILTER -->
-<select id="fBU"></select>
-<select id="fMgr"></select>
-<select id="fSup"></select>
-
-<!-- METRICS -->
-<div class="grid" id="metrics"></div>
-
-<!-- CHART -->
-<canvas id="buChart"></canvas>
+<!-- TOTAL SUP CHART -->
 <canvas id="supChart"></canvas>
-<canvas id="resignChart"></canvas>
+
+<!-- SUP CARDS -->
+<div class="grid" id="supGrid"></div>
 
 <!-- MODAL -->
 <div id="modal">
@@ -59,30 +53,14 @@ let RAW = [];
 async function load(){
   const res = await fetch('dataHRdashboard.js?t='+Date.now());
   RAW = JSON.parse(await res.text());
-
   init();
 }
 
-// ================= NORMALIZE =================
-function norm(d){
-  return d.map(e=>({
-    bu:e.bu,
-    name:e.name,
-    sup:e.sup,
-    manager:e.manager,
-    title:e.title,
-    check:e.check,
-    lwd: e.lwd && e.lwd!=="0" ? new Date((e.lwd-25569)*86400*1000) : null
-  }));
-}
-
-// ================= FILTER =================
-function applyFilter(data){
-  return data.filter(e =>
-    (!fBU.value || e.bu===fBU.value) &&
-    (!fMgr.value || e.manager===fMgr.value) &&
-    (!fSup.value || e.sup===fSup.value)
-  );
+// ================= HELP =================
+function excelDate(n){
+  if(!n || n==="0") return '';
+  const d = new Date((Number(n)-25569)*86400*1000);
+  return d.toLocaleDateString('vi-VN');
 }
 
 // ================= BUILD =================
@@ -90,129 +68,155 @@ function build(data){
 
   const today = new Date(); today.setHours(0,0,0,0);
 
-  const bu={}, sup={}, resign={already:[], upcoming:[]};
+  const map = {};
 
   data.forEach(e=>{
-    bu[e.bu]=(bu[e.bu]||0)+1;
 
-    if(!sup[e.sup]) sup[e.sup]={total:0};
-    sup[e.sup].total++;
-
-    if(e.lwd){
-      if(e.lwd < today) resign.already.push(e);
-      else resign.upcoming.push(e);
+    if(!map[e.sup]){
+      map[e.sup] = {
+        name:e.sup,
+        mgr:e.manager,
+        total:0,
+        perm:0,
+        out:0,
+        wsk:0,
+        res:[]
+      };
     }
+
+    const s = map[e.sup];
+
+    s.total++;
+    if(e.check==='TTI') s.perm++;
+    else s.out++;
+
+    if(e.title==='Warehouse Shift Keeper') s.wsk++;
+
+    if(e.lwd && e.lwd !== "0"){
+      const d = new Date((Number(e.lwd)-25569)*86400*1000);
+
+      s.res.push({
+        name:e.name,
+        id:e.id,
+        lwd:excelDate(e.lwd),
+        type: d<today?'red':'yellow'
+      });
+    }
+
   });
 
-  return {bu,sup,resign};
+  return Object.values(map).sort((a,b)=>b.total-a.total);
 }
 
+// ================= MODAL =================
+function showModal(title,list){
+
+  modal.style.display='flex';
+  modalTitle.innerText = title;
+
+  modalBody.innerHTML = list.map(e=>`
+    <div style="padding:6px;border-bottom:1px solid #333">
+      ${e.name} - ${e.id} - ${e.lwd||''}
+    </div>
+  `).join('');
+}
+
+modal.onclick=()=>modal.style.display='none';
+
 // ================= RENDER =================
-let chartBU, chartSup, chartResign;
+let chart;
 
-function render(){
+function init(){
 
-  const data = applyFilter(norm(RAW));
-  const r = build(data);
+  const sups = build(RAW);
 
-  // metrics
-  metrics.innerHTML = `
-    <div class="card">Total: ${data.length}</div>
-    <div class="card">Resigned: ${r.resign.already.length}</div>
-    <div class="card">Upcoming: ${r.resign.upcoming.length}</div>
-    <div class="card">Sup: ${Object.keys(r.sup).length}</div>
-  `;
-
-  // destroy
-  chartBU && chartBU.destroy();
-  chartSup && chartSup.destroy();
-  chartResign && chartResign.destroy();
-
-  // BU chart
-  chartBU = new Chart(buChart,{
-    type:'doughnut',
-    data:{labels:Object.keys(r.bu),datasets:[{data:Object.values(r.bu)}]},
-    options:{
-      onClick:(e,el)=>{
-        if(!el.length) return;
-        const label = chartBU.data.labels[el[0].index];
-        showModal("BU: "+label, data.filter(x=>x.bu===label));
-      }
-    }
-  });
-
-  // SUP chart
-  chartSup = new Chart(supChart,{
+  // ===== TOTAL SUP CHART =====
+  chart = new Chart(supChart,{
     type:'bar',
     data:{
-      labels:Object.keys(r.sup),
-      datasets:[{data:Object.values(r.sup).map(s=>s.total)}]
-    },
-    options:{
-      onClick:(e,el)=>{
-        if(!el.length) return;
-        const label = chartSup.data.labels[el[0].index];
-        showModal("SUP: "+label, data.filter(x=>x.sup===label));
-      }
-    }
-  });
-
-  // RESIGN chart
-  chartResign = new Chart(resignChart,{
-    type:'doughnut',
-    data:{
-      labels:['Already','Upcoming'],
-      datasets:[{data:[r.resign.already.length, r.resign.upcoming.length]}]
+      labels:sups.map(s=>s.name),
+      datasets:[{data:sups.map(s=>s.total)}]
     },
     options:{
       onClick:(e,el)=>{
         if(!el.length) return;
         const idx = el[0].index;
-        const list = idx===0 ? r.resign.already : r.resign.upcoming;
-        showModal(idx===0?"Đã nghỉ":"Sắp nghỉ", list);
+        const sup = sups[idx];
+
+        const list = RAW.filter(x=>x.sup===sup.name)
+          .map(x=>({
+            name:x.name,
+            id:x.id,
+            lwd:excelDate(x.lwd)
+          }));
+
+        showModal("SUP: "+sup.name, list);
       }
     }
   });
 
-}
+  // ===== SUP CARDS =====
+  supGrid.innerHTML = sups.map((s,i)=>{
 
-// ================= MODAL =================
-function showModal(title, list){
+    const permPct = Math.round(s.perm/s.total*100);
 
-  modal.style.display="flex";
-  modalTitle.innerText = title;
+    return `
+    <div class="card">
 
-  modalBody.innerHTML = list.map(e=>`
-    <div style="border-bottom:1px solid #333;padding:6px 0">
-      ${e.name} | ${e.sup} | ${e.bu}
+      <b>${s.name}</b><br>
+      <small>Mgr: ${s.mgr}</small><br><br>
+
+      Total: ${s.total} | Perm: ${s.perm} | Out: ${s.out}
+
+      <div class="bar">
+        <div class="fill" style="width:${permPct}%"></div>
+      </div>
+
+      <small>Permanent ${permPct}%</small><br>
+      <small>Shift Keeper: ${s.wsk}</small><br><br>
+
+      <!-- MINI CHART -->
+      <canvas id="mini${i}" height="80"></canvas>
+
+      <div style="margin-top:8px">
+        ${
+          s.res.length===0
+          ? '<small>No resignation</small>'
+          : s.res.map(r=>`
+            <div style="color:${r.type==='red'?'#f87171':'#fbbf24'};font-size:12px">
+              ${r.name} - ${r.id} - ${r.lwd}
+            </div>
+          `).join('')
+        }
+      </div>
+
     </div>
-  `).join('');
+    `;
 
-}
+  }).join('');
 
-modal.onclick = ()=> modal.style.display="none";
+  // ===== MINI CHART EACH SUP =====
+  sups.forEach((s,i)=>{
 
-// ================= FILTER INIT =================
-function initFilter(data){
+    const ctx = document.getElementById('mini'+i);
 
-  const set = (arr)=> [...new Set(arr)];
+    new Chart(ctx,{
+      type:'doughnut',
+      data:{
+        labels:['Perm','Out'],
+        datasets:[{data:[s.perm,s.out]}]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        onClick:()=>{
+          const list = RAW.filter(x=>x.sup===s.name);
+          showModal("SUP DETAIL: "+s.name, list);
+        }
+      }
+    });
 
-  fBU.innerHTML = '<option value="">BU</option>' + set(data.map(e=>e.bu)).map(v=>`<option>${v}</option>`).join('');
-  fMgr.innerHTML = '<option value="">Manager</option>' + set(data.map(e=>e.manager)).map(v=>`<option>${v}</option>`).join('');
-  fSup.innerHTML = '<option value="">Sup</option>' + set(data.map(e=>e.sup)).map(v=>`<option>${v}</option>`).join('');
+  });
 
-}
-
-// ================= INIT =================
-function init(){
-
-  const data = norm(RAW);
-
-  initFilter(data);
-
-  [fBU,fMgr,fSup].forEach(x=>x.onchange=render);
-
-  render();
 }
 
 load();
