@@ -4,18 +4,20 @@
 <meta charset="UTF-8">
 <title>HR Dashboard</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <style>
-/* ===== GIỮ NGUYÊN STYLE CỦA BẠN ===== */
-body { font-family: 'Be Vietnam Pro'; background:#0e1117; color:#e8eaf0; padding:20px; }
-.section-label { font-size:12px; margin:10px 0; color:#888; }
-.metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-.metric { background:#1e2535; padding:15px; border-radius:10px; }
-.chart-card { background:#1e2535; padding:15px; border-radius:10px; }
-.sup-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:20px; }
-.sup-card { background:#1e2535; padding:15px; border-radius:10px; }
+body { font-family:'Be Vietnam Pro'; background:#0e1117; color:#e8eaf0; padding:20px; }
+.section { margin:20px 0; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.card { background:#1e2535; padding:15px; border-radius:10px; }
+.sup-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+.bar { height:6px; background:#333; border-radius:4px; overflow:hidden; }
+.fill { height:100%; background:#34d399; }
+.small { font-size:12px; color:#aaa; }
+.red { color:#f87171; }
+.yellow { color:#fbbf24; }
 </style>
 </head>
 
@@ -23,65 +25,71 @@ body { font-family: 'Be Vietnam Pro'; background:#0e1117; color:#e8eaf0; padding
 
 <h2>Warehouse Headcount Dashboard</h2>
 
-<div class="section-label">Tổng quan</div>
-<div class="metrics" id="metrics"></div>
+<!-- METRICS -->
+<div class="section grid" id="metrics"></div>
 
-<div class="section-label">Phân bổ</div>
-<div style="display:grid;grid-template-columns:1fr 1fr; gap:10px;">
-  <div class="chart-card"><canvas id="buChart"></canvas></div>
-  <div class="chart-card"><canvas id="mgrChart"></canvas></div>
+<!-- CHART -->
+<div class="section">
+  <canvas id="buChart"></canvas>
 </div>
 
-<div class="chart-card" style="margin-top:10px">
-  <canvas id="supChart"></canvas>
+<!-- SUP -->
+<div class="section">
+  <div class="sup-grid" id="supGrid"></div>
 </div>
-
-<div class="section-label">Supervisor</div>
-<div class="sup-grid" id="supGrid"></div>
 
 <script>
-
-// ================= LOAD DATA =================
+// ================= LOAD =================
 let RAW = [];
 
 async function loadData(){
-  try{
-    const res = await fetch('dataHRdashboard.js?t='+Date.now());
-    const text = await res.text();
-    RAW = JSON.parse(text);
-
-    console.log("DATA:", RAW);
-
-    initDashboard();
-
-  }catch(e){
-    console.error(e);
-    document.body.innerHTML = "Load data failed";
-  }
+  const res = await fetch('dataHRdashboard.js?t='+Date.now());
+  RAW = JSON.parse(await res.text());
+  init();
 }
 
 // ================= PROCESS =================
-function buildSups(data){
+function process(data){
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
 
   const map = {};
 
-  data.forEach(e => {
+  data.forEach(e=>{
 
-    if (!map[e.sup]) {
+    if(!map[e.sup]){
       map[e.sup] = {
-        name: e.sup,
-        mgr: e.manager,
-        total: 0,
-        permanent: 0,
-        outsource: 0
+        name:e.sup,
+        mgr:e.manager,
+        total:0,
+        perm:0,
+        out:0,
+        wsk:0,
+        already:0,
+        upcoming:0,
+        res:[]
       };
     }
 
     const s = map[e.sup];
-
     s.total++;
-    if(e.check === 'TTI') s.permanent++;
-    else s.outsource++;
+
+    if(e.check==='TTI') s.perm++;
+    else s.out++;
+
+    if(e.title==='Warehouse Shift Keeper') s.wsk++;
+
+    if(e.lwd && e.lwd !== "0"){
+      const d = new Date(e.lwd);
+      if(d < today){
+        s.already++;
+        s.res.push({name:e.name,lwd:e.lwd,type:'red'});
+      } else {
+        s.upcoming++;
+        s.res.push({name:e.name,lwd:e.lwd,type:'yellow'});
+      }
+    }
 
   });
 
@@ -89,16 +97,14 @@ function buildSups(data){
 }
 
 // ================= RENDER =================
-let chartBU, chartMgr, chartSup;
+function init(){
 
-function initDashboard(){
-
-  if(!RAW || RAW.length===0){
+  if(!RAW.length){
     document.body.innerHTML="No data";
     return;
   }
 
-  const sups = buildSups(RAW);
+  const sups = process(RAW);
 
   // ===== METRICS =====
   const total = RAW.length;
@@ -106,53 +112,64 @@ function initDashboard(){
   const out = total - perm;
 
   metrics.innerHTML = `
-    <div class="metric">Total: ${total}</div>
-    <div class="metric">Permanent: ${perm}</div>
-    <div class="metric">Outsource: ${out}</div>
-    <div class="metric">Supervisor: ${sups.length}</div>
+    <div class="card">Total<br><b>${total}</b></div>
+    <div class="card">Permanent<br><b>${perm}</b></div>
+    <div class="card">Outsource<br><b>${out}</b></div>
+    <div class="card">Supervisor<br><b>${sups.length}</b></div>
   `;
 
-  // ===== BU =====
+  // ===== BU CHART =====
   const buMap = {};
-  RAW.forEach(e=> buMap[e.bu]=(buMap[e.bu]||0)+1);
+  RAW.forEach(e=>buMap[e.bu]=(buMap[e.bu]||0)+1);
 
-  chartBU = new Chart(buChart,{
+  new Chart(buChart,{
     type:'doughnut',
     data:{labels:Object.keys(buMap),datasets:[{data:Object.values(buMap)}]}
   });
 
-  // ===== MANAGER =====
-  const mgrMap = {};
-  RAW.forEach(e=> mgrMap[e.manager]=(mgrMap[e.manager]||0)+1);
-
-  chartMgr = new Chart(mgrChart,{
-    type:'doughnut',
-    data:{labels:Object.keys(mgrMap),datasets:[{data:Object.values(mgrMap)}]}
-  });
-
-  // ===== SUP =====
-  chartSup = new Chart(supChart,{
-    type:'bar',
-    data:{
-      labels:sups.map(s=>s.name),
-      datasets:[{data:sups.map(s=>s.total)}]
-    }
-  });
-
   // ===== SUP CARD =====
-  supGrid.innerHTML = sups.map(s=>`
-    <div class="sup-card">
-      <b>${s.name}</b><br>
-      Mgr: ${s.mgr}<br><br>
-      Total: ${s.total}<br>
-      Permanent: ${s.permanent}<br>
-      Outsource: ${s.outsource}
-    </div>
-  `).join('');
+  supGrid.innerHTML = sups.map(s=>{
+
+    const permPct = Math.round(s.perm/s.total*100);
+
+    return `
+      <div class="card">
+
+        <b>${s.name}</b><br>
+        <span class="small">Mgr: ${s.mgr}</span><br><br>
+
+        Total: ${s.total} | Perm: ${s.perm} | Out: ${s.out}<br><br>
+
+        <div class="small">Permanent ${permPct}%</div>
+        <div class="bar"><div class="fill" style="width:${permPct}%"></div></div>
+
+        <div class="small" style="margin-top:8px">
+          Shift Keeper: ${s.wsk}
+        </div>
+
+        <div style="margin-top:10px">
+          <span class="yellow">Upcoming: ${s.upcoming}</span> |
+          <span class="red">Resigned: ${s.already}</span>
+        </div>
+
+        <div style="margin-top:8px">
+          ${
+            s.res.length===0
+            ? '<span class="small">No resignation</span>'
+            : s.res.map(r=>`
+              <div class="small ${r.type}">
+                ${r.name} - ${r.lwd}
+              </div>
+            `).join('')
+          }
+        </div>
+
+      </div>
+    `;
+  }).join('');
 
 }
 
-// ================= INIT =================
 loadData();
 
 </script>
