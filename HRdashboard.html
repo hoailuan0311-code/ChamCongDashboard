@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>HR Dashboard</title>
+<title>HR Dashboard BI</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
@@ -12,10 +12,6 @@
   --card:#1e2535;
   --text:#e8eaf0;
   --sub:#8b92a8;
-  --blue:#4f8ef7;
-  --green:#34d399;
-  --yellow:#fbbf24;
-  --red:#f87171;
 }
 
 body{
@@ -31,8 +27,6 @@ body{
   justify-content:space-between;
   margin-bottom:20px;
 }
-.header h1{font-size:22px;}
-.header small{color:var(--sub);}
 
 /* KPI */
 .kpi{
@@ -46,23 +40,33 @@ body{
   padding:15px;
   border-radius:12px;
 }
-.kpi-title{font-size:12px;color:var(--sub);}
-.kpi-value{font-size:26px;font-weight:700;}
 
-/* CHART AREA */
-.charts{
+/* ===== CHART LAYOUT FIX ===== */
+.chart-row{
   display:grid;
   grid-template-columns:220px 220px 1fr;
-  gap:12px;
+  gap:16px;
   margin-bottom:20px;
 }
-canvas{
+
+.chart-box{
   background:var(--card);
   border-radius:12px;
-  padding:10px;
+  padding:12px;
+  height:220px;   /* FIX SIZE */
 }
 
-/* SUP GRID */
+.chart-box.large{
+  height:260px;
+}
+
+/* IMPORTANT */
+canvas{
+  width:100% !important;
+  height:100% !important;
+}
+
+/* SUP */
 .sup-grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
@@ -71,16 +75,14 @@ canvas{
 
 .sup-card{
   background:var(--card);
-  padding:16px;
+  padding:15px;
   border-radius:12px;
-  transition:.2s;
 }
-.sup-card:hover{transform:translateY(-2px);}
 
 .bar{
   height:6px;background:#333;border-radius:4px;margin:6px 0;
 }
-.fill{height:100%;background:var(--green);}
+.fill{height:100%;background:#34d399;}
 
 /* MODAL */
 #modal{
@@ -102,18 +104,18 @@ canvas{
 <body>
 
 <div class="header">
-  <h1>Warehouse Headcount Dashboard</h1>
-  <small id="updateTime"></small>
+  <h2>Warehouse Dashboard</h2>
+  <small id="time"></small>
 </div>
 
 <!-- KPI -->
 <div class="kpi" id="kpi"></div>
 
 <!-- CHART -->
-<div class="charts">
-  <canvas id="buChart"></canvas>
-  <canvas id="mgrChart"></canvas>
-  <canvas id="supChart"></canvas>
+<div class="chart-row">
+  <div class="chart-box"><canvas id="buChart"></canvas></div>
+  <div class="chart-box"><canvas id="mgrChart"></canvas></div>
+  <div class="chart-box large"><canvas id="supChart"></canvas></div>
 </div>
 
 <!-- SUP -->
@@ -152,7 +154,6 @@ function build(data){
   const bu={}, mgr={}, sup={};
 
   data.forEach(e=>{
-
     bu[e.bu]=(bu[e.bu]||0)+1;
     mgr[e.manager]=(mgr[e.manager]||0)+1;
 
@@ -178,10 +179,7 @@ function build(data){
 
   });
 
-  return {
-    bu,mgr,
-    sups:Object.values(sup).sort((a,b)=>b.total-a.total)
-  };
+  return {bu,mgr,sups:Object.values(sup).sort((a,b)=>b.total-a.total)};
 }
 
 // ===== MODAL =====
@@ -200,7 +198,7 @@ modal.onclick=()=>modal.style.display='none';
 // ===== INIT =====
 function init(){
 
-  updateTime.innerText = "Updated: " + new Date().toLocaleString('vi-VN');
+  time.innerText=new Date().toLocaleString('vi-VN');
 
   const {bu,mgr,sups}=build(RAW);
 
@@ -209,17 +207,18 @@ function init(){
   const perm=RAW.filter(x=>x.check==='TTI').length;
 
   kpi.innerHTML=`
-    <div class="kpi-card"><div class="kpi-title">Total HC</div><div class="kpi-value">${total}</div></div>
-    <div class="kpi-card"><div class="kpi-title">Permanent</div><div class="kpi-value">${perm}</div></div>
-    <div class="kpi-card"><div class="kpi-title">Outsource</div><div class="kpi-value">${total-perm}</div></div>
-    <div class="kpi-card"><div class="kpi-title">Supervisor</div><div class="kpi-value">${sups.length}</div></div>
+    <div class="kpi-card">Total<br><b>${total}</b></div>
+    <div class="kpi-card">Permanent<br><b>${perm}</b></div>
+    <div class="kpi-card">Outsource<br><b>${total-perm}</b></div>
+    <div class="kpi-card">Supervisor<br><b>${sups.length}</b></div>
   `;
 
-  // BU
+  // ===== BU =====
   new Chart(buChart,{
     type:'doughnut',
     data:{labels:Object.keys(bu),datasets:[{data:Object.values(bu)}]},
     options:{
+      maintainAspectRatio:false,
       onClick:(e,el)=>{
         if(!el.length)return;
         const k=Object.keys(bu)[el[0].index];
@@ -228,11 +227,12 @@ function init(){
     }
   });
 
-  // MGR
+  // ===== MANAGER =====
   new Chart(mgrChart,{
     type:'doughnut',
     data:{labels:Object.keys(mgr),datasets:[{data:Object.values(mgr)}]},
     options:{
+      maintainAspectRatio:false,
       onClick:(e,el)=>{
         if(!el.length)return;
         const k=Object.keys(mgr)[el[0].index];
@@ -241,7 +241,7 @@ function init(){
     }
   });
 
-  // SUP BAR
+  // ===== SUP BAR =====
   new Chart(supChart,{
     type:'bar',
     data:{
@@ -249,6 +249,7 @@ function init(){
       datasets:[{data:sups.map(s=>s.total)}]
     },
     options:{
+      maintainAspectRatio:false,
       plugins:{legend:{display:false}},
       onClick:(e,el)=>{
         if(!el.length)return;
@@ -258,11 +259,9 @@ function init(){
     }
   });
 
-  // SUP CARD
+  // ===== SUP CARD =====
   supGrid.innerHTML=sups.map(s=>{
-
     const pct=Math.round(s.perm/s.total*100);
-
     return `
     <div class="sup-card">
       <b>${s.name}</b><br>
@@ -271,21 +270,18 @@ function init(){
       Total: ${s.total} | Permanent: ${s.perm} | Outsource: ${s.out}
 
       <div class="bar"><div class="fill" style="width:${pct}%"></div></div>
-      <small>Permanent ${pct}%</small><br><br>
 
       ${
-        s.res.length===0
-        ? '<small style="color:#8b92a8">No resignation</small>'
-        : s.res.map(r=>`
+        s.res.map(r=>`
           <div style="color:${r.type==='red'?'#f87171':'#fbbf24'};font-size:12px">
             ${r.id} - ${r.name} - ${r.lwd}
           </div>
         `).join('')
       }
-
     </div>
     `;
   }).join('');
+
 }
 </script>
 
