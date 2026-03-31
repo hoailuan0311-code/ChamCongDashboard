@@ -200,10 +200,10 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
       <h1>Warehouse <span>HR</span></h1>
       <p>Dashboard Portal</p>
     </div>
-    <div class="field"><label>Tài khoản</label><input id="inp-user" type="text" placeholder="Nhập username" autocomplete="username"></div>
-    <div class="field"><label>Mật khẩu</label><input id="inp-pass" type="password" placeholder="Nhập password" autocomplete="current-password"></div>
-    <div class="login-err" id="login-err">Tài khoản hoặc mật khẩu không đúng</div>
-    <button class="btn-login" onclick="doLogin()">Đăng nhập</button>
+    <div class="field"><label>User</label><input id="inp-user" type="text" placeholder="Enter username" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input id="inp-pass" type="password" placeholder="Enter password" autocomplete="current-password"></div>
+    <div class="login-err" id="login-err">Invalid username or password</div>
+    <button class="btn-login" onclick="doLogin()">Login</button>
   </div>
 </div>
 
@@ -230,20 +230,20 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
   </div>
 
   <!-- KPI -->
-  <div class="sec">Tổng quan</div>
+  <div class="sec">Overview</div>
   <div class="kpi-grid" id="kpi-grid"></div>
 
   <!-- Charts -->
-  <div class="sec">Phân bổ nhân sự</div>
+  <div class="sec">Staff Allocation</div>
   <div class="charts-grid">
     <div class="chart-card"><div class="chart-title">Theo BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
     <div class="chart-card"><div class="chart-title">Theo Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
-    <div class="chart-card"><div class="chart-title">Headcount theo Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Headcount by Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">Permanent vs Outsource</div><div style="position:relative;height:180px"><canvas id="stackChart"></canvas></div></div>
   </div>
 
   <!-- Supervisor cards -->
-  <div class="sec">Chi tiết theo Supervisor <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">— click card để xem nhân viên</span></div>
+  <div class="sec">Detail by Supervisor <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">— click card to view employees</span></div>
   <div class="sup-grid" id="sup-grid"></div>
 </div>
 
@@ -251,11 +251,11 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 <div class="overlay" id="modal-resign">
   <div class="modal" style="max-width:640px">
     <div class="modal-hdr">
-      <div><h3 id="resign-modal-title">Nghỉ việc tháng này</h3><p id="resign-modal-sub"></p></div>
+      <div><h3 id="resign-modal-title">Resignations This Month</h3><p id="resign-modal-sub"></p></div>
       <button class="modal-close" onclick="closeModal('modal-resign')">×</button>
     </div>
     <div class="modal-body" id="resign-modal-body"></div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-resign')">Đóng</button></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-resign')">Close</button></div>
   </div>
 </div>
 
@@ -270,8 +270,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
       <div id="sup-modal-body"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" onclick="closeModal('modal-sup')">Đóng</button>
-      <button class="btn btn-blue" onclick="exportSupXLSX()">⬇ Export danh sách này</button>
+      <button class="btn" onclick="closeModal('modal-sup')">Close</button>
+      <button class="btn btn-blue" onclick="exportSupXLSX()">⬇ Export this list</button>
     </div>
   </div>
 </div>
@@ -281,8 +281,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 //  CONFIG
 // ════════════════════════════════════════════
 const USERS = [
-  { username: 'admin',  password: '123456' },
-  { username: 'admin1', password: '123123' },
+  { username: 'cris',  password: '123456' },
+  { username: 'letai', password: '123123' },
   // Thêm user tại đây: { username: 'user2', password: 'pass' },
 ];
 
@@ -386,7 +386,7 @@ function syncResetBtn() {
 }
 
 function resetTransfers() {
-  if (!confirm('Reset toàn bộ transfer về dữ liệu gốc?')) return;
+  if (!confirm('Reset all transfers to original data?')) return;
   localStorage.removeItem(TF_KEY);
   loadData();
 }
@@ -442,7 +442,7 @@ function loadData() {
     })
     .catch(err => {
       document.getElementById('loading-overlay').classList.remove('show');
-      alert('Không tải được dữ liệu: ' + err.message);
+      alert('Cannot load data: ' + err.message);
     });
 }
 
@@ -562,34 +562,34 @@ function render() {
 
   // Header date
   const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
-  document.getElementById('date-lbl').textContent = 'Cập nhật: ' + T.toLocaleDateString('vi-VN') + ' · ' + mn;
+  document.getElementById('date-lbl').textContent = 'Updated: ' + T.toLocaleDateString('vi-VN') + ' · ' + mn;
 
   // KPI
   const kpi = document.getElementById('kpi-grid');
   kpi.innerHTML = `
     <div class="kpi-card" style="--ac:var(--blue);--ib:rgba(79,142,247,.1)">
       <div class="kpi-icon">👥</div>
-      <div class="kpi-label">Tổng nhân viên</div>
+      <div class="kpi-label">Total Employees</div>
       <div class="kpi-val">${P.total}</div>
-      <div class="kpi-sub">${P.total - P.alr - P.upc} đang làm · ${P.alr+P.upc} có LWD</div>
+      <div class="kpi-sub">${P.total - P.alr - P.upc} currently working · ${P.alr+P.upc} have LWD</div>
     </div>
     <div class="kpi-card" style="--ac:var(--green);--ib:rgba(52,211,153,.1)">
       <div class="kpi-icon">✅</div>
-      <div class="kpi-label">Nhân viên chính thức</div>
+      <div class="kpi-label">Full-time Employees</div>
       <div class="kpi-val">${P.perm}</div>
-      <div class="kpi-sub">${Math.round(P.perm/P.total*100)}% tổng số</div>
+      <div class="kpi-sub">${Math.round(P.perm/P.total*100)}% of total</div>
     </div>
     <div class="kpi-card" style="--ac:var(--amber);--ib:rgba(251,191,36,.1)">
       <div class="kpi-icon">🏢</div>
-      <div class="kpi-label">Nhân viên Outsource</div>
+      <div class="kpi-label">Outsource Employees</div>
       <div class="kpi-val">${P.out}</div>
-      <div class="kpi-sub">${Math.round(P.out/P.total*100)}% tổng số</div>
+      <div class="kpi-sub">${Math.round(P.out/P.total*100)}% of total</div>
     </div>
     <div class="kpi-card clickable" style="--ac:var(--red);--ib:rgba(248,113,113,.1)" onclick="showResignModal()">
       <div class="kpi-icon">⚠️</div>
-      <div class="kpi-label">Nghỉ việc trong ${mn}</div>
+      <div class="kpi-label">Resignations in ${mn}</div>
       <div class="kpi-val" style="color:var(--red)">${P.totMon}</div>
-      <div class="kpi-sub">${P.alr} đã nghỉ · ${P.upc} sắp nghỉ · <span style="color:var(--blue)">xem chi tiết →</span></div>
+      <div class="kpi-sub">${P.alr} have resigned · ${P.upc} are upcoming · <span style="color:var(--blue)">view details →</span></div>
     </div>`;
 
   // Donuts
@@ -684,22 +684,22 @@ function renderSupCards(sups) {
 
     let badges = '';
     if (s.total_month > 0) {
-      badges += `<span class="badge b-blue">Tháng này: ${s.total_month}</span>`;
-      if (s.upcoming > 0) badges += `<span class="badge b-yellow">Sắp: ${s.upcoming}</span>`;
-      if (s.already  > 0) badges += `<span class="badge b-red">Đã: ${s.already}</span>`;
+      badges += `<span class="badge b-blue">This month: ${s.total_month}</span>`;
+      if (s.upcoming > 0) badges += `<span class="badge b-yellow">Upcoming: ${s.upcoming}</span>`;
+      if (s.already  > 0) badges += `<span class="badge b-red">Resigned: ${s.already}</span>`;
     }
 
-    let resRows = '<div class="no-res">Không có nghỉ việc</div>';
+    let resRows = '<div class="no-res">No resignations</div>';
     if (s.resignees.length > 0) {
       resRows = `<table class="res-table">
-        <thead><tr><th>ID</th><th>Họ tên</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <thead><tr><th>ID</th><th>Name</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
         <tbody>${s.resignees.map(r =>
           `<tr>
             <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${r.id}</td>
             <td>${r.name}</td>
             <td style="color:var(--text3);font-size:10px">${r.title}</td>
             <td style="font-family:'DM Mono',monospace;font-size:10px">${fmtDate(r.lwd)}</td>
-            <td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Đã nghỉ':'Sắp nghỉ'}</span></td>
+            <td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Has resigned':'Upcoming'}</span></td>
           </tr>`
         ).join('')}</tbody>
       </table>`;
@@ -718,11 +718,11 @@ function renderSupCards(sups) {
         <div class="badges">${badges}</div>
       </div>
       <div class="sstats">
-        <div class="sstat"><div class="sstat-l">Tổng NV</div><div class="sstat-v">${s.total}</div></div>
+        <div class="sstat"><div class="sstat-l">Total Employees</div><div class="sstat-v">${s.total}</div></div>
         <div class="sstat"><div class="sstat-l">Permanent</div><div class="sstat-v">${s.perm}</div></div>
         <div class="sstat"><div class="sstat-l">Outsource</div><div class="sstat-v">${s.out}</div></div>
-        <div class="sstat"><div class="sstat-l">Sắp nghỉ</div><div class="sstat-v y">${s.upcoming}</div></div>
-        <div class="sstat"><div class="sstat-l">Đã nghỉ</div><div class="sstat-v r">${s.already}</div></div>
+        <div class="sstat"><div class="sstat-l">Upcoming Resignations</div><div class="sstat-v y">${s.upcoming}</div></div>
+        <div class="sstat"><div class="sstat-l">Resigned</div><div class="sstat-v r">${s.already}</div></div>
       </div>
       <div class="bars">
         <div class="bar-row"><span class="bar-lbl">Permanent</span><div class="bar-track"><div class="bar-fill" style="width:${permPct}%;background:#34d399"></div></div><span class="bar-pct">${permPct}%</span></div>
@@ -756,9 +756,9 @@ function showResignModal() {
   document.getElementById('resign-modal-sub').textContent = `${list.length} nhân viên`;
 
   document.getElementById('resign-modal-body').innerHTML = list.length === 0
-    ? '<p style="color:var(--text3);font-size:13px">Không có nhân viên nghỉ việc trong tháng này.</p>'
+    ? '<p style="color:var(--text3);font-size:13px">No resignations this month.</p>'
     : `<table class="emp-table">
-        <thead><tr><th>ID</th><th>Họ tên</th><th>Supervisor</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <thead><tr><th>ID</th><th>Name</th><th>Supervisor</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
         <tbody>${list.map(e=>`
           <tr>
             <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
@@ -766,7 +766,7 @@ function showResignModal() {
             <td style="color:var(--text3)">${e.sup}</td>
             <td style="color:var(--text3)">${e.title}</td>
             <td style="font-family:'DM Mono',monospace;font-size:11px">${fmtDate(e.lwd)}</td>
-            <td><span class="pill ${e._isAlready?'p-r':'p-y'}">${e._isAlready?'Đã nghỉ':'Sắp nghỉ'}</span></td>
+            <td><span class="pill ${e._isAlready?'p-r':'p-y'}">${e._isAlready?'Has resigned':'Upcoming'}</span></td>
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -780,7 +780,7 @@ function showSupModal(supName) {
   const allSups = [...new Set(RAW.map(e => e.sup))].filter(s => s !== supName).sort();
 
   document.getElementById('sup-modal-title').textContent = supName;
-  document.getElementById('sup-modal-sub').textContent = `${emps.length} nhân viên`;
+  document.getElementById('sup-modal-sub').textContent = `${emps.length} employees`;
 
   renderSupModalBody(emps, allSups);
   openModal('modal-sup');
@@ -795,20 +795,20 @@ function renderSupModalBody(emps, allSups) {
       <thead>
         <tr>
           <th>ID</th>
-          <th>Họ tên</th>
-          <th>Chức danh</th>
+          <th>Name</th>
+          <th>Position</th>
           <th>LWD</th>
-          <th>Trạng thái</th>
+          <th>Status</th>
           <th>Transfer</th>
         </tr>
       </thead>
       <tbody>${empsNow.map(e => {
         const lwdColor = e._isAlready ? 'var(--red)' : e._isUpcoming ? 'var(--amber)' : 'var(--text3)';
         const statusPill = e._isAlready
-          ? `<span class="pill p-r">Đã nghỉ</span>`
+          ? `<span class="pill p-r">Has resigned</span>`
           : e._isUpcoming
-            ? `<span class="pill p-y">Sắp nghỉ</span>`
-            : `<span style="font-size:11px;color:var(--text3)">Đang làm</span>`;
+            ? `<span class="pill p-y">Upcoming</span>`
+            : `<span style="font-size:11px;color:var(--text3)">Currently employed</span>`;
         return `
         <tr id="tr-${e.id}">
           <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
@@ -891,11 +891,11 @@ function loadXLSX(cb) {
 function exportXLSX() {
   loadXLSX(() => {
     const rows = RAW.map(e => ({
-      'ID': e.id, 'Họ tên': e.name, 'BU': e.bu,
+      'ID': e.id, 'Full Name': e.name, 'BU': e.bu,
       'Manager': e.manager, 'Supervisor': e.sup,
-      'Chức danh': e.title, 'Loại HĐ': e.type,
-      'Phân loại': e.check === 'TTI' ? 'Permanent' : 'Outsource',
-      'Ngày vào': e.join, 'LWD': e.lwd || '',
+      'Position': e.title, 'Contract Type': e.type,
+      'Classification': e.check === 'TTI' ? 'Permanent' : 'Outsource',
+      'Join Date': e.join, 'LWD': e.lwd || '',
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -907,10 +907,11 @@ function exportXLSX() {
 function exportSupXLSX() {
   loadXLSX(() => {
     const rows = RAW.filter(e => e.sup === CURRENT_SUP).map(e => ({
-      'ID': e.id, 'Họ tên': e.name, 'BU': e.bu,
-      'Supervisor': e.sup, 'Chức danh': e.title,
-      'Loại HĐ': e.check === 'TTI' ? 'Permanent' : 'Outsource',
-      'Ngày vào': e.join, 'LWD': e.lwd || '',
+      'ID': e.id, 'Full Name': e.name, 'BU': e.bu,
+      'Supervisor': e.sup, 'Position': e.title,
+      'Contract Type': e.type,
+      'Classification': e.check === 'TTI' ? 'Permanent' : 'Outsource',
+      'Join Date': e.join, 'LWD': e.lwd || '',
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
