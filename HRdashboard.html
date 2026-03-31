@@ -209,7 +209,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 
 <!-- APP -->
 <div id="app">
-  <div class="hdr">
+  <div class="hdr" id="main-hdr">
     <div class="hdr-left">
       <h2>Warehouse <span>Headcount</span> Dashboard</h2>
       <p id="date-lbl"></p>
@@ -218,8 +218,15 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
       <span class="user-badge" id="user-badge"></span>
       <button class="btn" onclick="exportXLSX()">⬇ Export XLSX</button>
       <button class="btn" id="btn-reset" onclick="resetTransfers()" style="display:none;color:var(--amber);border-color:rgba(251,191,36,.3)">↺ Reset transfers</button>
-      <button class="btn" onclick="doLogout()">Đăng xuất</button>
+      <button class="btn" id="btn-logout" onclick="doLogout()">Đăng xuất</button>
     </div>
+  </div>
+
+  <!-- Filter bar (visible when Power BI passes URL params) -->
+  <div id="filter-bar" style="display:none;background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;display:none;align-items:center;gap:8px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em">🔗 Power BI Filter</span>
+    <div id="filter-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto">Data đang được lọc theo slicer Power BI</span>
   </div>
 
   <!-- KPI -->
@@ -274,8 +281,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 //  CONFIG
 // ════════════════════════════════════════════
 const USERS = [
-  { username: 'cris',  password: '123456' },
-  { username: 'letai', password: '123123' },
+  { username: 'admin',  password: '123456' },
+  { username: 'admin1', password: '123123' },
   // Thêm user tại đây: { username: 'user2', password: 'pass' },
 ];
 
@@ -284,9 +291,77 @@ const DATA_URL = 'dataHRdashboard.js';
 // ════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════
-let RAW = [];         // loaded from dataHRdashboard.js
+let RAW = [];         // full dataset (post-transfers)
 let CHARTS = {};      // chart instances
-let CURRENT_SUP = ''; // for export
+let CURRENT_SUP = ''; // for modal export
+
+// ════════════════════════════════════════════
+//  URL PARAM FILTER  (Power BI integration)
+//  Supported params:
+//    embed=1        → skip login, hide header chrome
+//    bu=CPT,OP      → filter by BU (comma-separated)
+//    mgr=Sharp      → filter by Manager
+//    sup=BuiXuanNam → filter by Supervisor (URL-encoded)
+//    month=3        → filter resign month (optional)
+//    year=2026      → filter resign year  (optional)
+// ════════════════════════════════════════════
+function getURLFilters() {
+  const p = new URLSearchParams(window.location.search);
+  const split = key => p.has(key)
+    ? p.get(key).split(',').map(s => decodeURIComponent(s.trim())).filter(Boolean)
+    : null;
+  return {
+    embed:  p.get('embed') === '1',
+    bu:     split('bu'),
+    mgr:    split('mgr'),
+    sup:    split('sup'),
+    month:  p.has('month') ? parseInt(p.get('month')) : null,
+    year:   p.has('year')  ? parseInt(p.get('year'))  : null,
+  };
+}
+
+// Returns filtered subset of RAW based on URL params
+function getViewData() {
+  const f = getURLFilters();
+  let d = RAW;
+  if (f.bu  && f.bu.length)  d = d.filter(e => f.bu.includes(e.bu));
+  if (f.mgr && f.mgr.length) d = d.filter(e => f.mgr.includes(e.manager));
+  if (f.sup && f.sup.length) d = d.filter(e => f.sup.includes(e.sup));
+  return d;
+}
+
+// Show/hide filter bar in header
+function syncFilterBar() {
+  const f = getURLFilters();
+  const tags = [];
+  if (f.bu)  tags.push(...f.bu.map(v  => `<span class="badge b-blue"  style="font-size:11px">BU: ${v}</span>`));
+  if (f.mgr) tags.push(...f.mgr.map(v => `<span class="badge b-blue"  style="font-size:11px">Manager: ${v}</span>`));
+  if (f.sup) tags.push(...f.sup.map(v => `<span class="badge b-green" style="font-size:11px">Sup: ${v}</span>`));
+  if (f.month) tags.push(`<span class="badge b-blue" style="font-size:11px">Tháng: ${f.month}/${f.year || new Date().getFullYear()}</span>`);
+  const bar = document.getElementById('filter-bar');
+  if (tags.length) {
+    document.getElementById('filter-tags').innerHTML = tags.join('');
+    bar.style.display = 'flex';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+// Embed mode: auto-login, hide non-essential UI
+function initEmbedMode() {
+  const f = getURLFilters();
+  if (!f.embed) return false;
+  // Show app immediately — no login needed in embed mode
+  // Auth is controlled by Power BI access, not this screen
+  document.getElementById('login').style.display   = 'none';
+  document.getElementById('app').style.display     = 'block';
+  document.getElementById('user-badge').style.display = 'none';
+  document.getElementById('btn-logout').style.display = 'none';
+  document.getElementById('btn-reset').style.display  = 'none';
+  document.getElementById('main-hdr').style.marginBottom = '10px';
+  loadData();
+  return true;
+}
 
 
 
@@ -341,12 +416,14 @@ function doLogout() {
   location.reload();
 }
 
-// Auto-login if session exists
-if (sessionStorage.getItem('hr_user')) {
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  document.getElementById('user-badge').textContent = '👤 ' + sessionStorage.getItem('hr_user');
-  loadData();
+// Boot sequence: embed mode → session restore → show login
+if (!initEmbedMode()) {
+  if (sessionStorage.getItem('hr_user')) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-badge').textContent = '👤 ' + sessionStorage.getItem('hr_user');
+    loadData();
+  }
 }
 
 // ════════════════════════════════════════════
@@ -360,6 +437,7 @@ function loadData() {
       RAW = applyTransfers(data);  // apply any saved transfers
       document.getElementById('loading-overlay').classList.remove('show');
       syncResetBtn();
+      syncFilterBar();   // show Power BI filter tags if URL params present
       render();
     })
     .catch(err => {
@@ -414,13 +492,14 @@ function fmtDate(s) {
 }
 
 // ════════════════════════════════════════════
-//  PROCESS
+//  PROCESS  (uses URL-filtered view of RAW)
 // ════════════════════════════════════════════
 function process() {
   const T = today(), MS = monthStart(), ME = monthEnd();
   const bu = {}, mgr = {}, supMap = {};
+  const VIEW = getViewData(); // RAW filtered by URL params (Power BI slicers)
 
-  RAW.forEach(e => {
+  VIEW.forEach(e => {
     const lwd = parseDate(e.lwd);
     e._lwd    = lwd;
     e._isAlready  = lwd !== null && lwd < T;
@@ -453,12 +532,12 @@ function process() {
   // Sort resignees by LWD
   sups.forEach(s => s.resignees.sort((a, b) => a._lwd - b._lwd));
 
-  const total  = RAW.length;
-  const perm   = RAW.filter(e => e.check === 'TTI').length;
-  const out    = RAW.filter(e => e.check === 'Outsource').length;
-  const alr    = RAW.filter(e => e._isAlready).length;
-  const upc    = RAW.filter(e => e._isUpcoming).length;
-  const totMon = RAW.filter(e => e._inMonth).length;
+  const total  = VIEW.length;
+  const perm   = VIEW.filter(e => e.check === 'TTI').length;
+  const out    = VIEW.filter(e => e.check === 'Outsource').length;
+  const alr    = VIEW.filter(e => e._isAlready).length;
+  const upc    = VIEW.filter(e => e._isUpcoming).length;
+  const totMon = VIEW.filter(e => e._inMonth).length;
 
   return { bu, mgr, sups, total, perm, out, alr, upc, totMon };
 }
@@ -671,7 +750,7 @@ document.querySelectorAll('.overlay').forEach(el => {
 function showResignModal() {
   const T = today(), MS = monthStart(), ME = monthEnd();
   const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
-  const list = RAW.filter(e => e._inMonth).sort((a,b) => a._lwd - b._lwd);
+  const list = getViewData().filter(e => e._inMonth).sort((a,b) => a._lwd - b._lwd);
 
   document.getElementById('resign-modal-title').textContent = `Nghỉ việc trong ${mn}`;
   document.getElementById('resign-modal-sub').textContent = `${list.length} nhân viên`;
@@ -697,7 +776,7 @@ function showResignModal() {
 // Supervisor employee list modal
 function showSupModal(supName) {
   CURRENT_SUP = supName;
-  const emps = RAW.filter(e => e.sup === supName);
+  const emps = getViewData().filter(e => e.sup === supName);
   const allSups = [...new Set(RAW.map(e => e.sup))].filter(s => s !== supName).sort();
 
   document.getElementById('sup-modal-title').textContent = supName;
