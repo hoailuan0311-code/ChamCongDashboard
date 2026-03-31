@@ -218,7 +218,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
       <span class="user-badge" id="user-badge"></span>
       <button class="btn" onclick="exportXLSX()">⬇ Export XLSX</button>
       <button class="btn" id="btn-reset" onclick="resetTransfers()" style="display:none;color:var(--amber);border-color:rgba(251,191,36,.3)">↺ Reset transfers</button>
-      <button class="btn" id="btn-logout" onclick="doLogout()">Đăng xuất</button>
+      <button class="btn" id="btn-logout" onclick="doLogout()">Logout</button>
     </div>
   </div>
 
@@ -226,7 +226,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
   <div id="filter-bar" style="display:none;background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;display:none;align-items:center;gap:8px;flex-wrap:wrap">
     <span style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em">🔗 Power BI Filter</span>
     <div id="filter-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-    <span style="font-size:11px;color:var(--text3);margin-left:auto">Data đang được lọc theo slicer Power BI</span>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto">Data is being filtered by Power BI slicer</span>
   </div>
 
   <!-- KPI -->
@@ -236,8 +236,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
   <!-- Charts -->
   <div class="sec">Staff Allocation</div>
   <div class="charts-grid">
-    <div class="chart-card"><div class="chart-title">Theo BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
-    <div class="chart-card"><div class="chart-title">Theo Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
+    <div class="chart-card"><div class="chart-title">By BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
+    <div class="chart-card"><div class="chart-title">By Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
     <div class="chart-card"><div class="chart-title">Headcount by Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
     <div class="chart-card"><div class="chart-title">Permanent vs Outsource</div><div style="position:relative;height:180px"><canvas id="stackChart"></canvas></div></div>
   </div>
@@ -561,8 +561,8 @@ function render() {
   const T = today();
 
   // Header date
-  const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
-  document.getElementById('date-lbl').textContent = 'Updated: ' + T.toLocaleDateString('vi-VN') + ' · ' + mn;
+  const mn = T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('date-lbl').textContent = 'Updated: ' + T.toLocaleDateString('en-US') + ' · ' + mn;
 
   // KPI
   const kpi = document.getElementById('kpi-grid');
@@ -749,11 +749,11 @@ document.querySelectorAll('.overlay').forEach(el => {
 // Resign KPI modal
 function showResignModal() {
   const T = today(), MS = monthStart(), ME = monthEnd();
-  const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
+  const mn = T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
   const list = getViewData().filter(e => e._inMonth).sort((a,b) => a._lwd - b._lwd);
 
-  document.getElementById('resign-modal-title').textContent = `Nghỉ việc trong ${mn}`;
-  document.getElementById('resign-modal-sub').textContent = `${list.length} nhân viên`;
+  document.getElementById('resign-modal-title').textContent = `Resignations for ${mn}`;
+  document.getElementById('resign-modal-sub').textContent = `${list.length} employees`;
 
   document.getElementById('resign-modal-body').innerHTML = list.length === 0
     ? '<p style="color:var(--text3);font-size:13px">No resignations this month.</p>'
