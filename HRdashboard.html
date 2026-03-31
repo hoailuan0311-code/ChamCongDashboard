@@ -2,205 +2,726 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>HR Dashboard BI PRO</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>HR Dashboard · Warehouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0e1117;
-  --card:#1e2535;
-  --text:#e8eaf0;
-  --sub:#8b92a8;
+  --bg:#0b0f1a;--bg2:#111827;--bg3:#1a2235;--bg4:#202b3d;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8eaf0;--text2:#8b92a8;--text3:#4b5468;
+  --blue:#4f8ef7;--green:#34d399;--amber:#fbbf24;
+  --red:#f87171;--purple:#a78bfa;--teal:#2dd4bf;
+  --r:12px;--rs:8px;
 }
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
-body{background:var(--bg);color:var(--text);font-family:'Segoe UI';padding:24px;}
-
-.header{display:flex;justify-content:space-between;margin-bottom:15px;}
-
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
-.kpi-card{background:var(--card);padding:15px;border-radius:12px;}
-
-.chart-row{
-  display:grid;
-  grid-template-columns:220px 220px 1fr;
-  gap:16px;
-  margin-bottom:10px;
+/* ── LOGIN ── */
+#login{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--bg);
+  background-image:radial-gradient(ellipse at 20% 50%,rgba(79,142,247,.08) 0%,transparent 60%),
+                   radial-gradient(ellipse at 80% 20%,rgba(167,139,250,.06) 0%,transparent 50%);
 }
-
-.chart-box{
-  background:var(--card);
-  border-radius:12px;
-  padding:12px;
-  height:220px;
+.login-box{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:20px;
+  padding:48px 44px;width:380px;
+  box-shadow:0 32px 64px rgba(0,0,0,.5);
+  animation:fadeUp .4s ease;
 }
-
-.chart-box.large{height:260px;}
-
-canvas{width:100%!important;height:100%!important;}
-
-.btn{
-  background:#4f8ef7;border:none;color:#fff;padding:8px 12px;
-  border-radius:6px;cursor:pointer;
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.login-logo h1 span{color:var(--blue)}
+.login-logo p{font-size:12px;color:var(--text3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+.field input{
+  width:100%;padding:11px 14px;background:var(--bg3);
+  border:1px solid var(--border2);border-radius:var(--rs);
+  color:var(--text);font-size:14px;font-family:inherit;
+  transition:border-color .2s,box-shadow .2s;outline:none;
 }
+.field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.15)}
+.login-err{font-size:12px;color:var(--red);margin-bottom:14px;display:none;padding:10px 12px;background:rgba(248,113,113,.1);border-radius:var(--rs);border:1px solid rgba(248,113,113,.2)}
+.btn-login{
+  width:100%;padding:12px;background:var(--blue);border:none;
+  border-radius:var(--rs);color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:opacity .2s,transform .1s;
+}
+.btn-login:hover{opacity:.9}
+.btn-login:active{transform:scale(.98)}
 
+/* ── APP ── */
+#app{display:none;padding:24px 28px 48px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.app-in{animation:fadeIn .3s ease}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.hdr-left h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.hdr-left h2 span{color:var(--blue)}
+.hdr-left p{font-size:12px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.btn{padding:8px 16px;border-radius:var(--rs);border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.03em}
+.btn:hover{background:var(--bg3);color:var(--text)}
+.btn-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-blue:hover{opacity:.88;color:#fff}
+.user-badge{font-size:12px;color:var(--text3);padding:8px 14px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--border)}
+
+/* Section label */
+.sec{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}
+.kpi-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:18px 20px;position:relative;overflow:hidden;
+  transition:border-color .2s,transform .15s;cursor:default;
+}
+.kpi-card.clickable{cursor:pointer}
+.kpi-card.clickable:hover{border-color:var(--border2);transform:translateY(-2px)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--blue));border-radius:var(--r) var(--r) 0 0}
+.kpi-icon{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;background:var(--ib,rgba(79,142,247,.1))}
+.kpi-label{font-size:11px;color:var(--text2);font-weight:500;margin-bottom:10px}
+.kpi-val{font-size:32px;font-weight:700;line-height:1;margin-bottom:5px;font-family:'DM Mono',monospace}
+.kpi-sub{font-size:11px;color:var(--text3)}
+
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:200px 200px 1fr 1fr;gap:12px;margin-bottom:24px}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.chart-title{font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.donut-wrap{display:flex;flex-direction:column;align-items:center}
+.donut-c{position:relative;width:120px;height:120px;margin-bottom:10px}
+.dlegend{width:100%;display:flex;flex-direction:column;gap:5px}
+.dleg-row{display:flex;align-items:center;justify-content:space-between;font-size:11px}
+.dleg-dot{width:7px;height:7px;border-radius:2px;margin-right:5px;flex-shrink:0}
+.dleg-name{color:var(--text2);display:flex;align-items:center}
+.dleg-val{font-weight:700;color:var(--text);font-family:'DM Mono',monospace}
+
+/* Supervisor section */
+.sup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sup-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px 18px;cursor:pointer;transition:border-color .2s,transform .15s;
+}
+.sup-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.sup-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.sup-info{flex:1;min-width:0}
+.sup-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sup-meta{font-size:11px;color:var(--text3);margin-top:2px}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:99px}
+.b-yellow{background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.b-red{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.25)}
+.b-blue{background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2)}
+.b-green{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.sstats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:12px}
+.sstat{background:var(--bg3);border-radius:var(--rs);padding:8px 10px}
+.sstat-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:3px}
+.sstat-v{font-size:17px;font-weight:700;font-family:'DM Mono',monospace}
+.sstat-v.y{color:var(--amber)}.sstat-v.r{color:var(--red)}
+.bars{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{font-size:10px;color:var(--text3);min-width:76px}
+.bar-track{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+.bar-pct{font-size:10px;color:var(--text3);min-width:32px;text-align:right;font-family:'DM Mono',monospace}
+.res-divider{height:1px;background:var(--border);margin:12px 0 10px}
+.res-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.res-table{width:100%;border-collapse:collapse;font-size:11px}
+.res-table th{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);font-weight:700;padding:0 0 6px;text-align:left}
+.res-table td{padding:5px 0;border-top:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.res-table td:last-child{text-align:right}
+.pill{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:99px}
+.p-y{background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.25)}
+.p-r{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.25)}
+.no-res{font-size:11px;color:var(--text3);font-style:italic;padding:4px 0}
+
+/* ── MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
+  z-index:1000;align-items:center;justify-content:center;
+  backdrop-filter:blur(3px);
+}
+.overlay.open{display:flex;animation:fadeIn .2s ease}
+.modal{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
+  width:min(820px,95vw);max-height:90vh;display:flex;flex-direction:column;
+  animation:fadeUp .25s ease;overflow:hidden;
+}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
+.modal-hdr h3{font-size:16px;font-weight:700}
+.modal-hdr p{font-size:12px;color:var(--text3);margin-top:2px}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);border:none;color:var(--text2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.modal-close:hover{background:var(--bg4);color:var(--text)}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* Employee table */
+.emp-table{width:100%;border-collapse:collapse;font-size:13px}
+.emp-table th{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);font-weight:700;padding:0 8px 10px;text-align:left;white-space:nowrap}
+.emp-table td{padding:9px 8px;border-top:1px solid var(--border);vertical-align:middle;color:var(--text2)}
+.emp-table tr:hover td{background:var(--bg3)}
+.emp-table td:first-child{color:var(--text);font-weight:500}
+.btn-transfer{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--blue);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s;white-space:nowrap}
+.btn-transfer:hover{background:rgba(79,142,247,.12);border-color:var(--blue)}
+
+/* Transfer panel inside table row */
+.transfer-row td{padding:0 8px 10px;background:var(--bg3)}
+.transfer-panel{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg4);border-radius:var(--rs);border:1px solid var(--border2)}
+.transfer-panel select{flex:1;padding:7px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
+.transfer-panel select:focus{border-color:var(--blue)}
+
+/* Loading spinner */
+#loading-overlay{display:none;position:fixed;inset:0;background:var(--bg);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#loading-overlay.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
 </style>
 </head>
-
 <body>
 
-<div class="header">
-  <h2>Warehouse Dashboard</h2>
-  <button class="btn" onclick="exportExcel()">Export Excel</button>
+<!-- Loading -->
+<div id="loading-overlay"><div class="spinner"></div><p style="font-size:13px;color:var(--text2)">Đang tải dữ liệu...</p></div>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-logo">
+      <h1>Warehouse <span>HR</span></h1>
+      <p>Dashboard Portal</p>
+    </div>
+    <div class="field"><label>Tài khoản</label><input id="inp-user" type="text" placeholder="Nhập username" autocomplete="username"></div>
+    <div class="field"><label>Mật khẩu</label><input id="inp-pass" type="password" placeholder="Nhập password" autocomplete="current-password"></div>
+    <div class="login-err" id="login-err">Tài khoản hoặc mật khẩu không đúng</div>
+    <button class="btn-login" onclick="doLogin()">Đăng nhập</button>
+  </div>
 </div>
 
-<div class="kpi" id="kpi"></div>
+<!-- APP -->
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-left">
+      <h2>Warehouse <span>Headcount</span> Dashboard</h2>
+      <p id="date-lbl"></p>
+    </div>
+    <div class="hdr-right">
+      <span class="user-badge" id="user-badge"></span>
+      <button class="btn" onclick="exportXLSX()">⬇ Export XLSX</button>
+      <button class="btn" onclick="doLogout()">Đăng xuất</button>
+    </div>
+  </div>
 
-<div class="chart-row">
-  <div class="chart-box"><canvas id="buChart"></canvas></div>
-  <div class="chart-box"><canvas id="mgrChart"></canvas></div>
-  <div class="chart-box large"><canvas id="supChart"></canvas></div>
+  <!-- KPI -->
+  <div class="sec">Tổng quan</div>
+  <div class="kpi-grid" id="kpi-grid"></div>
+
+  <!-- Charts -->
+  <div class="sec">Phân bổ nhân sự</div>
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Theo BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
+    <div class="chart-card"><div class="chart-title">Theo Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
+    <div class="chart-card"><div class="chart-title">Headcount theo Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Permanent vs Outsource</div><div style="position:relative;height:180px"><canvas id="stackChart"></canvas></div></div>
+  </div>
+
+  <!-- Supervisor cards -->
+  <div class="sec">Chi tiết theo Supervisor <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">— click card để xem nhân viên</span></div>
+  <div class="sup-grid" id="sup-grid"></div>
 </div>
 
-<!-- STACKED BAR -->
-<div class="chart-box large">
-  <canvas id="stackChart"></canvas>
+<!-- MODAL: Resign KPI detail -->
+<div class="overlay" id="modal-resign">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-hdr">
+      <div><h3 id="resign-modal-title">Nghỉ việc tháng này</h3><p id="resign-modal-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('modal-resign')">×</button>
+    </div>
+    <div class="modal-body" id="resign-modal-body"></div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal('modal-resign')">Đóng</button></div>
+  </div>
+</div>
+
+<!-- MODAL: Supervisor employee list -->
+<div class="overlay" id="modal-sup">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><h3 id="sup-modal-title"></h3><p id="sup-modal-sub"></p></div>
+      <button class="modal-close" onclick="closeModal('modal-sup')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="sup-modal-body"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal('modal-sup')">Đóng</button>
+      <button class="btn btn-blue" onclick="exportSupXLSX()">⬇ Export danh sách này</button>
+    </div>
+  </div>
 </div>
 
 <script>
+// ════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════
+const USERS = [
+  { username: 'admin',  password: '123456' },
+  { username: 'admin1', password: '123123' },
+  // Thêm user tại đây: { username: 'user2', password: 'pass' },
+];
 
-// ===== LOAD =====
-let RAW=[];
-fetch('dataHRdashboard.js?t='+Date.now())
-.then(r=>r.text())
-.then(t=>{
-  RAW=JSON.parse(t);
-  init();
-});
+const DATA_URL = 'dataHRdashboard.js';
 
-// ===== BUILD =====
-function build(data){
+// ════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════
+let RAW = [];         // loaded from dataHRdashboard.js
+let CHARTS = {};      // chart instances
+let CURRENT_SUP = ''; // for export
 
-  const bu={}, mgr={}, sup={};
+// ════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value;
+  const match = USERS.find(x => x.username === u && x.password === p);
+  if (!match) {
+    document.getElementById('login-err').style.display = 'block';
+    return;
+  }
+  sessionStorage.setItem('hr_user', u);
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('app').classList.add('app-in');
+  document.getElementById('user-badge').textContent = '👤 ' + u;
+  loadData();
+}
+document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-  data.forEach(e=>{
-    bu[e.bu]=(bu[e.bu]||0)+1;
-    mgr[e.manager]=(mgr[e.manager]||0)+1;
-
-    if(!sup[e.sup]){
-      sup[e.sup]={name:e.sup,perm:0,out:0,total:0};
-    }
-
-    const s=sup[e.sup];
-    s.total++;
-
-    if(e.check==='TTI') s.perm++;
-    else s.out++;
-  });
-
-  return {bu,mgr,sups:Object.values(sup)};
+function doLogout() {
+  sessionStorage.removeItem('hr_user');
+  location.reload();
 }
 
-// ===== INIT =====
-function init(){
+// Auto-login if session exists
+if (sessionStorage.getItem('hr_user')) {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('user-badge').textContent = '👤 ' + sessionStorage.getItem('hr_user');
+  loadData();
+}
 
-  const {bu,mgr,sups}=build(RAW);
+// ════════════════════════════════════════════
+//  DATA LOAD
+// ════════════════════════════════════════════
+function loadData() {
+  document.getElementById('loading-overlay').classList.add('show');
+  fetch(DATA_URL + '?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      RAW = data;
+      document.getElementById('loading-overlay').classList.remove('show');
+      render();
+    })
+    .catch(err => {
+      document.getElementById('loading-overlay').classList.remove('show');
+      alert('Không tải được dữ liệu: ' + err.message);
+    });
+}
+
+// ════════════════════════════════════════════
+//  DATE UTILS
+// ════════════════════════════════════════════
+function today() {
+  const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+}
+function monthStart() {
+  const t = today(); return new Date(t.getFullYear(), t.getMonth(), 1);
+}
+function monthEnd() {
+  const t = today(); return new Date(t.getFullYear(), t.getMonth() + 1, 0, 23, 59, 59);
+}
+function parseDate(s) {
+  if (!s) return null;
+  const d = new Date(s); return isNaN(d) ? null : d;
+}
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = parseDate(s);
+  return d ? d.toLocaleDateString('vi-VN') : '—';
+}
+
+// ════════════════════════════════════════════
+//  PROCESS
+// ════════════════════════════════════════════
+function process() {
+  const T = today(), MS = monthStart(), ME = monthEnd();
+  const bu = {}, mgr = {}, supMap = {};
+
+  RAW.forEach(e => {
+    const lwd = parseDate(e.lwd);
+    e._lwd    = lwd;
+    e._isAlready  = lwd && lwd < T;
+    e._isUpcoming = lwd && lwd >= T && lwd <= ME;
+    e._inMonth    = lwd && lwd >= MS && lwd <= ME;
+
+    bu[e.bu]       = (bu[e.bu]       || 0) + 1;
+    mgr[e.manager] = (mgr[e.manager] || 0) + 1;
+
+    if (!supMap[e.sup]) supMap[e.sup] = {
+      name: e.sup, bu: new Set(), manager: '', total: 0,
+      perm: 0, out: 0, wsk: 0,
+      already: 0, upcoming: 0, total_month: 0,
+      resignees: [],
+    };
+    const s = supMap[e.sup];
+    s.total++; s.bu.add(e.bu); s.manager = e.manager;
+    if (e.check === 'TTI') s.perm++;
+    else s.out++;
+    if (e.title === 'Warehouse Shift Keeper') s.wsk++;
+    if (e._isAlready)  s.already++;
+    if (e._isUpcoming) s.upcoming++;
+    if (e._inMonth)    s.total_month++;
+    if (lwd) s.resignees.push({ ...e });
+  });
+
+  const sups = Object.values(supMap).map(s => ({ ...s, bu: [...s.bu].sort().join(', ') }))
+                                    .sort((a, b) => b.total - a.total);
+
+  // Sort resignees by LWD
+  sups.forEach(s => s.resignees.sort((a, b) => a._lwd - b._lwd));
+
+  const total  = RAW.length;
+  const perm   = RAW.filter(e => e.check === 'TTI').length;
+  const out    = RAW.filter(e => e.check === 'Outsource').length;
+  const alr    = RAW.filter(e => e._isAlready).length;
+  const upc    = RAW.filter(e => e._isUpcoming).length;
+  const totMon = RAW.filter(e => e._inMonth).length;
+
+  return { bu, mgr, sups, total, perm, out, alr, upc, totMon };
+}
+
+// ════════════════════════════════════════════
+//  RENDER
+// ════════════════════════════════════════════
+const BU_COLORS  = ['#4f8ef7','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf'];
+const MGR_COLORS = ['#a78bfa','#2dd4bf','#fbbf24','#4f8ef7','#f87171','#888','#34d399','#f97316'];
+const AVATAR_C   = [
+  ['#1e3a5f','#4f8ef7'],['#1a3d2e','#34d399'],['#3b2569','#a78bfa'],
+  ['#3d2b00','#fbbf24'],['#3b1515','#f87171'],['#1a3535','#2dd4bf'],
+  ['#1f3060','#60a5fa'],['#2e1f3d','#c084fc'],['#1e3830','#6ee7b7'],
+  ['#2d2000','#f59e0b'],['#1f1f3d','#818cf8'],['#2d1515','#fca5a5'],
+  ['#1a2d1a','#86efac'],['#2d1f00','#fdba74'],
+];
+function initials(n) { const p = n.trim().split(' '); return (p[0][0]+(p[p.length-1][0]||'')).toUpperCase(); }
+
+function render() {
+  const P = process();
+  const T = today();
+
+  // Header date
+  const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
+  document.getElementById('date-lbl').textContent = 'Cập nhật: ' + T.toLocaleDateString('vi-VN') + ' · ' + mn;
 
   // KPI
-  const total=RAW.length;
-  const perm=RAW.filter(x=>x.check==='TTI').length;
+  const kpi = document.getElementById('kpi-grid');
+  kpi.innerHTML = `
+    <div class="kpi-card" style="--ac:var(--blue);--ib:rgba(79,142,247,.1)">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-label">Tổng nhân viên</div>
+      <div class="kpi-val">${P.total}</div>
+      <div class="kpi-sub">${P.total - P.alr - P.upc} đang làm · ${P.alr+P.upc} có LWD</div>
+    </div>
+    <div class="kpi-card" style="--ac:var(--green);--ib:rgba(52,211,153,.1)">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-label">Nhân viên chính thức</div>
+      <div class="kpi-val">${P.perm}</div>
+      <div class="kpi-sub">${Math.round(P.perm/P.total*100)}% tổng số</div>
+    </div>
+    <div class="kpi-card" style="--ac:var(--amber);--ib:rgba(251,191,36,.1)">
+      <div class="kpi-icon">🏢</div>
+      <div class="kpi-label">Nhân viên Outsource</div>
+      <div class="kpi-val">${P.out}</div>
+      <div class="kpi-sub">${Math.round(P.out/P.total*100)}% tổng số</div>
+    </div>
+    <div class="kpi-card clickable" style="--ac:var(--red);--ib:rgba(248,113,113,.1)" onclick="showResignModal()">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-label">Nghỉ việc trong ${mn}</div>
+      <div class="kpi-val" style="color:var(--red)">${P.totMon}</div>
+      <div class="kpi-sub">${P.alr} đã nghỉ · ${P.upc} sắp nghỉ · <span style="color:var(--blue)">xem chi tiết →</span></div>
+    </div>`;
 
-  kpi.innerHTML=`
-    <div class="kpi-card">Total<br><b>${total}</b></div>
-    <div class="kpi-card">Permanent<br><b>${perm}</b></div>
-    <div class="kpi-card">Outsource<br><b>${total-perm}</b></div>
-    <div class="kpi-card">Supervisor<br><b>${sups.length}</b></div>
-  `;
+  // Donuts
+  renderDonut('buChart', 'buLeg', P.bu, BU_COLORS);
+  renderDonut('mgrChart', 'mgrLeg', P.mgr, MGR_COLORS);
 
-  // ===== DONUT STYLE FIX =====
-  const donutOpt = {
-    maintainAspectRatio:false,
-    plugins:{
-      legend:{
-        position:'bottom',
-        labels:{color:'#aaa',boxWidth:12}
-      }
-    }
-  };
+  // Bar charts
+  const supLabels = P.sups.map(s => s.name.split(' ').slice(-1)[0]);
+  const gc = 'rgba(255,255,255,.05)';
+  const tc = '#555e72';
 
-  new Chart(buChart,{
-    type:'doughnut',
-    data:{labels:Object.keys(bu),datasets:[{data:Object.values(bu)}]},
-    options:donutOpt
-  });
-
-  new Chart(mgrChart,{
-    type:'doughnut',
-    data:{labels:Object.keys(mgr),datasets:[{data:Object.values(mgr)}]},
-    options:donutOpt
-  });
-
-  // ===== SUP BAR =====
-  new Chart(supChart,{
-    type:'bar',
-    data:{
-      labels:sups.map(s=>s.name),
-      datasets:[{data:sups.map(s=>s.total)}]
-    },
-    options:{maintainAspectRatio:false}
-  });
-
-  // ===== STACKED BAR =====
-  new Chart(stackChart,{
-    type:'bar',
-    data:{
-      labels:sups.map(s=>s.name),
-      datasets:[
-        {
-          label:'Permanent',
-          data:sups.map(s=>s.perm),
-          backgroundColor:'#34d399'
-        },
-        {
-          label:'Outsource',
-          data:sups.map(s=>s.out),
-          backgroundColor:'#fbbf24'
-        }
-      ]
-    },
-    options:{
-      maintainAspectRatio:false,
-      responsive:true,
-      scales:{
-        x:{stacked:true},
-        y:{stacked:true}
-      }
+  if (CHARTS.supBar) CHARTS.supBar.destroy();
+  CHARTS.supBar = new Chart(document.getElementById('supBarChart'), {
+    type: 'bar',
+    data: { labels: supLabels, datasets: [{ data: P.sups.map(s=>s.total), backgroundColor: '#4f8ef7', borderRadius: 4, borderSkipped: false }] },
+    options: { responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name,afterLabel:i=>`Click card để xem chi tiết`}}},
+      scales:{x:{ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{ticks:{font:{size:10},color:tc},grid:{color:gc}}},
+      onClick:(e,items)=>{ if(items.length) showSupModal(P.sups[items[0].index].name); }
     }
   });
 
-}
-
-// ===== EXPORT =====
-function exportExcel(){
-
-  const rows = RAW.map(e=>[
-    e.id,e.name,e.bu,e.manager,e.sup,e.title,e.type,e.lwd
-  ]);
-
-  let csv="ID,Name,BU,Manager,Sup,Title,Type,LWD\n";
-
-  rows.forEach(r=>{
-    csv+=r.join(",")+"\n";
+  if (CHARTS.stack) CHARTS.stack.destroy();
+  CHARTS.stack = new Chart(document.getElementById('stackChart'), {
+    type: 'bar',
+    data: { labels: supLabels, datasets: [
+      { label:'Permanent', data:P.sups.map(s=>s.perm), backgroundColor:'#34d399', stack:'s', borderRadius:0 },
+      { label:'Outsource', data:P.sups.map(s=>s.out),  backgroundColor:'#fbbf24', stack:'s', borderRadius:4 },
+    ]},
+    options: { responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}}},
+      scales:{x:{stacked:true,ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{stacked:true,ticks:{font:{size:10},color:tc},grid:{color:gc}}},
+      onClick:(e,items)=>{ if(items.length) showSupModal(P.sups[items[0].index].name); }
+    }
   });
 
-  const blob=new Blob([csv],{type:"text/csv"});
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="HR_Dashboard.csv";
-  a.click();
+  // Supervisor cards
+  renderSupCards(P.sups);
 }
 
+function renderDonut(canvasId, legId, dataMap, colors) {
+  if (CHARTS[canvasId]) CHARTS[canvasId].destroy();
+  const labels = Object.keys(dataMap).sort((a,b) => dataMap[b]-dataMap[a]);
+  const vals   = labels.map(k => dataMap[k]);
+  CHARTS[canvasId] = new Chart(document.getElementById(canvasId), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: vals, backgroundColor: colors.slice(0, labels.length), borderWidth: 0, hoverOffset: 4 }] },
+    options: { responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} NV`}}} }
+  });
+  document.getElementById(legId).innerHTML = labels.map((l,i)=>
+    `<div class="dleg-row"><span class="dleg-name"><span class="dleg-dot" style="background:${colors[i]}"></span>${l}</span><span class="dleg-val">${vals[i]}</span></div>`
+  ).join('');
+}
+
+function renderSupCards(sups) {
+  const grid = document.getElementById('sup-grid');
+  grid.innerHTML = '';
+  sups.forEach((s, i) => {
+    const [bg, fg] = AVATAR_C[i % AVATAR_C.length];
+    const permPct = s.total ? Math.round(s.perm/s.total*100) : 0;
+    const wskPct  = s.total ? Math.round(s.wsk/s.total*100) : 0;
+
+    let badges = '';
+    if (s.total_month > 0) {
+      badges += `<span class="badge b-blue">Tháng này: ${s.total_month}</span>`;
+      if (s.upcoming > 0) badges += `<span class="badge b-yellow">Sắp: ${s.upcoming}</span>`;
+      if (s.already  > 0) badges += `<span class="badge b-red">Đã: ${s.already}</span>`;
+    }
+
+    let resRows = '<div class="no-res">Không có nghỉ việc</div>';
+    if (s.resignees.length > 0) {
+      resRows = `<table class="res-table">
+        <thead><tr><th>Họ tên</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <tbody>${s.resignees.map(r =>
+          `<tr><td>${r.name}</td><td style="font-family:'DM Mono',monospace;font-size:10px">${fmtDate(r.lwd)}</td>
+           <td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Đã nghỉ':'Sắp nghỉ'}</span></td></tr>`
+        ).join('')}</tbody>
+      </table>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'sup-card';
+    card.onclick = () => showSupModal(s.name);
+    card.innerHTML = `
+      <div class="sup-hdr">
+        <div class="avatar" style="background:${bg};color:${fg}">${initials(s.name)}</div>
+        <div class="sup-info">
+          <div class="sup-name">${s.name}</div>
+          <div class="sup-meta">Mgr: ${s.manager} · BU: ${s.bu}</div>
+        </div>
+        <div class="badges">${badges}</div>
+      </div>
+      <div class="sstats">
+        <div class="sstat"><div class="sstat-l">Tổng NV</div><div class="sstat-v">${s.total}</div></div>
+        <div class="sstat"><div class="sstat-l">Permanent</div><div class="sstat-v">${s.perm}</div></div>
+        <div class="sstat"><div class="sstat-l">Outsource</div><div class="sstat-v">${s.out}</div></div>
+        <div class="sstat"><div class="sstat-l">Sắp nghỉ</div><div class="sstat-v y">${s.upcoming}</div></div>
+        <div class="sstat"><div class="sstat-l">Đã nghỉ</div><div class="sstat-v r">${s.already}</div></div>
+      </div>
+      <div class="bars">
+        <div class="bar-row"><span class="bar-lbl">Permanent</span><div class="bar-track"><div class="bar-fill" style="width:${permPct}%;background:#34d399"></div></div><span class="bar-pct">${permPct}%</span></div>
+        <div class="bar-row"><span class="bar-lbl">Shift Keeper</span><div class="bar-track"><div class="bar-fill" style="width:${wskPct}%;background:#4f8ef7"></div></div><span class="bar-pct">${s.wsk} HC</span></div>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-title">Resignation</div>
+      ${resRows}`;
+    grid.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════
+//  MODALS
+// ════════════════════════════════════════════
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Click outside to close
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// Resign KPI modal
+function showResignModal() {
+  const T = today(), MS = monthStart(), ME = monthEnd();
+  const mn = T.toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
+  const list = RAW.filter(e => e._inMonth).sort((a,b) => a._lwd - b._lwd);
+
+  document.getElementById('resign-modal-title').textContent = `Nghỉ việc trong ${mn}`;
+  document.getElementById('resign-modal-sub').textContent = `${list.length} nhân viên`;
+
+  document.getElementById('resign-modal-body').innerHTML = list.length === 0
+    ? '<p style="color:var(--text3);font-size:13px">Không có nhân viên nghỉ việc trong tháng này.</p>'
+    : `<table class="emp-table">
+        <thead><tr><th>Họ tên</th><th>Supervisor</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <tbody>${list.map(e=>`
+          <tr>
+            <td>${e.name}</td>
+            <td style="color:var(--text3)">${e.sup}</td>
+            <td style="color:var(--text3)">${e.title}</td>
+            <td style="font-family:'DM Mono',monospace;font-size:11px">${fmtDate(e.lwd)}</td>
+            <td><span class="pill ${e._isAlready?'p-r':'p-y'}">${e._isAlready?'Đã nghỉ':'Sắp nghỉ'}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  openModal('modal-resign');
+}
+
+// Supervisor employee list modal
+function showSupModal(supName) {
+  CURRENT_SUP = supName;
+  const emps = RAW.filter(e => e.sup === supName);
+  const allSups = [...new Set(RAW.map(e => e.sup))].filter(s => s !== supName).sort();
+
+  document.getElementById('sup-modal-title').textContent = supName;
+  document.getElementById('sup-modal-sub').textContent = `${emps.length} nhân viên`;
+
+  renderSupModalBody(emps, allSups);
+  openModal('modal-sup');
+}
+
+function renderSupModalBody(emps, allSups) {
+  const P = process();
+  const supList = allSups || [...new Set(RAW.map(e=>e.sup))].filter(s=>s!==CURRENT_SUP).sort();
+  const empsNow = emps || RAW.filter(e=>e.sup===CURRENT_SUP);
+
+  document.getElementById('sup-modal-body').innerHTML = `
+    <table class="emp-table" id="sup-emp-table">
+      <thead><tr><th>#</th><th>Họ tên</th><th>Chức danh</th><th>Loại</th><th>LWD</th><th>Transfer</th></tr></thead>
+      <tbody>${empsNow.map((e,i)=>`
+        <tr id="tr-${e.id}">
+          <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
+          <td>${e.name}</td>
+          <td style="color:var(--text3);font-size:12px">${e.title}</td>
+          <td><span class="pill ${e.check==='TTI'?'b-green':'b-yellow'}" style="font-size:10px">${e.check==='TTI'?'Permanent':'Outsource'}</span></td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px;color:${e._isAlready?'var(--red)':e._isUpcoming?'var(--amber)':'var(--text3)'}">${fmtDate(e.lwd)}</td>
+          <td><button class="btn-transfer" onclick="toggleTransfer(${e.id}, this)">Transfer →</button></td>
+        </tr>
+        <tr class="transfer-row" id="tp-${e.id}" style="display:none">
+          <td colspan="6">
+            <div class="transfer-panel">
+              <span style="font-size:12px;color:var(--text2);white-space:nowrap">Chuyển sang:</span>
+              <select id="sel-${e.id}">
+                <option value="">— Chọn Supervisor —</option>
+                ${supList.map(s=>`<option value="${s}">${s}</option>`).join('')}
+              </select>
+              <button class="btn btn-blue" onclick="doTransfer(${e.id})" style="font-size:12px;padding:6px 14px">Xác nhận</button>
+              <button class="btn" onclick="cancelTransfer(${e.id})" style="font-size:12px;padding:6px 10px">✕</button>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`;
+}
+
+function toggleTransfer(id, btn) {
+  const tp = document.getElementById('tp-'+id);
+  const showing = tp.style.display !== 'none';
+  // Close all
+  document.querySelectorAll('.transfer-row').forEach(r => r.style.display='none');
+  if (!showing) tp.style.display = 'table-row';
+}
+function cancelTransfer(id) {
+  document.getElementById('tp-'+id).style.display = 'none';
+}
+
+function doTransfer(id) {
+  const sel = document.getElementById('sel-'+id);
+  const newSup = sel.value;
+  if (!newSup) { sel.style.borderColor='var(--red)'; return; }
+
+  const emp = RAW.find(e => e.id === id);
+  if (emp) emp.sup = newSup;
+
+  closeModal('modal-sup');
+
+  // Re-render after a tick so modal closes first
+  setTimeout(() => {
+    render();
+    // Re-open with updated data
+    showSupModal(CURRENT_SUP);
+  }, 100);
+}
+
+// ════════════════════════════════════════════
+//  EXPORT
+// ════════════════════════════════════════════
+function loadXLSX(cb) {
+  if (window.XLSX) { cb(); return; }
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = cb;
+  document.head.appendChild(s);
+}
+
+function exportXLSX() {
+  loadXLSX(() => {
+    const rows = RAW.map(e => ({
+      'ID': e.id, 'Họ tên': e.name, 'BU': e.bu,
+      'Manager': e.manager, 'Supervisor': e.sup,
+      'Chức danh': e.title, 'Loại HĐ': e.type,
+      'Phân loại': e.check === 'TTI' ? 'Permanent' : 'Outsource',
+      'Ngày vào': e.join, 'LWD': e.lwd || '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    XLSX.writeFile(wb, 'HR_Dashboard_' + new Date().toISOString().slice(0,10) + '.xlsx');
+  });
+}
+
+function exportSupXLSX() {
+  loadXLSX(() => {
+    const rows = RAW.filter(e => e.sup === CURRENT_SUP).map(e => ({
+      'ID': e.id, 'Họ tên': e.name, 'BU': e.bu,
+      'Supervisor': e.sup, 'Chức danh': e.title,
+      'Loại HĐ': e.check === 'TTI' ? 'Permanent' : 'Outsource',
+      'Ngày vào': e.join, 'LWD': e.lwd || '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, CURRENT_SUP.slice(0,25));
+    XLSX.writeFile(wb, 'Sup_' + CURRENT_SUP.replace(/\s+/g,'_') + '.xlsx');
+  });
+}
 </script>
-
 </body>
 </html>
