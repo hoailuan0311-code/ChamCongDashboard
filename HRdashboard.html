@@ -6,6 +6,7 @@
 <title>HR Dashboard · Warehouse</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -217,6 +218,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
     <div class="hdr-right">
       <span class="user-badge" id="user-badge"></span>
       <button class="btn" onclick="exportXLSX()">⬇ Export XLSX</button>
+      <button class="btn" id="btn-reset" onclick="resetTransfers()" style="display:none;color:var(--amber);border-color:rgba(251,191,36,.3)">↺ Reset transfers</button>
       <button class="btn" onclick="doLogout()">Đăng xuất</button>
     </div>
   </div>
@@ -287,6 +289,34 @@ let RAW = [];         // loaded from dataHRdashboard.js
 let CHARTS = {};      // chart instances
 let CURRENT_SUP = ''; // for export
 
+// Register datalabels only for bar charts (opt-in per chart)
+// Donuts will explicitly set datalabels: { display: false }
+
+// ════════════════════════════════════════════
+//  TRANSFER PERSISTENCE (localStorage)
+// ════════════════════════════════════════════
+const TF_KEY = 'hr_transfers_v1';
+
+function loadTFMap()  { try { return JSON.parse(localStorage.getItem(TF_KEY) || '{}'); } catch { return {}; } }
+function saveTFMap(m) { localStorage.setItem(TF_KEY, JSON.stringify(m)); }
+
+function applyTransfers(data) {
+  const m = loadTFMap();
+  data.forEach(e => { if (m[e.id]) e.sup = m[e.id]; });
+  return data;
+}
+
+function syncResetBtn() {
+  const m = loadTFMap();
+  document.getElementById('btn-reset').style.display = Object.keys(m).length ? 'inline-block' : 'none';
+}
+
+function resetTransfers() {
+  if (!confirm('Reset toàn bộ transfer về dữ liệu gốc?')) return;
+  localStorage.removeItem(TF_KEY);
+  loadData();
+}
+
 // ════════════════════════════════════════════
 //  AUTH
 // ════════════════════════════════════════════
@@ -328,8 +358,9 @@ function loadData() {
   fetch(DATA_URL + '?t=' + Date.now())
     .then(r => r.json())
     .then(data => {
-      RAW = data;
+      RAW = applyTransfers(data);  // apply any saved transfers
       document.getElementById('loading-overlay').classList.remove('show');
+      syncResetBtn();
       render();
     })
     .catch(err => {
@@ -350,14 +381,37 @@ function monthStart() {
 function monthEnd() {
   const t = today(); return new Date(t.getFullYear(), t.getMonth() + 1, 0, 23, 59, 59);
 }
+
+/**
+ * Safely parse a date value from dataHRdashboard.js.
+ * Handles: null/undefined/empty → null (still working)
+ *          Excel serial number (e.g. 46122) → proper JS Date
+ *          ISO string ("2026-03-21") → proper JS Date
+ */
 function parseDate(s) {
-  if (!s) return null;
-  const d = new Date(s); return isNaN(d) ? null : d;
+  // Explicit null / empty / zero → no LWD, still working
+  if (s === null || s === undefined || s === '' || s === 0 || s === '0' || s === 'null') return null;
+
+  // Numeric value OR numeric-looking string → Excel serial date
+  // Excel serials for dates after 2000 are > 36526; guard with > 1000 to be safe
+  const num = typeof s === 'number' ? s : (/^\d+(\.\d+)?$/.test(String(s).trim()) ? parseFloat(s) : NaN);
+  if (!isNaN(num) && num > 1000) {
+    // Excel epoch is Dec 30, 1899; subtract 25569 days to get Unix epoch days
+    const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Regular date string
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
 }
+
 function fmtDate(s) {
-  if (!s) return '—';
+  if (s === null || s === undefined || s === '' || s === 0) return '—';
   const d = parseDate(s);
-  return d ? d.toLocaleDateString('vi-VN') : '—';
+  if (!d) return '—';
+  // dd/mm/yyyy
+  return d.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
 }
 
 // ════════════════════════════════════════════
@@ -370,9 +424,9 @@ function process() {
   RAW.forEach(e => {
     const lwd = parseDate(e.lwd);
     e._lwd    = lwd;
-    e._isAlready  = lwd && lwd < T;
-    e._isUpcoming = lwd && lwd >= T && lwd <= ME;
-    e._inMonth    = lwd && lwd >= MS && lwd <= ME;
+    e._isAlready  = lwd !== null && lwd < T;
+    e._isUpcoming = lwd !== null && lwd >= T && lwd <= ME;
+    e._inMonth    = lwd !== null && lwd >= MS && lwd <= ME;
 
     bu[e.bu]       = (bu[e.bu]       || 0) + 1;
     mgr[e.manager] = (mgr[e.manager] || 0) + 1;
@@ -391,7 +445,7 @@ function process() {
     if (e._isAlready)  s.already++;
     if (e._isUpcoming) s.upcoming++;
     if (e._inMonth)    s.total_month++;
-    if (lwd) s.resignees.push({ ...e });
+    if (lwd !== null) s.resignees.push({ ...e });
   });
 
   const sups = Object.values(supMap).map(s => ({ ...s, bu: [...s.bu].sort().join(', ') }))
@@ -469,12 +523,24 @@ function render() {
   const gc = 'rgba(255,255,255,.05)';
   const tc = '#555e72';
 
+  // Register datalabels plugin (scoped — only charts that opt in via plugins.datalabels)
+  if (window.ChartDataLabels) Chart.register(ChartDataLabels);
+
   if (CHARTS.supBar) CHARTS.supBar.destroy();
   CHARTS.supBar = new Chart(document.getElementById('supBarChart'), {
     type: 'bar',
     data: { labels: supLabels, datasets: [{ data: P.sups.map(s=>s.total), backgroundColor: '#4f8ef7', borderRadius: 4, borderSkipped: false }] },
     options: { responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name,afterLabel:i=>`Click card để xem chi tiết`}}},
+      layout: { padding: { top: 18 } },
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}},
+        datalabels:{
+          anchor:'end', align:'top',
+          color:'#8b92a8', font:{size:10, family:"'DM Mono', monospace"},
+          formatter: v => v
+        }
+      },
       scales:{x:{ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{ticks:{font:{size:10},color:tc},grid:{color:gc}}},
       onClick:(e,items)=>{ if(items.length) showSupModal(P.sups[items[0].index].name); }
     }
@@ -484,11 +550,27 @@ function render() {
   CHARTS.stack = new Chart(document.getElementById('stackChart'), {
     type: 'bar',
     data: { labels: supLabels, datasets: [
-      { label:'Permanent', data:P.sups.map(s=>s.perm), backgroundColor:'#34d399', stack:'s', borderRadius:0 },
-      { label:'Outsource', data:P.sups.map(s=>s.out),  backgroundColor:'#fbbf24', stack:'s', borderRadius:4 },
+      { label:'Permanent', data:P.sups.map(s=>s.perm), backgroundColor:'#34d399', stack:'s', borderRadius:0,
+        datalabels:{ display: false } },
+      { label:'Outsource', data:P.sups.map(s=>s.out), backgroundColor:'#fbbf24', stack:'s', borderRadius:4,
+        datalabels:{
+          anchor:'end', align:'top',
+          color:'#8b92a8', font:{size:10, family:"'DM Mono', monospace"},
+          formatter:(v, ctx) => {
+            // Show total (perm + out) on top of the stacked bar
+            const idx = ctx.dataIndex;
+            return P.sups[idx].total;
+          }
+        }
+      },
     ]},
     options: { responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}}},
+      layout: { padding: { top: 18 } },
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}},
+        datalabels: {}  // enabled; individual datasets override above
+      },
       scales:{x:{stacked:true,ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{stacked:true,ticks:{font:{size:10},color:tc},grid:{color:gc}}},
       onClick:(e,items)=>{ if(items.length) showSupModal(P.sups[items[0].index].name); }
     }
@@ -505,7 +587,7 @@ function renderDonut(canvasId, legId, dataMap, colors) {
   CHARTS[canvasId] = new Chart(document.getElementById(canvasId), {
     type: 'doughnut',
     data: { labels, datasets: [{ data: vals, backgroundColor: colors.slice(0, labels.length), borderWidth: 0, hoverOffset: 4 }] },
-    options: { responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} NV`}}} }
+    options: { responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},datalabels:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} NV`}}} }
   });
   document.getElementById(legId).innerHTML = labels.map((l,i)=>
     `<div class="dleg-row"><span class="dleg-name"><span class="dleg-dot" style="background:${colors[i]}"></span>${l}</span><span class="dleg-val">${vals[i]}</span></div>`
@@ -619,43 +701,56 @@ function showSupModal(supName) {
 }
 
 function renderSupModalBody(emps, allSups) {
-  const P = process();
   const supList = allSups || [...new Set(RAW.map(e=>e.sup))].filter(s=>s!==CURRENT_SUP).sort();
   const empsNow = emps || RAW.filter(e=>e.sup===CURRENT_SUP);
 
   document.getElementById('sup-modal-body').innerHTML = `
     <table class="emp-table" id="sup-emp-table">
-      <thead><tr><th>#</th><th>Họ tên</th><th>Chức danh</th><th>Loại</th><th>LWD</th><th>Transfer</th></tr></thead>
-      <tbody>${empsNow.map((e,i)=>`
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Họ tên</th>
+          <th>LWD</th>
+          <th>Trạng thái</th>
+          <th>Transfer</th>
+        </tr>
+      </thead>
+      <tbody>${empsNow.map(e => {
+        const lwdColor = e._isAlready ? 'var(--red)' : e._isUpcoming ? 'var(--amber)' : 'var(--text3)';
+        const statusPill = e._isAlready
+          ? `<span class="pill p-r">Đã nghỉ</span>`
+          : e._isUpcoming
+            ? `<span class="pill p-y">Sắp nghỉ</span>`
+            : `<span style="font-size:11px;color:var(--text3)">Đang làm</span>`;
+        return `
         <tr id="tr-${e.id}">
           <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
           <td>${e.name}</td>
-          <td style="color:var(--text3);font-size:12px">${e.title}</td>
-          <td><span class="pill ${e.check==='TTI'?'b-green':'b-yellow'}" style="font-size:10px">${e.check==='TTI'?'Permanent':'Outsource'}</span></td>
-          <td style="font-family:'DM Mono',monospace;font-size:11px;color:${e._isAlready?'var(--red)':e._isUpcoming?'var(--amber)':'var(--text3)'}">${fmtDate(e.lwd)}</td>
-          <td><button class="btn-transfer" onclick="toggleTransfer(${e.id}, this)">Transfer →</button></td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px;color:${lwdColor}">${fmtDate(e.lwd)}</td>
+          <td>${statusPill}</td>
+          <td><button class="btn-transfer" onclick="toggleTransfer(${e.id})">Transfer →</button></td>
         </tr>
         <tr class="transfer-row" id="tp-${e.id}" style="display:none">
-          <td colspan="6">
+          <td colspan="5">
             <div class="transfer-panel">
               <span style="font-size:12px;color:var(--text2);white-space:nowrap">Chuyển sang:</span>
               <select id="sel-${e.id}">
                 <option value="">— Chọn Supervisor —</option>
                 ${supList.map(s=>`<option value="${s}">${s}</option>`).join('')}
               </select>
-              <button class="btn btn-blue" onclick="doTransfer(${e.id})" style="font-size:12px;padding:6px 14px">Xác nhận</button>
+              <button class="btn btn-blue" onclick="doTransfer(${e.id})" style="font-size:12px;padding:6px 14px">✓ Xác nhận</button>
               <button class="btn" onclick="cancelTransfer(${e.id})" style="font-size:12px;padding:6px 10px">✕</button>
             </div>
           </td>
-        </tr>`).join('')}
+        </tr>`;
+      }).join('')}
       </tbody>
     </table>`;
 }
 
-function toggleTransfer(id, btn) {
+function toggleTransfer(id) {
   const tp = document.getElementById('tp-'+id);
   const showing = tp.style.display !== 'none';
-  // Close all
   document.querySelectorAll('.transfer-row').forEach(r => r.style.display='none');
   if (!showing) tp.style.display = 'table-row';
 }
@@ -666,19 +761,32 @@ function cancelTransfer(id) {
 function doTransfer(id) {
   const sel = document.getElementById('sel-'+id);
   const newSup = sel.value;
-  if (!newSup) { sel.style.borderColor='var(--red)'; return; }
+  if (!newSup) { sel.style.borderColor='var(--red)'; setTimeout(()=>sel.style.borderColor='',1200); return; }
 
+  // 1. Update in-memory RAW
   const emp = RAW.find(e => e.id === id);
-  if (emp) emp.sup = newSup;
+  if (!emp) return;
+  emp.sup = newSup;
 
-  closeModal('modal-sup');
+  // 2. Persist to localStorage so it survives page refresh
+  const m = loadTFMap();
+  m[id] = newSup;
+  saveTFMap(m);
+  syncResetBtn();
 
-  // Re-render after a tick so modal closes first
+  // 3. Flash confirmation on the row before closing
+  const row = document.getElementById('tr-'+id);
+  if (row) {
+    row.style.background = 'rgba(52,211,153,.12)';
+    row.cells[1].innerHTML = `<span style="text-decoration:line-through;color:var(--text3)">${emp.name}</span> <span style="color:var(--green);font-size:11px">→ ${newSup}</span>`;
+  }
+
+  // 4. After brief delay: close modal, re-render everything, re-open current sup
   setTimeout(() => {
+    closeModal('modal-sup');
     render();
-    // Re-open with updated data
     showSupModal(CURRENT_SUP);
-  }, 100);
+  }, 600);
 }
 
 // ════════════════════════════════════════════
