@@ -274,8 +274,8 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 //  CONFIG
 // ════════════════════════════════════════════
 const USERS = [
-  { username: 'admin',  password: '123456' },
-  { username: 'admin1', password: '123123' },
+  { username: 'cris',  password: '123456' },
+  { username: 'letai', password: '123123' },
   // Thêm user tại đây: { username: 'user2', password: 'pass' },
 ];
 
@@ -613,11 +613,12 @@ function renderSupCards(sups) {
     let resRows = '<div class="no-res">Không có nghỉ việc</div>';
     if (s.resignees.length > 0) {
       resRows = `<table class="res-table">
-        <thead><tr><th>ID</th><th>Họ tên</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <thead><tr><th>ID</th><th>Họ tên</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
         <tbody>${s.resignees.map(r =>
           `<tr>
             <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${r.id}</td>
             <td>${r.name}</td>
+            <td style="color:var(--text3);font-size:10px">${r.title}</td>
             <td style="font-family:'DM Mono',monospace;font-size:10px">${fmtDate(r.lwd)}</td>
             <td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Đã nghỉ':'Sắp nghỉ'}</span></td>
           </tr>`
@@ -678,9 +679,10 @@ function showResignModal() {
   document.getElementById('resign-modal-body').innerHTML = list.length === 0
     ? '<p style="color:var(--text3);font-size:13px">Không có nhân viên nghỉ việc trong tháng này.</p>'
     : `<table class="emp-table">
-        <thead><tr><th>Họ tên</th><th>Supervisor</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
+        <thead><tr><th>ID</th><th>Họ tên</th><th>Supervisor</th><th>Chức danh</th><th>LWD</th><th>Trạng thái</th></tr></thead>
         <tbody>${list.map(e=>`
           <tr>
+            <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
             <td>${e.name}</td>
             <td style="color:var(--text3)">${e.sup}</td>
             <td style="color:var(--text3)">${e.title}</td>
@@ -715,6 +717,7 @@ function renderSupModalBody(emps, allSups) {
         <tr>
           <th>ID</th>
           <th>Họ tên</th>
+          <th>Chức danh</th>
           <th>LWD</th>
           <th>Trạng thái</th>
           <th>Transfer</th>
@@ -731,12 +734,13 @@ function renderSupModalBody(emps, allSups) {
         <tr id="tr-${e.id}">
           <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
           <td>${e.name}</td>
+          <td style="color:var(--text3);font-size:11px">${e.title}</td>
           <td style="font-family:'DM Mono',monospace;font-size:11px;color:${lwdColor}">${fmtDate(e.lwd)}</td>
           <td>${statusPill}</td>
           <td><button class="btn-transfer" onclick="toggleTransfer(${e.id})">Transfer →</button></td>
         </tr>
         <tr class="transfer-row" id="tp-${e.id}" style="display:none">
-          <td colspan="5">
+          <td colspan="6">
             <div class="transfer-panel">
               <span style="font-size:12px;color:var(--text2);white-space:nowrap">Chuyển sang:</span>
               <select id="sel-${e.id}">
