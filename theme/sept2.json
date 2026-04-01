@@ -3,6 +3,8 @@
   "name": "Quốc Khánh Việt Nam – 2/9",
   "background": "linear-gradient(180deg,#8b0000,#b30000,#e60000)",
   "textColor": "#fff2cc",
+  "music": "QuocCa.mp3",
+  "musicVolume": 0.5,
   "effect": "effect_sept2.js",
   "font": "\"Be Vietnam Pro\", sans-serif",
   "autoMonth": 9,
