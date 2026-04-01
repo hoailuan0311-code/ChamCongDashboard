@@ -4,6 +4,7 @@
   "background": "linear-gradient(180deg,#ffafbd,#ffc3a0)",
   "textColor": "#35231f",
   "music": "NhacAugust.mp3",
+  "musicVolume": 0.45,
   "effect": "lightparticles.js",
   "font": "\"Be Vietnam Pro\", sans-serif",
   "autoMonth": 8,
