@@ -953,6 +953,20 @@ async function loadTheme() {
             const eff = document.createElement("script");
             eff.src = "theme/" + theme.effect; eff.defer = true;
             document.body.appendChild(eff);
+
+            // Dừng hiệu ứng sau 10s: fade out rồi remove canvas pháo hoa
+            // (canvas do effect tạo không có id, phân biệt với canvas chart có id)
+            setTimeout(() => {
+                document.querySelectorAll('canvas:not([id])').forEach(c => {
+                    c.style.transition = 'opacity 1.5s ease';
+                    c.style.opacity = '0';
+                    setTimeout(() => {
+                        c.remove();
+                        // Xoá luôn style/canvas thừa nếu effect inject vào body
+                        document.querySelectorAll('canvas:not([id])').forEach(x => x.remove());
+                    }, 1500);
+                });
+            }, 10000);
         }
         console.log("✔ Theme applied:", activeTheme);
         // Re-render charts sau khi theme đổi màu nền
