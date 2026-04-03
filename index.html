@@ -160,8 +160,9 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
     font-weight: 700;
     letter-spacing: 0.3px;
 }
-.confirm-none { background: rgba(255,107,107,0.15); color: #e53e3e; border: 1px solid rgba(255,107,107,0.3); }
-.confirm-done { background: rgba(46,204,113,0.15); color: #27ae60; border: 1px solid rgba(46,204,113,0.3); }
+.confirm-none  { background: rgba(255,107,107,0.18); color: #e53e3e; border: 1px solid rgba(255,107,107,0.35); }
+.confirm-done  { background: rgba(46,204,113,0.18);  color: #27ae60; border: 1px solid rgba(46,204,113,0.35); }
+.confirm-other { background: rgba(255,213,0,0.18);   color: #e6ac00; border: 1px solid rgba(255,213,0,0.40); }
 
 /* ===================== KPI CARDS ===================== */
 .section-header {
@@ -544,15 +545,16 @@ function renderTable(data){
     tbody.innerHTML = "";
     if(!data || data.length === 0) return;
     data.forEach(r=>{
+        const cv = (r.ConfirmAdmin || "").trim();
+        const badgeClass = !cv ? "confirm-none" : (cv.toLowerCase() === "done" ? "confirm-done" : "confirm-other");
+        const badgeText  = !cv ? "Chưa phản hồi" : cv;
         tbody.insertAdjacentHTML("beforeend", `
         <tr>
             <td>${r.MSNV || ""}</td>
             <td>${r.FullName || ""}</td>
             <td>${excelDate(r.NgayDieuChinh)}</td>
             <td>${r.NoiDung || ""}</td>
-            <td><span class="badge ${r.ConfirmAdmin ? "confirm-done":"confirm-none"}">
-                ${r.ConfirmAdmin || "Chưa phản hồi"}
-            </span></td>
+            <td><span class="badge ${badgeClass}">${badgeText}</span></td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
         </tr>`);
@@ -579,14 +581,18 @@ function renderKPI(data){
 /* ============ CHART HELPERS ============ */
 Chart.register(ChartDataLabels);
 
-// Check dark mode
-function isDark(){
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+// Detect actual background brightness (works even after theme override)
+function bgIsDark(){
+    const bg = window.getComputedStyle(document.body).backgroundColor;
+    const m = bg.match(/\d+/g);
+    if(!m || m.length < 3) return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const lum = (0.299*+m[0] + 0.587*+m[1] + 0.114*+m[2]) / 255;
+    return lum < 0.45;
 }
-
-function gridColor(){ return isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'; }
-function tickColor(){ return isDark() ? '#aaa' : '#888'; }
-function labelColor(){ return isDark() ? '#ccc' : '#444'; }
+function isDark(){ return bgIsDark(); }
+function gridColor()  { return isDark() ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.07)'; }
+function tickColor()  { return isDark() ? '#e0e0e0' : '#666666'; }
+function labelColor() { return isDark() ? '#ffffff' : '#333333'; }
 
 // Gradient bar fill
 function makeGrad(ctx, colors, vertical=true){
@@ -949,6 +955,14 @@ async function loadTheme() {
             document.body.appendChild(eff);
         }
         console.log("✔ Theme applied:", activeTheme);
+        // Re-render charts sau khi theme đổi màu nền
+        if(fullData && fullData.length >= 0){
+            renderBU(fullData);
+            renderConfirm(fullData);
+            renderTeam(fullData);
+            renderTop(fullData);
+            renderNgay(fullData);
+        }
     } catch (err) { console.error("Theme load error:", err); }
 }
 loadTheme();
