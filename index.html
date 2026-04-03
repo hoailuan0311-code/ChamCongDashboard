@@ -5,187 +5,356 @@
 <title>📅 Dashboard – WAREHOUSE RYOBI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Font tiếng Việt -->
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
-
-<!-- ChartJS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <style>
 /* ===================== DARK MODE AUTO ===================== */
 :root {
-    --bg: #f5f7fa;
+    --bg: #f0f2f8;
     --text: #111;
+    --text-muted: #666;
     --box: #fff;
-    --box-border: #ddd;
+    --box-border: #e2e8f0;
+    --box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    --accent: #4facfe;
+    --chart-grid: rgba(0,0,0,0.06);
+    --chart-tick: #888;
+    --kpi-bg: #fff;
 }
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg: #121212;
+        --bg: #0f1117;
         --text: #eee;
-        --box: #1e1e1e;
-        --box-border: #333;
+        --text-muted: #aaa;
+        --box: #1a1d27;
+        --box-border: #2a2d3a;
+        --box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+        --chart-grid: rgba(255,255,255,0.06);
+        --chart-tick: #aaa;
+        --kpi-bg: #1a1d27;
     }
 }
 
 /* ===================== GLOBAL ===================== */
+*, *::before, *::after { box-sizing: border-box; }
 body {
     background: var(--bg);
     color: var(--text);
     font-family: "Be Vietnam Pro", sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 20px 24px;
     transition: background 0.3s, color 0.3s;
 }
 
 /* ===================== TITLE ===================== */
 h1 {
     text-align: center;
-    font-size: 42px;
+    font-size: 38px;
     font-weight: 800;
-    margin-bottom: 10px;
-    background: linear-gradient(90deg, #4facfe, #00f2fe);
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 12px rgba(0,255,255,0.25);
+    background-clip: text;
 }
 
-h2 { margin-top: 25px; }
+h2 {
+    margin-top: 30px;
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
 
 /* ===================== SEARCH / BUTTONS ===================== */
 .search-bar {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     align-items: center;
     flex-wrap: wrap;
     margin-bottom: 6px;
 }
-
-/* gộp 2 ô thành 1, thu gọn */
 .search-bar input {
     padding: 10px 14px;
-    width: 7%;                /* nhỏ lại theo yêu cầu — chỉnh nếu muốn */
     min-width: 220px;
     border-radius: 10px;
     border: 1px solid var(--box-border);
     background: var(--box);
     color: var(--text);
-    font-size: 11px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    font-size: 13px;
+    box-shadow: var(--box-shadow);
+    font-family: "Be Vietnam Pro", sans-serif;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
 }
-
-/* chung cho các nút hành động */
+.search-bar input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 0 3px rgba(79,172,254,0.15);
+}
 .btn {
-    padding: 12px 18px;
-    border-radius: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
     cursor: pointer;
     border: none;
     font-weight: 700;
+    font-family: "Be Vietnam Pro", sans-serif;
+    font-size: 13px;
     color: #fff;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.08);
-    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    transition: transform .15s, box-shadow .15s, opacity .15s;
 }
-.btn:hover { transform: translateY(-3px); }
-
-/* riêng các nút màu */
-.btn-feedback { background: linear-gradient(135deg,#9fbdfb,#d6bffd); color:#063; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+.btn:active { transform: translateY(0); }
+.btn-feedback { background: linear-gradient(135deg,#667eea,#764ba2); }
 .btn-qa { background: linear-gradient(135deg,#16a085,#27ae60); }
-.btn-pass { background: linear-gradient(135deg,#16a085,#27ae60); } /* Quên Pass */
+.btn-pass { background: linear-gradient(135deg,#11998e,#38ef7d); color: #063; }
 .btn-viewpass { background: linear-gradient(135deg,#8e44ad,#9b59b6); }
-.btn-chot { background: linear-gradient(135deg,#f59f00,#f08b00); } /* Xem Chốt Công */
-.btn-late { background: linear-gradient(135deg,#d43d2a,#c33a2a); box-shadow:0 14px 36px rgba(196,57,57,0.2); }
+.btn-chot { background: linear-gradient(135deg,#f59f00,#f08b00); }
+.btn-late { background: linear-gradient(135deg,#d43d2a,#c33a2a); box-shadow:0 4px 18px rgba(196,57,57,0.25); }
 
-/* tweak nhỏ cho hàng nút khi co nhỏ màn hình */
 @media (max-width: 880px) {
     .search-bar input { width: 60%; }
-    .btn { padding: 10px 12px; font-size: 14px; }
+    .btn { padding: 9px 11px; font-size: 12px; }
 }
 
 /* ===================== TABLE ===================== */
 table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     margin-top: 15px;
     background: var(--box);
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--box-border);
 }
-
 th, td {
-    padding: 10px;
+    padding: 11px 14px;
     border-bottom: 1px solid var(--box-border);
+    font-size: 13px;
 }
-
 th {
-    background: rgba(0,0,0,0.05);
+    background: rgba(79,172,254,0.08);
     cursor: pointer;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
 }
+th:hover { background: rgba(79,172,254,0.14); }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(79,172,254,0.04); }
 
 /* Badge */
 .badge {
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    color: #fff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
 }
-.confirm-none { background: #ff6b6b; }
-.confirm-done { background: #2ecc71; }
+.confirm-none { background: rgba(255,107,107,0.15); color: #e53e3e; border: 1px solid rgba(255,107,107,0.3); }
+.confirm-done { background: rgba(46,204,113,0.15); color: #27ae60; border: 1px solid rgba(46,204,113,0.3); }
 
-/* ===================== CHART BOXES ===================== */
+/* ===================== KPI CARDS ===================== */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 36px;
+    margin-bottom: 16px;
+}
+.section-header h2 { margin: 0; }
+.section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--box-border), transparent);
+}
+
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+@media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .kpi-grid { grid-template-columns: 1fr; } }
+
+.kpi-card {
+    background: var(--kpi-bg);
+    border-radius: 16px;
+    padding: 18px 20px;
+    border: 1px solid var(--box-border);
+    box-shadow: var(--box-shadow);
+    position: relative;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+.kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+}
+.kpi-card:nth-child(1)::before { background: linear-gradient(90deg,#4facfe,#00f2fe); }
+.kpi-card:nth-child(2)::before { background: linear-gradient(90deg,#43e97b,#38f9d7); }
+.kpi-card:nth-child(3)::before { background: linear-gradient(90deg,#ff6b6b,#ffa07a); }
+.kpi-card:nth-child(4)::before { background: linear-gradient(90deg,#a18cd1,#fbc2eb); }
+
+.kpi-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.kpi-value {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.kpi-card:nth-child(1) .kpi-value { background: linear-gradient(135deg,#4facfe,#00c9ff); -webkit-background-clip: text; background-clip: text; }
+.kpi-card:nth-child(2) .kpi-value { background: linear-gradient(135deg,#43e97b,#38f9d7); -webkit-background-clip: text; background-clip: text; }
+.kpi-card:nth-child(3) .kpi-value { background: linear-gradient(135deg,#ff6b6b,#ff4757); -webkit-background-clip: text; background-clip: text; }
+.kpi-card:nth-child(4) .kpi-value { background: linear-gradient(135deg,#a18cd1,#fbc2eb); -webkit-background-clip: text; background-clip: text; }
+.kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* ===================== CHART SECTION ===================== */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 0;
+}
+.chart-full { grid-column: 1 / -1; }
+@media (max-width: 768px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-full { grid-column: 1; }
+}
+
 .chart-box {
     background: var(--box);
-    padding: 15px;
-    border-radius: 12px;
-    margin-top: 20px;
+    border-radius: 16px;
     border: 1px solid var(--box-border);
+    box-shadow: var(--box-shadow);
+    padding: 0;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+}
+.chart-box:hover {
+    box-shadow: 0 10px 36px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
 }
 
-.footer-layout {
-    display: grid;
-    gap: 20px;
+.chart-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--box-border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+.chart-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.chart-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.chart-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(79,172,254,0.1);
+    color: #4facfe;
+    border: 1px solid rgba(79,172,254,0.2);
+}
+.chart-body {
+    padding: 20px;
+    position: relative;
 }
 
-.footer-row {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 20px;
+/* doughnut wrapper center */
+.doughnut-wrap {
+    position: relative;
+    max-width: 240px;
+    margin: 0 auto;
+}
+.doughnut-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+.doughnut-center-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+}
+.doughnut-center-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
-.full-row { grid-column: 1 / -1; }
+/* accent stripe per chart box */
+.chart-box .stripe { height: 3px; }
+.stripe-blue   { background: linear-gradient(90deg,#4facfe,#00f2fe); }
+.stripe-green  { background: linear-gradient(90deg,#43e97b,#38f9d7); }
+.stripe-orange { background: linear-gradient(90deg,#fa8231,#f7b731); }
+.stripe-purple { background: linear-gradient(90deg,#a18cd1,#fbc2eb); }
+.stripe-cyan   { background: linear-gradient(90deg,#00c9ff,#92fe9d); }
 
 /* ===================== AUDIO ===================== */
 audio { display: none; }
-
 </style>
 </head>
 
 <body>
 
 <h1>Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</h1>
-
-<p>🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
+<p style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:4px;">🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
 
 <!-- SEARCH + ACTIONS -->
-<div class="search-bar">
-    <!-- Gộp 2 ô thành 1 -->
+<div class="search-bar" style="margin-top:20px;">
     <input id="searchBox" placeholder="Tìm theo MSNV hoặc Họ Tên…">
-
     <button id="feedbackBtn" class="btn btn-feedback">📝 Phản hồi Chấm Công</button>
-
-    <!-- Quên Pass CADENA (rút gọn) -->
     <button id="passBtn" class="btn btn-pass">🔐 Quên Pass CADENA</button>
-
-    <!-- Xem Pass CADENA -->
     <button id="viewPassBtn" class="btn btn-viewpass">📁 Xem Pass CADENA</button>
-
-    <!-- Xem Chốt Công (mới) -->
     <button id="viewChotBtn" class="btn btn-chot">📊 Xem Chốt Công</button>
-
-    <!-- Late / Out / Missing (mới) -->
     <button id="lateBtn" class="btn btn-late">⏱️ Late • Early • Missing</button>
 </div>
 
-<h2>Danh sách chi tiết</h2>
+<h2 style="margin-top:28px;">Danh sách chi tiết</h2>
 
 <table id="dataTable">
     <thead>
@@ -202,31 +371,126 @@ audio { display: none; }
     <tbody></tbody>
 </table>
 
-<!-- FOOTER CHARTS -->
-<h2>Biểu đồ phụ</h2>
+<!-- =================== CHART SECTION =================== -->
+<div class="section-header">
+    <h2>📊 Thống kê & Biểu đồ</h2>
+    <div class="section-line"></div>
+</div>
 
-<div class="footer-layout">
-    <div class="footer-row">
-        <div class="chart-box">
-            <h3>Theo BU</h3>
-            <canvas id="chartBU"></canvas>
+<!-- KPI CARDS -->
+<div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+        <div class="kpi-label">Tổng phản hồi</div>
+        <div class="kpi-value" id="kpiTotal">–</div>
+        <div class="kpi-sub">Tất cả yêu cầu</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Đã confirm</div>
+        <div class="kpi-value" id="kpiDone">–</div>
+        <div class="kpi-sub" id="kpiDonePct">–</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Chưa phản hồi</div>
+        <div class="kpi-value" id="kpiPending">–</div>
+        <div class="kpi-sub" id="kpiPendingPct">–</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Hôm nay</div>
+        <div class="kpi-value" id="kpiToday">–</div>
+        <div class="kpi-sub" id="kpiTodayDate">–</div>
+    </div>
+</div>
+
+<!-- CHARTS GRID -->
+<div class="charts-grid">
+
+    <!-- Chart 1: BU Doughnut -->
+    <div class="chart-box">
+        <div class="stripe stripe-blue"></div>
+        <div class="chart-header">
+            <div class="chart-title">
+                <div class="chart-icon" style="background:rgba(79,172,254,0.12);">🏢</div>
+                Phân bổ theo BU
+            </div>
+            <span class="chart-badge" id="badgeBU">–</span>
         </div>
-
-        <div class="chart-box">
-            <h3>Theo Team</h3>
-            <canvas id="chartTeam"></canvas>
+        <div class="chart-body">
+            <div class="doughnut-wrap">
+                <canvas id="chartBU" height="220"></canvas>
+                <div class="doughnut-center">
+                    <div class="doughnut-center-value" id="buTotal">–</div>
+                    <div class="doughnut-center-label">Total</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="chart-box full-row">
-        <h3>Top phản hồi</h3>
-        <canvas id="chartTop"></canvas>
+    <!-- Chart 2: Confirm Status Doughnut -->
+    <div class="chart-box">
+        <div class="stripe stripe-green"></div>
+        <div class="chart-header">
+            <div class="chart-title">
+                <div class="chart-icon" style="background:rgba(67,233,123,0.12);">✅</div>
+                Trạng thái Confirm
+            </div>
+            <span class="chart-badge" id="badgeConfirm">–</span>
+        </div>
+        <div class="chart-body">
+            <div class="doughnut-wrap">
+                <canvas id="chartConfirm" height="220"></canvas>
+                <div class="doughnut-center">
+                    <div class="doughnut-center-value" id="confirmRate">–</div>
+                    <div class="doughnut-center-label">Confirm %</div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="chart-box full-row">
-        <h3>Theo ngày chỉnh</h3>
-        <canvas id="chartNgay"></canvas>
+    <!-- Chart 3: Team Bar (full width) -->
+    <div class="chart-box chart-full">
+        <div class="stripe stripe-orange"></div>
+        <div class="chart-header">
+            <div class="chart-title">
+                <div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>
+                Phân bổ theo Team
+            </div>
+            <span class="chart-badge" id="badgeTeam">–</span>
+        </div>
+        <div class="chart-body">
+            <canvas id="chartTeam" height="90"></canvas>
+        </div>
     </div>
+
+    <!-- Chart 4: Top người phản hồi (full width) -->
+    <div class="chart-box chart-full">
+        <div class="stripe stripe-purple"></div>
+        <div class="chart-header">
+            <div class="chart-title">
+                <div class="chart-icon" style="background:rgba(161,140,209,0.12);">🏆</div>
+                Top 10 người phản hồi nhiều nhất
+            </div>
+            <span class="chart-badge" id="badgeTop">–</span>
+        </div>
+        <div class="chart-body">
+            <canvas id="chartTop" height="90"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart 5: Theo ngày (full width, line area) -->
+    <div class="chart-box chart-full">
+        <div class="stripe stripe-cyan"></div>
+        <div class="chart-header">
+            <div class="chart-title">
+                <div class="chart-icon" style="background:rgba(0,201,255,0.12);">📅</div>
+                Xu hướng phản hồi theo ngày
+            </div>
+            <span class="chart-badge" id="badgeNgay">–</span>
+        </div>
+        <div class="chart-body">
+            <canvas id="chartNgay" height="80"></canvas>
+        </div>
+    </div>
+
 </div>
 
 <!-- Background Music -->
@@ -234,13 +498,11 @@ audio { display: none; }
     <source src="NhacGiangSinh.mp3" type="audio/mpeg">
 </audio>
 
-
-<!-- ===================== SCRIPT gốc của bạn (không phá cấu trúc) ===================== -->
+<!-- ===================== SCRIPT ===================== -->
 <script>
 const jsonUrl = "https://hoailuan0311-code.github.io/ChamCongDashboard/data.json";
 let fullData = [];
 
-/* LOAD DATA */
 async function loadData(){
     try {
         let res = await fetch(jsonUrl + "?cache=" + Date.now());
@@ -254,49 +516,33 @@ async function loadData(){
 }
 loadData();
 
-/* FORMAT DATE */
 function excelDate(v){
     if (!v) return "";
     const d = new Date((v - 25569) * 86400 * 1000);
     return isNaN(d) ? v : d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});
 }
 
-/* SEARCH (dùng ô gộp) */
 document.getElementById("searchBox").addEventListener("input", applySearch);
 
 function applySearch(){
     const q = (document.getElementById("searchBox").value || "").toLowerCase().trim();
-
-    // nếu rỗng => hiển thị đầy đủ
-    if(!q){
-        renderAll(fullData);
-        return;
-    }
-
+    if(!q){ renderAll(fullData); return; }
     const f = fullData.filter(r =>
         (("" + (r.MSNV||"")).toLowerCase().includes(q)) ||
         (("" + (r.FullName||"")).toLowerCase().includes(q))
     );
-
     renderAll(f);
 }
 
-/* SORT (giữ nguyên) */
 function sortBy(col){
     fullData.sort((a,b)=> (a[col] > b[col] ? 1 : -1));
     renderAll(fullData);
 }
 
-/* RENDER TABLE (giữ nguyên nhưng an toàn nếu data rỗng) */
 function renderTable(data){
     let tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
-
-    if(!data || data.length === 0){
-        // giữ header nhưng show hàng trống (như bản gốc)
-        return;
-    }
-
+    if(!data || data.length === 0) return;
     data.forEach(r=>{
         tbody.insertAdjacentHTML("beforeend", `
         <tr>
@@ -309,244 +555,402 @@ function renderTable(data){
             </span></td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
-        </tr>
-        `);
+        </tr>`);
     });
 }
 
-/* RENDER ALL */
+/* ============ KPI CARDS ============ */
+function renderKPI(data){
+    const total = data.length;
+    const done = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim() !== "").length;
+    const pending = total - done;
+    const todayStr = excelDate(Math.round(Date.now()/86400000 + 25569));
+    const today = data.filter(r => excelDate(r.NgayDieuChinh) === todayStr).length;
+
+    document.getElementById("kpiTotal").textContent = total;
+    document.getElementById("kpiDone").textContent = done;
+    document.getElementById("kpiPending").textContent = pending;
+    document.getElementById("kpiToday").textContent = today;
+    document.getElementById("kpiDonePct").textContent = total ? Math.round(done/total*100) + "% tổng số" : "–";
+    document.getElementById("kpiPendingPct").textContent = total ? Math.round(pending/total*100) + "% tổng số" : "–";
+    document.getElementById("kpiTodayDate").textContent = new Date().toLocaleDateString("vi-VN");
+}
+
+/* ============ CHART HELPERS ============ */
+Chart.register(ChartDataLabels);
+
+// Check dark mode
+function isDark(){
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function gridColor(){ return isDark() ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)'; }
+function tickColor(){ return isDark() ? '#aaa' : '#888'; }
+function labelColor(){ return isDark() ? '#ccc' : '#444'; }
+
+// Gradient bar fill
+function makeGrad(ctx, colors, vertical=true){
+    const area = ctx.chartArea;
+    if(!area) return colors[0];
+    const g = vertical
+        ? ctx.ctx.createLinearGradient(0, area.top, 0, area.bottom)
+        : ctx.ctx.createLinearGradient(area.left, 0, area.right, 0);
+    g.addColorStop(0, colors[0]);
+    g.addColorStop(1, colors[1]);
+    return g;
+}
+
+const PALETTE = {
+    blue:   ['#4facfe','#00c9ff'],
+    green:  ['#43e97b','#38f9d7'],
+    orange: ['#fa8231','#f7b731'],
+    purple: ['#a18cd1','#fbc2eb'],
+    cyan:   ['#00c9ff','#92fe9d'],
+    red:    ['#ff6b6b','#ff4757'],
+    pink:   ['#f093fb','#f5576c'],
+    teal:   ['#4ecdc4','#44a08d'],
+    indigo: ['#667eea','#764ba2'],
+    warm:   ['#f8b500','#ff6600'],
+};
+
+function multiColors(n){
+    const keys = Object.keys(PALETTE);
+    return Array.from({length:n}, (_,i) => PALETTE[keys[i % keys.length]][0]);
+}
+
+const CHART_DEFAULTS = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins:{
+        legend: { display: true, labels: { color: labelColor, font:{family:"Be Vietnam Pro", size:12}, boxWidth:12, padding:14 }},
+        tooltip:{
+            backgroundColor: isDark() ? 'rgba(20,23,40,0.95)' : 'rgba(255,255,255,0.97)',
+            titleColor: isDark() ? '#eee' : '#111',
+            bodyColor: isDark() ? '#ccc' : '#444',
+            borderColor: isDark() ? '#2a2d3a' : '#e2e8f0',
+            borderWidth: 1,
+            padding: 10,
+            cornerRadius: 10,
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+        },
+        datalabels:{ display:false },
+    }
+};
+
+/* ============ BU DOUGHNUT ============ */
+function renderBU(data){
+    const c = {};
+    data.forEach(r => c[r.BU||'N/A'] = (c[r.BU||'N/A'] || 0) + 1);
+    const keys = Object.keys(c), vals = Object.values(c);
+    const total = vals.reduce((a,b)=>a+b,0);
+
+    document.getElementById("badgeBU").textContent = keys.length + " BU";
+    document.getElementById("buTotal").textContent = total;
+
+    if(window._chartBU) window._chartBU.destroy();
+    window._chartBU = new Chart(document.getElementById("chartBU"), {
+        type: "doughnut",
+        data: {
+            labels: keys,
+            datasets:[{
+                data: vals,
+                backgroundColor: multiColors(keys.length),
+                borderWidth: 0,
+                hoverOffset: 10,
+            }]
+        },
+        options:{
+            cutout:'68%',
+            animation:{ duration:1000, easing:'easeOutQuart' },
+            plugins:{
+                ...CHART_DEFAULTS.plugins,
+                legend:{ ...CHART_DEFAULTS.plugins.legend, position:'bottom' },
+                datalabels:{
+                    color:'#fff',
+                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
+                    formatter:(v,ctx) => {
+                        const pct = Math.round(v/total*100);
+                        return pct >= 5 ? pct+'%' : '';
+                    }
+                }
+            }
+        },
+        plugins:[ChartDataLabels]
+    });
+}
+
+/* ============ CONFIRM DOUGHNUT ============ */
+function renderConfirm(data){
+    const done   = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim()!=="").length;
+    const pending = data.length - done;
+    const pct = data.length ? Math.round(done/data.length*100) : 0;
+
+    document.getElementById("badgeConfirm").textContent = pct + "% done";
+    document.getElementById("confirmRate").textContent = pct + "%";
+
+    if(window._chartConfirm) window._chartConfirm.destroy();
+    window._chartConfirm = new Chart(document.getElementById("chartConfirm"),{
+        type:"doughnut",
+        data:{
+            labels:["Đã confirm","Chưa phản hồi"],
+            datasets:[{
+                data:[done, pending],
+                backgroundColor:['#43e97b','#ff6b6b'],
+                borderWidth:0,
+                hoverOffset:10,
+            }]
+        },
+        options:{
+            cutout:'68%',
+            animation:{ duration:1000, easing:'easeOutQuart' },
+            plugins:{
+                ...CHART_DEFAULTS.plugins,
+                legend:{ ...CHART_DEFAULTS.plugins.legend, position:'bottom' },
+                datalabels:{
+                    color:'#fff',
+                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
+                    formatter:(v) => v > 0 ? v : ''
+                }
+            }
+        },
+        plugins:[ChartDataLabels]
+    });
+}
+
+/* ============ TEAM BAR ============ */
+function renderTeam(data){
+    const c = {};
+    data.forEach(r => c[r.Team||'N/A'] = (c[r.Team||'N/A'] || 0) + 1);
+    const keys = Object.keys(c), vals = Object.values(c);
+    document.getElementById("badgeTeam").textContent = keys.length + " Teams";
+
+    if(window._chartTeam) window._chartTeam.destroy();
+    window._chartTeam = new Chart(document.getElementById("chartTeam"),{
+        type:"bar",
+        data:{
+            labels: keys,
+            datasets:[{
+                label:'Số phản hồi',
+                data: vals,
+                backgroundColor: function(ctx){
+                    const chart = ctx.chart;
+                    if(!chart.chartArea) return PALETTE.orange[0];
+                    const g = chart.ctx.createLinearGradient(0, chart.chartArea.top, 0, chart.chartArea.bottom);
+                    g.addColorStop(0, PALETTE.orange[0]);
+                    g.addColorStop(1, PALETTE.orange[1]+'88');
+                    return g;
+                },
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options:{
+            ...CHART_DEFAULTS,
+            plugins:{
+                ...CHART_DEFAULTS.plugins,
+                legend:{display:false},
+                datalabels:{
+                    anchor:'end', align:'end',
+                    color: labelColor,
+                    font:{weight:'bold', size:12, family:'Be Vietnam Pro'},
+                    formatter: v => v
+                }
+            },
+            scales:{
+                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}} },
+                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
+            },
+            animation:{ duration:1000, easing:'easeOutQuart' }
+        },
+        plugins:[ChartDataLabels]
+    });
+}
+
+/* ============ TOP 10 ============ */
+function renderTop(data){
+    const c = {};
+    data.forEach(r => c[r.FullName||'N/A'] = (c[r.FullName||'N/A']||0)+1);
+    const sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    document.getElementById("badgeTop").textContent = "Top " + sorted.length;
+
+    if(window._chartTop) window._chartTop.destroy();
+    window._chartTop = new Chart(document.getElementById("chartTop"),{
+        type:"bar",
+        data:{
+            labels: sorted.map(x=>x[0]),
+            datasets:[{
+                label:'Số lần phản hồi',
+                data: sorted.map(x=>x[1]),
+                backgroundColor: sorted.map((_,i) => multiColors(sorted.length)[i] + 'cc'),
+                borderColor:     sorted.map((_,i) => multiColors(sorted.length)[i]),
+                borderWidth: 1.5,
+                borderRadius: 8,
+                borderSkipped: false,
+            }]
+        },
+        options:{
+            ...CHART_DEFAULTS,
+            plugins:{
+                ...CHART_DEFAULTS.plugins,
+                legend:{display:false},
+                datalabels:{
+                    anchor:'end', align:'end',
+                    color: labelColor,
+                    font:{weight:'bold', size:12, family:'Be Vietnam Pro'},
+                    formatter: v => v
+                }
+            },
+            scales:{
+                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro', size:11}, maxRotation:20} },
+                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
+            },
+            animation:{ duration:1200, easing:'easeOutQuart' }
+        },
+        plugins:[ChartDataLabels]
+    });
+}
+
+/* ============ THEO NGÀY – LINE AREA ============ */
+function renderNgay(data){
+    const c = {};
+    data.forEach(r => {
+        let d = excelDate(r.NgayDieuChinh);
+        if(d) c[d] = (c[d]||0)+1;
+    });
+    // Sort by date
+    const sorted = Object.entries(c).sort((a,b)=>{
+        const parseDate = s => {
+            const parts = s.split(' ');
+            if(parts.length < 3) return 0;
+            return new Date(`${parts[1]} ${parts[0]} ${parts[2]}`).getTime();
+        };
+        return parseDate(a[0]) - parseDate(b[0]);
+    });
+    document.getElementById("badgeNgay").textContent = sorted.length + " ngày";
+
+    if(window._chartNgay) window._chartNgay.destroy();
+    window._chartNgay = new Chart(document.getElementById("chartNgay"),{
+        type:"line",
+        data:{
+            labels: sorted.map(x=>x[0]),
+            datasets:[{
+                label:'Số phản hồi',
+                data: sorted.map(x=>x[1]),
+                borderColor: '#4facfe',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#4facfe',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                fill: true,
+                backgroundColor: function(ctx){
+                    const chart = ctx.chart;
+                    const {ctx:c2, chartArea} = chart;
+                    if(!chartArea) return 'rgba(79,172,254,0.1)';
+                    const g = c2.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                    g.addColorStop(0, 'rgba(79,172,254,0.35)');
+                    g.addColorStop(1, 'rgba(79,172,254,0.01)');
+                    return g;
+                },
+                tension: 0.4,
+            }]
+        },
+        options:{
+            ...CHART_DEFAULTS,
+            plugins:{
+                ...CHART_DEFAULTS.plugins,
+                legend:{display:false},
+                datalabels:{
+                    align:'top', anchor:'end',
+                    color: labelColor,
+                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
+                    formatter: v => v
+                }
+            },
+            scales:{
+                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro', size:11}, maxRotation:30} },
+                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
+            },
+            animation:{ duration:1400, easing:'easeOutQuart' }
+        },
+        plugins:[ChartDataLabels]
+    });
+}
+
+/* ============ RENDER ALL ============ */
 function renderAll(data){
     renderTable(data);
+    renderKPI(data);
     renderBU(data);
+    renderConfirm(data);
     renderTeam(data);
     renderTop(data);
     renderNgay(data);
 }
 
-/* CHART FUNCTIONS (giữ nguyên) */
-Chart.register(ChartDataLabels);
+/* ============ BUTTONS ============ */
+document.getElementById("feedbackBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wSm7WHpgCw","_blank"));
+document.getElementById("passBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wMUXy1P6P1","_blank"));
+document.getElementById("viewPassBtn").addEventListener("click", () => window.open("passCadena.html","_blank"));
+document.getElementById("viewChotBtn").addEventListener("click", () => window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/chotcong","_blank"));
+document.getElementById("lateBtn").addEventListener("click", () => window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/LateEarly","_blank"));
 
-function renderBU(data){
-    const c = {};
-    data.forEach(r => c[r.BU] = (c[r.BU] || 0) + 1);
-
-    // cleanup old canvas if exists to avoid duplicates
-    if(window._chartBU) window._chartBU.destroy?.();
-
-    window._chartBU = new Chart(document.getElementById("chartBU"), {
-        type: "pie",
-        data: { labels: Object.keys(c), datasets: [{ data:Object.values(c), backgroundColor:["#ff6384","#36a2eb"] }]},
-        plugins: [ChartDataLabels],
-        options:{
-            animation:{ duration:1200, easing:"easeOutBounce" },
-            plugins:{ datalabels:{ color:"#fff", font:{weight:"bold"} } }
-        }
-    });
-}
-
-function renderTeam(data){
-    const c = {};
-    data.forEach(r => c[r.Team] = (c[r.Team] || 0) + 1);
-
-    if(window._chartTeam) window._chartTeam.destroy?.();
-
-    window._chartTeam = new Chart(document.getElementById("chartTeam"),{
-        type:"bar",
-        data:{
-            labels:Object.keys(c),
-            datasets:[{ data:Object.values(c), backgroundColor:"#ffa64d" }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1200, easing:"easeOutElastic" },
-            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
-        }
-    });
-}
-
-function renderTop(data){
-    const c = {};
-    data.forEach(r => c[r.FullName] = (c[r.FullName]||0)+1);
-
-    let sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
-
-    if(window._chartTop) window._chartTop.destroy?.();
-
-    window._chartTop = new Chart(document.getElementById("chartTop"),{
-        type:"bar",
-        data:{
-            labels:sorted.map(x=>x[0]),
-            datasets:[{ data:sorted.map(x=>x[1]), backgroundColor:"#00c9ff" }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1400, easing:"easeOutQuad" },
-            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
-        }
-    });
-}
-
-function renderNgay(data){
-    const c = {};
-    data.forEach(r => {
-        let d = excelDate(r.NgayDieuChinh);
-        c[d] = (c[d]||0)+1;
-    });
-
-    if(window._chartNgay) window._chartNgay.destroy?.();
-
-    window._chartNgay = new Chart(document.getElementById("chartNgay"),{
-        type:"bar",
-        data:{
-            labels:Object.keys(c),
-            datasets:[{ data:Object.values(c), backgroundColor:"#9b59b6" }]
-        },
-        plugins:[ChartDataLabels],
-        options:{
-            animation:{ duration:1500, easing:"easeOutBounce" },
-            plugins:{ datalabels:{ anchor:"end", align:"top", color:"#fff", font:{weight:"bold"} } }
-        }
-    });
-}
-
-/* BUTTON ACTIONS (giữ các link gốc, 2 nút mới mở placeholder) */
-document.getElementById("feedbackBtn").addEventListener("click", () => {
-    window.open("https://forms.office.com/r/wSm7WHpgCw", "_blank");
-});
-
-document.getElementById("passBtn").addEventListener("click", () => {
-    window.open("https://forms.office.com/r/wMUXy1P6P1", "_blank"); // chỉnh nếu muốn khác
-});
-
-document.getElementById("viewPassBtn").addEventListener("click", () => {
-    window.open("passCadena.html", "_blank");
-});
-
-// nút mới: Xem Chốt Công — bạn sẽ add link sau
-document.getElementById("viewChotBtn").addEventListener("click", () => {
-    // đặt URL thật ở đây khi có
-    window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/chotcong", "_blank");
-});
-
-// nút mới: Late • Out • Missing — bạn sẽ add link sau
-document.getElementById("lateBtn").addEventListener("click", () => {
-    window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/LateEarly", "_blank");
-});
-
-/* MUSIC (giữ) */
-document.addEventListener("click", ()=> {
-    try { document.getElementById("bgMusic").play(); } catch(e){}
-}, {once:true});
-document.addEventListener("touchstart", ()=> {
-    try { document.getElementById("bgMusic").play(); } catch(e){}
-}, {once:true});
+/* MUSIC */
+document.addEventListener("click",  ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
+document.addEventListener("touchstart", ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
 </script>
 
-<!-- ===================== THEME LOADER (FINAL + AUTO MONTH) ===================== -->
+<!-- ===================== THEME LOADER ===================== -->
 <script>
 async function loadTheme() {
     try {
-        // Load cấu hình
         const cfgResp = await fetch("theme/themeList.json?v=" + Date.now());
         const cfg = await cfgResp.json();
-
         let activeTheme = cfg.activeTheme || "default";
 
-        // ================== AUTO THEME THEO THÁNG ==================
-        // Tháng JS: 0 = Jan → 11 = Dec
-        const month = new Date().getMonth() + 1; // đổi về 1–12 cho khớp file bạn gửi
+        const month = new Date().getMonth() + 1;
+        const map = { 1:"jan_newyear",2:"feb_valentine",3:"mar_womenday",4:"april30",5:"may_workers",6:"jun_summer",7:"jul_fireworks",8:"aug_sun",9:"sept2",10:"oct_halloween",11:"nov_remember",12:"dec_noel" };
+        if (activeTheme === "auto") activeTheme = map[month] || "default";
+        if (activeTheme === "default") return;
 
-        const map = {
-            1: "jan_newyear",
-            2: "feb_valentine",
-            3: "mar_womenday",
-            4: "april30",
-            5: "may_workers",
-            6: "jun_summer",
-            7: "jul_fireworks",
-            8: "aug_sun",
-            9: "sept2",
-            10: "oct_halloween",
-            11: "nov_remember",
-            12: "dec_noel"
-        };
-
-        // Nếu cấu hình ghi activeTheme = "auto" → kích hoạt auto theo tháng
-        if (activeTheme === "auto") {
-            activeTheme = map[month] || "default";
-            console.log("AUTO THEME:", "month =", month, "→ theme =", activeTheme);
-        }
-
-        // Nếu theme = default → giữ nguyên UI, thoát sớm
-        if (activeTheme === "default") {
-            console.log("Theme default → giữ giao diện gốc");
-            return;
-        }
-
-        // ================== LOAD FILE THEME ==================
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
-        if (!themeFile.ok) {
-            console.warn("Không tìm thấy theme:", activeTheme);
-            return;
-        }
-
+        if (!themeFile.ok) return;
         const theme = await themeFile.json();
+        if (!theme.override) return;
 
-        if (!theme.override) {
-            console.log("Theme override = false → giữ layout gốc");
-            return;
-        }
-
-        // ================== APPLY UI ==================
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
 
-        // ================== UI COLOR OVERRIDE (table, card, header) ==================
         if (theme.uiColors) {
             const s = document.createElement("style");
             s.id = "theme-ui";
             s.innerHTML = `
-                table { background:${theme.uiColors.tableBg || "inherit"} !important; }
-                table td, table th { color:${theme.uiColors.tableText || "inherit"} !important; }
-                th { background:${theme.uiColors.tableHeaderBg || "inherit"} !important; }
-                .chart-box { 
-                    background:${theme.uiColors.cardBg || "inherit"} !important;
-                    border-color:${theme.uiColors.boxBorder || "inherit"} !important;
-                }
+                table { background:${theme.uiColors.tableBg||"inherit"} !important; }
+                table td, table th { color:${theme.uiColors.tableText||"inherit"} !important; }
+                th { background:${theme.uiColors.tableHeaderBg||"inherit"} !important; }
+                .chart-box { background:${theme.uiColors.cardBg||"inherit"} !important; border-color:${theme.uiColors.boxBorder||"inherit"} !important; }
             `;
             document.head.appendChild(s);
         }
-
-        // ================== MUSIC ==================
         if (theme.music) {
             if (!document.getElementById("themeMusic")) {
                 const audio = document.createElement("audio");
                 audio.src = "theme/" + theme.music;
                 audio.id = "themeMusic";
-                audio.autoplay = true;
-                audio.loop = true;
-                audio.volume = 0.45;
-                audio.style.display = "none";
+                audio.autoplay = true; audio.loop = true; audio.volume = 0.45; audio.style.display = "none";
                 document.body.appendChild(audio);
             }
         }
-
-        // ================== EFFECT SCRIPT ==================
         if (theme.effect) {
             const eff = document.createElement("script");
-            eff.src = "theme/" + theme.effect;
-            eff.defer = true;
+            eff.src = "theme/" + theme.effect; eff.defer = true;
             document.body.appendChild(eff);
         }
-
         console.log("✔ Theme applied:", activeTheme);
-
-    } catch (err) {
-        console.error("Theme load error:", err);
-    }
+    } catch (err) { console.error("Theme load error:", err); }
 }
-
 loadTheme();
 </script>
 
