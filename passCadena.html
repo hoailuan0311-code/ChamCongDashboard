@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<title>📅 Dashboard – WAREHOUSE RYOBI</title>
+<title>📁 Pass CADENA – WAREHOUSE RYOBI</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
@@ -342,8 +342,8 @@ audio { display: none; }
 
 <body>
 
-<h1>Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</h1>
-<p style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:4px;">🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
+<h1>📁 Pass CADENA – WAREHOUSE RYOBI</h1>
+<p style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:4px;">🔐 Danh sách cấp lại / đặt lại mật khẩu CADENA ❤️🫶❤️</p>
 
 <!-- SEARCH + ACTIONS -->
 <div class="search-bar" style="margin-top:20px;">
@@ -362,9 +362,11 @@ audio { display: none; }
         <tr>
             <th onclick="sortBy('MSNV')">MSNV ⬍</th>
             <th>Họ tên</th>
-            <th onclick="sortBy('NgayDieuChinh')">Ngày điều chỉnh ⬍</th>
-            <th>Nội dung</th>
-            <th>Confirm</th>
+            <th onclick="sortBy('Date')">Ngày yêu cầu ⬍</th>
+            <th>Lý do</th>
+            <th>Mật khẩu mới</th>
+            <th onclick="sortBy('NgayCapLai')">Ngày cấp ⬍</th>
+            <th>Key</th>
             <th>BU</th>
             <th>Team</th>
         </tr>
@@ -386,12 +388,12 @@ audio { display: none; }
         <div class="kpi-sub">Tất cả yêu cầu</div>
     </div>
     <div class="kpi-card">
-        <div class="kpi-label">Đã confirm</div>
+        <div class="kpi-label">Đã cấp pass</div>
         <div class="kpi-value" id="kpiDone">–</div>
         <div class="kpi-sub" id="kpiDonePct">–</div>
     </div>
     <div class="kpi-card">
-        <div class="kpi-label">Chưa phản hồi</div>
+        <div class="kpi-label">Chưa cấp pass</div>
         <div class="kpi-value" id="kpiPending">–</div>
         <div class="kpi-sub" id="kpiPendingPct">–</div>
     </div>
@@ -530,7 +532,7 @@ function applySearch(){
     if(!q){ renderAll(fullData); return; }
     const f = fullData.filter(r =>
         (("" + (r.MSNV||"")).toLowerCase().includes(q)) ||
-        (("" + (r.FullName||"")).toLowerCase().includes(q))
+        (("" + (r.HoTen||"")).toLowerCase().includes(q))
     );
     renderAll(f);
 }
@@ -545,16 +547,18 @@ function renderTable(data){
     tbody.innerHTML = "";
     if(!data || data.length === 0) return;
     data.forEach(r=>{
-        const cv = (r.ConfirmAdmin || "").trim();
-        const badgeClass = !cv ? "confirm-none" : (cv.toLowerCase() === "done" ? "confirm-done" : "confirm-other");
-        const badgeText  = !cv ? "Chưa phản hồi" : cv;
+        const cv = (r.MatKhauMoi || "").trim();
+        const badgeClass = !cv ? "confirm-none" : "confirm-done";
+        const badgeText  = !cv ? "Chưa cấp" : "Đã cấp";
         tbody.insertAdjacentHTML("beforeend", `
         <tr>
             <td>${r.MSNV || ""}</td>
-            <td>${r.FullName || ""}</td>
-            <td>${excelDate(r.NgayDieuChinh)}</td>
-            <td>${r.NoiDung || ""}</td>
+            <td>${r.HoTen || ""}</td>
+            <td>${excelDate(r.Date)}</td>
+            <td>${r.LyDo || ""}</td>
             <td><span class="badge ${badgeClass}">${badgeText}</span></td>
+            <td>${r.NgayCapLai ? excelDate(r.NgayCapLai) : "–"}</td>
+            <td>${r.Key || "–"}</td>
             <td>${r.BU || ""}</td>
             <td>${r.Team || ""}</td>
         </tr>`);
@@ -564,10 +568,10 @@ function renderTable(data){
 /* ============ KPI CARDS ============ */
 function renderKPI(data){
     const total = data.length;
-    const done = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim() !== "").length;
+    const done = data.filter(r => r.MatKhauMoi && r.MatKhauMoi.trim() !== "").length;
     const pending = total - done;
     const todayStr = excelDate(Math.round(Date.now()/86400000 + 25569));
-    const today = data.filter(r => excelDate(r.NgayDieuChinh) === todayStr).length;
+    const today = data.filter(r => excelDate(r.Date) === todayStr).length;
 
     document.getElementById("kpiTotal").textContent = total;
     document.getElementById("kpiDone").textContent = done;
@@ -687,18 +691,18 @@ function renderBU(data){
 
 /* ============ CONFIRM DOUGHNUT ============ */
 function renderConfirm(data){
-    const done   = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim()!=="").length;
+    const done   = data.filter(r => r.MatKhauMoi && r.MatKhauMoi.trim()!=="").length;
     const pending = data.length - done;
     const pct = data.length ? Math.round(done/data.length*100) : 0;
 
-    document.getElementById("badgeConfirm").textContent = pct + "% done";
+    document.getElementById("badgeConfirm").textContent = pct + "% cấp";
     document.getElementById("confirmRate").textContent = pct + "%";
 
     if(window._chartConfirm) window._chartConfirm.destroy();
     window._chartConfirm = new Chart(document.getElementById("chartConfirm"),{
         type:"doughnut",
         data:{
-            labels:["Đã confirm","Chưa phản hồi"],
+            labels:["Đã cấp pass","Chưa cấp"],
             datasets:[{
                 data:[done, pending],
                 backgroundColor:['#43e97b','#ff6b6b'],
@@ -775,7 +779,7 @@ function renderTeam(data){
 /* ============ TOP 10 ============ */
 function renderTop(data){
     const c = {};
-    data.forEach(r => c[r.FullName||'N/A'] = (c[r.FullName||'N/A']||0)+1);
+    data.forEach(r => c[r.HoTen||'N/A'] = (c[r.HoTen||'N/A']||0)+1);
     const sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
     document.getElementById("badgeTop").textContent = "Top " + sorted.length;
 
@@ -820,7 +824,7 @@ function renderTop(data){
 function renderNgay(data){
     const c = {};
     data.forEach(r => {
-        let d = excelDate(r.NgayDieuChinh);
+        let d = excelDate(r.NgayCapLai);
         if(d) c[d] = (c[d]||0)+1;
     });
     // Sort by date
