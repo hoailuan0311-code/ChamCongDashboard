@@ -2,10 +2,12 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>📊 Zalo Ads Tracking</title>
+<title>📊 Zalo Tracking Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 body{
  font-family:"Be Vietnam Pro", sans-serif;
@@ -14,96 +16,159 @@ body{
  margin:0;
  padding:20px;
 }
+
 h1{
  text-align:center;
  margin-bottom:20px;
 }
+
+.grid{
+ display:grid;
+ grid-template-columns: repeat(4,1fr);
+ gap:16px;
+ margin-bottom:20px;
+}
+
 .card{
+ background:#1e293b;
+ padding:16px;
+ border-radius:16px;
+ box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.kpi{
+ font-size:34px;
+ font-weight:800;
+}
+
+.label{
+ font-size:12px;
+ color:#94a3b8;
+ margin-bottom:6px;
+}
+
+.chart-box{
  background:#1e293b;
  padding:20px;
  border-radius:16px;
  margin-bottom:20px;
- box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
-.kpi{
- font-size:40px;
- font-weight:800;
-}
-.label{
- color:#94a3b8;
- font-size:13px;
+
+@media(max-width:900px){
+ .grid{ grid-template-columns: repeat(2,1fr); }
 }
 </style>
 </head>
+
 <body>
 
 <h1>📊 Zalo Click Dashboard</h1>
 
-<div class="card">
- <div class="label">Tổng số click Zalo</div>
- <div class="kpi" id="totalClick">0</div>
+<!-- KPI -->
+<div class="grid">
+ <div class="card">
+   <div class="label">Tổng Click</div>
+   <div class="kpi" id="total">0</div>
+ </div>
+ <div class="card">
+   <div class="label">Mobile</div>
+   <div class="kpi" id="mobile">0</div>
+ </div>
+ <div class="card">
+   <div class="label">PC</div>
+   <div class="kpi" id="pc">0</div>
+ </div>
+ <div class="card">
+   <div class="label">Giờ cao nhất</div>
+   <div class="kpi" id="bestHour">--</div>
+ </div>
 </div>
 
-<div class="card">
- <canvas id="chart"></canvas>
+<!-- Charts -->
+<div class="chart-box">
+ <canvas id="chartDay"></canvas>
 </div>
+
+<div class="chart-box">
+ <canvas id="chartHour"></canvas>
+</div>
+
+<div class="chart-box">
+ <canvas id="chartType"></canvas>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-// ===== FIREBASE CONFIG (bạn thay thông tin của bạn) =====
 const firebaseConfig = {
   apiKey: "YOUR_KEY",
   authDomain: "YOUR_DOMAIN",
   projectId: "YOUR_PROJECT_ID",
 };
 
-// ===== LOAD FIREBASE =====
-const script1 = document.createElement('script');
-script1.src = "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js";
-document.head.appendChild(script1);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-const script2 = document.createElement('script');
-script2.src = "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js";
-document.head.appendChild(script2);
+db.collection("zalo_clicks").get().then(snapshot => {
 
-script2.onload = () => {
+ let total = 0;
+ let dayMap = {};
+ let hourMap = {};
+ let deviceMap = {};
+ let typeMap = {};
 
- const app = firebase.initializeApp(firebaseConfig);
- const db = firebase.firestore();
+ snapshot.forEach(doc => {
+   const d = doc.data();
+   total++;
 
- let labels = [];
- let values = [];
+   let date = new Date(d.time).toLocaleDateString();
+   dayMap[date] = (dayMap[date] || 0) + 1;
 
- db.collection("zalo_clicks").orderBy("time").get().then(snapshot => {
+   hourMap[d.hour || 0] = (hourMap[d.hour || 0] || 0) + 1;
 
-     let total = 0;
-     let map = {};
+   deviceMap[d.device || "Unknown"] = (deviceMap[d.device] || 0) + 1;
 
-     snapshot.forEach(doc => {
-         const data = doc.data();
-         total++;
-
-         let date = new Date(data.time).toLocaleDateString();
-         map[date] = (map[date] || 0) + 1;
-     });
-
-     document.getElementById("totalClick").innerText = total;
-
-     labels = Object.keys(map);
-     values = Object.values(map);
-
-     new Chart(document.getElementById("chart"),{
-         type:"line",
-         data:{
-             labels:labels,
-             datasets:[{
-                 label:"Clicks / Day",
-                 data:values,
-                 fill:true
-             }]
-         }
-     });
+   typeMap[d.type || "unknown"] = (typeMap[d.type] || 0) + 1;
  });
-}
+
+ // KPI
+ document.getElementById("total").innerText = total;
+ document.getElementById("mobile").innerText = deviceMap["Mobile"] || 0;
+ document.getElementById("pc").innerText = deviceMap["PC"] || 0;
+
+ let bestHour = Object.entries(hourMap).sort((a,b)=>b[1]-a[1])[0];
+ document.getElementById("bestHour").innerText = bestHour ? bestHour[0] + "h" : "--";
+
+ // Chart ngày
+ new Chart(document.getElementById("chartDay"),{
+   type:"line",
+   data:{
+     labels:Object.keys(dayMap),
+     datasets:[{label:"Clicks / Day", data:Object.values(dayMap), fill:true}]
+   }
+ });
+
+ // Chart giờ
+ new Chart(document.getElementById("chartHour"),{
+   type:"bar",
+   data:{
+     labels:Object.keys(hourMap),
+     datasets:[{label:"Clicks / Hour", data:Object.values(hourMap)}]
+   }
+ });
+
+ // Chart nguồn click
+ new Chart(document.getElementById("chartType"),{
+   type:"doughnut",
+   data:{
+     labels:Object.keys(typeMap),
+     datasets:[{data:Object.values(typeMap)}]
+   }
+ });
+
+});
 </script>
 
 </body>
