@@ -153,12 +153,17 @@ tbody tr:hover{background:rgba(167,139,250,.04);}
 .kpi-card:nth-child(3)::before{background:linear-gradient(90deg,#ff6b6b,#ffa07a);}
 .kpi-card:nth-child(4)::before{background:linear-gradient(90deg,#fbbf24,#f59e0b);}
 .kpi-label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:var(--text-muted); margin-bottom:8px;}
-.kpi-value{font-size:36px; font-weight:800; line-height:1; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;}
-.kpi-card:nth-child(1) .kpi-value{background:linear-gradient(135deg,#a78bfa,#818cf8);}
-.kpi-card:nth-child(2) .kpi-value{background:linear-gradient(135deg,#43e97b,#38f9d7);}
-.kpi-card:nth-child(3) .kpi-value{background:linear-gradient(135deg,#ff6b6b,#ff4757);}
-.kpi-card:nth-child(4) .kpi-value{background:linear-gradient(135deg,#fbbf24,#f59e0b);}
-.kpi-sub{font-size:11px; color:var(--text-muted); margin-top:6px;}
+.kpi-value{font-size:38px; font-weight:800; line-height:1; margin-bottom:2px;}
+.kpi-card:nth-child(1) .kpi-value{color:#a78bfa;}
+.kpi-card:nth-child(2) .kpi-value{color:#43e97b;}
+.kpi-card:nth-child(3) .kpi-value{color:#ff6b6b;}
+.kpi-card:nth-child(4) .kpi-value{color:#fbbf24;}
+.kpi-pct{font-size:12px; font-weight:700; opacity:.75; margin-bottom:2px;}
+.kpi-card:nth-child(1) .kpi-pct{color:#a78bfa;}
+.kpi-card:nth-child(2) .kpi-pct{color:#43e97b;}
+.kpi-card:nth-child(3) .kpi-pct{color:#ff6b6b;}
+.kpi-card:nth-child(4) .kpi-pct{color:#fbbf24;}
+.kpi-sub{font-size:11px; color:var(--text-muted); margin-top:2px;}
 
 /* ===================== CHARTS ===================== */
 .charts-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:0;}
@@ -239,9 +244,10 @@ audio{display:none;}
       <th onclick="sortBy('MSNV')">MSNV ⬍</th>
       <th>Họ Tên</th>
       <th>BU</th>
+      <th>Team</th>
       <th>Lý Do</th>
+      <th>Trạng Thái</th>
       <th>🔒 Mật Khẩu Mới</th>
-      <th>🔒 Team</th>
       <th>🔒 Ngày Cấp</th>
     </tr>
   </thead>
@@ -264,17 +270,20 @@ audio{display:none;}
   <div class="kpi-card">
     <div class="kpi-label">Đã cấp pass</div>
     <div class="kpi-value" id="kpiDone">–</div>
-    <div class="kpi-sub" id="kpiDonePct">–</div>
+    <div class="kpi-pct" id="kpiDonePct">–</div>
+    <div class="kpi-sub">trên tổng số yêu cầu</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-label">Chưa cấp</div>
     <div class="kpi-value" id="kpiPending">–</div>
-    <div class="kpi-sub" id="kpiPendingPct">–</div>
+    <div class="kpi-pct" id="kpiPendingPct">–</div>
+    <div class="kpi-sub">đang chờ xử lý</div>
   </div>
   <div class="kpi-card">
     <div class="kpi-label">Quên / Bị Khóa</div>
     <div class="kpi-value" id="kpiProblem">–</div>
-    <div class="kpi-sub" id="kpiProblemPct">–</div>
+    <div class="kpi-pct" id="kpiProblemPct">–</div>
+    <div class="kpi-sub">không phải cấp mới</div>
   </div>
 </div>
 
@@ -460,7 +469,7 @@ function renderTable(){
   }
 
   if(rows.length===0){
-    tbody.innerHTML=`<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:28px;font-size:13px;">
+    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:28px;font-size:13px;">
       ${unlocked?"Không tìm thấy kết quả.":"🔒 Nhập KEY để xem danh sách nhân viên team bạn."}
     </td></tr>`;
     return;
@@ -471,14 +480,22 @@ function renderTable(){
     const lyDo=(r.LyDo||"").trim();
     const lyClass=lyDo==="Quên Pass"?"b-warn":lyDo==="Bị Khóa"?"b-pend":"b-done";
 
+    // Status: luôn hiện
+    const statusCell=hasPass
+      ?`<span class="badge b-done">✅ Đã Cấp</span>`
+      :`<span class="badge b-pend">⏳ Pending</span>`;
+
+    // Team: luôn hiện
+    const teamName=(r.Team&&r.Team!=="#N/A")?esc(r.Team):`<span style="color:var(--text-muted);font-size:11px;">–</span>`;
+
+    // Cột nhạy cảm – chỉ hiện khi unlocked
     const passCell=unlocked
       ?(hasPass
         ?`<span class="badge b-done">${esc(r.MatKhauMoi)}</span>
           <button class="copyBtn" onclick="copyText('${escA(r.MatKhauMoi)}',this)">📋 Copy</button>`
-        :`<span class="badge b-pend">⏳ Pending</span>`)
+        :`<span class="locked-cell" style="font-style:normal;color:var(--text-muted);">–</span>`)
       :`<span class="locked-cell">🔒 ─────</span>`;
 
-    const teamCell=unlocked?esc(r.Team):`<span class="locked-cell">🔒 ─</span>`;
     const ngayCell=unlocked
       ?(r.NgayCapLai?`<span class="badge b-done">${excelDateStr(r.NgayCapLai)}</span>`:`<span class="badge b-pend">⏳ Chưa cấp</span>`)
       :`<span class="locked-cell">🔒 ─</span>`;
@@ -489,9 +506,10 @@ function renderTable(){
         <td>${esc(r.MSNV)}</td>
         <td>${esc(r.HoTen)}</td>
         <td>${esc(r.BU)}</td>
+        <td>${teamName}</td>
         <td><span class="badge ${lyClass}">${esc(r.LyDo)}</span></td>
+        <td>${statusCell}</td>
         <td>${passCell}</td>
-        <td>${teamCell}</td>
         <td>${ngayCell}</td>
       </tr>`);
   });
@@ -560,8 +578,8 @@ function renderKPI(data){
   document.getElementById("kpiDone").textContent=done;
   document.getElementById("kpiPending").textContent=pend;
   document.getElementById("kpiProblem").textContent=prob;
-  document.getElementById("kpiDonePct").textContent=tot?Math.round(done/tot*100)+"% đã xử lý":"–";
-  document.getElementById("kpiPendingPct").textContent=tot?Math.round(pend/tot*100)+"% chưa xử lý":"–";
+  document.getElementById("kpiDonePct").textContent=tot?Math.round(done/tot*100)+"% tổng số":"–";
+  document.getElementById("kpiPendingPct").textContent=tot?Math.round(pend/tot*100)+"% tổng số":"–";
   document.getElementById("kpiProblemPct").textContent=tot?Math.round(prob/tot*100)+"% tổng số":"–";
 }
 
