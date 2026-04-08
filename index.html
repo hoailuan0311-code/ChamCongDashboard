@@ -337,6 +337,53 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 
 /* ===================== AUDIO ===================== */
 audio { display: none; }
+/* ===== ZALO ADD ONLY ===== */
+.intro-text{
+ text-align:center;
+ font-size:13px;
+ margin-top:6px;
+ color:var(--text-muted);
+ animation:fadeSlide 0.8s ease forwards;
+ opacity:0;
+}
+@keyframes fadeSlide{
+ from{opacity:0; transform:translateY(8px)}
+ to{opacity:1; transform:translateY(0)}
+}
+
+.zalo-float{
+ position:fixed;
+ bottom:20px;
+ right:20px;
+ z-index:9999;
+ display:flex;
+ align-items:center;
+ gap:10px;
+ background:linear-gradient(135deg,#0084ff,#00c6ff);
+ padding:10px 14px;
+ border-radius:50px;
+ color:#fff;
+ text-decoration:none;
+ box-shadow:0 6px 20px rgba(0,132,255,0.4);
+}
+.zalo-float img{
+ width:32px;
+ height:32px;
+ border-radius:50%;
+}
+
+.zalo-popup{
+ position:fixed;
+ bottom:90px;
+ right:20px;
+ width:260px;
+ background:var(--box);
+ border-radius:16px;
+ padding:14px;
+ box-shadow:0 10px 30px rgba(0,0,0,0.2);
+ display:none;
+ z-index:9999;
+}
 </style>
 </head>
 
@@ -905,6 +952,50 @@ document.getElementById("lateBtn").addEventListener("click", () => window.open("
 /* MUSIC */
 document.addEventListener("click",  ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
 document.addEventListener("touchstart", ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
+</script>
+
+<!-- ===== ZALO ADD ONLY ===== -->
+<div class="zalo-popup" id="zaloPopup">
+    <img src="https://i.imgur.com/2DhmtJ4.png">
+    <div class="name">Mỹ Huyền</div>
+    <div class="desc">Tư vấn tài chính • Hỗ trợ 24/7</div>
+    <a href="https://zalo.me/0971517862" target="_blank" onclick="trackZalo('popup')">
+        Nhắn Zalo ngay
+    </a>
+</div>
+
+<a href="https://zalo.me/0971517862" target="_blank" class="zalo-float" onclick="trackZalo('button')">
+    <img src="https://i.imgur.com/2DhmtJ4.png">
+    Mỹ Huyền
+</a>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function trackZalo(type){
+ db.collection("zalo_clicks").add({
+   time: Date.now(),
+   type: type,
+   device: /Mobi|Android/i.test(navigator.userAgent) ? "Mobile":"PC"
+ });
+}
+
+setTimeout(()=>{
+ if(!localStorage.getItem("zalo_shown")){
+   document.getElementById('zaloPopup').style.display='block';
+   localStorage.setItem("zalo_shown", true);
+ }
+},4000);
 </script>
 
 <!-- ===================== THEME LOADER ===================== -->
