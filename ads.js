@@ -17,9 +17,9 @@ function initAds(){
 
 // ===== FIREBASE CONFIG =====
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyCN9ntHNLZRm9gaeG0CNhA0asWXP2E78j8",
+  authDomain: "zalo-checking-click.firebaseapp.com",
+  projectId: "zalo-checking-click",
 };
 
 firebase.initializeApp(firebaseConfig);
