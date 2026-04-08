@@ -92,16 +92,16 @@ document.head.appendChild(style);
 // ===== INJECT HTML =====
 const html = `
 <div class="zalo-popup" id="zaloPopup">
-    <img src="https://i.imgur.com/2DhmtJ4.png">
+    <img src="https://i.ibb.co/ZR4hzbQT/Image-99.jpg">
     <div class="name">Mỹ Huyền</div>
-    <div class="desc">Chuyên viên hổ trợ tài chính • Hỗ trợ chi tiêu thẻ Tín Dụng (1.7%)</div>
+    <div class="desc">Chuyên viên hổ trợ giải pháp tài chính • Hỗ trợ chi tiêu thẻ Tín Dụng (Phí rút chỉ: 1.7%)</div>
     <a href="https://zalo.me/0971517862" target="_blank" id="zaloLink">
         Nhắn Zalo ngay
     </a>
 </div>
 
 <div class="zalo-float" id="zaloBtn">
-    <img src="https://i.ibb.co/N0qdhCJ/Image-98.jpg">
+    <img src="https://i.ibb.co/ZR4hzbQT/Image-99.jpg">
     Mỹ Huyền
 </div>
 `;
