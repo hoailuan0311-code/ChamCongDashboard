@@ -103,15 +103,19 @@ h1{
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyCN9ntHNLZRm9gaeG0CNhA0asWXP2E78j8",
+  authDomain: "zalo-checking-click.firebaseapp.com",
+  projectId: "zalo-checking-click",
+  storageBucket: "zalo-checking-click.firebasestorage.app",
+  messagingSenderId: "497822758337",
+  appId: "1:497822758337:web:a54ad22726dc0ba420ab40"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-db.collection("zalo_clicks").get().then(snapshot => {
+// REALTIME LOAD
+db.collection("zalo_clicks").onSnapshot(snapshot => {
 
  let total = 0;
  let dayMap = {};
@@ -141,30 +145,44 @@ db.collection("zalo_clicks").get().then(snapshot => {
  let bestHour = Object.entries(hourMap).sort((a,b)=>b[1]-a[1])[0];
  document.getElementById("bestHour").innerText = bestHour ? bestHour[0] + "h" : "--";
 
+ // destroy old charts nếu có
+ if(window.chartDay) chartDay.destroy();
+ if(window.chartHour) chartHour.destroy();
+ if(window.chartType) chartType.destroy();
+
  // Chart ngày
- new Chart(document.getElementById("chartDay"),{
+ window.chartDay = new Chart(document.getElementById("chartDay"),{
    type:"line",
    data:{
      labels:Object.keys(dayMap),
-     datasets:[{label:"Clicks / Day", data:Object.values(dayMap), fill:true}]
+     datasets:[{
+       label:"Clicks / Day",
+       data:Object.values(dayMap),
+       fill:true
+     }]
    }
  });
 
  // Chart giờ
- new Chart(document.getElementById("chartHour"),{
+ window.chartHour = new Chart(document.getElementById("chartHour"),{
    type:"bar",
    data:{
      labels:Object.keys(hourMap),
-     datasets:[{label:"Clicks / Hour", data:Object.values(hourMap)}]
+     datasets:[{
+       label:"Clicks / Hour",
+       data:Object.values(hourMap)
+     }]
    }
  });
 
  // Chart nguồn click
- new Chart(document.getElementById("chartType"),{
+ window.chartType = new Chart(document.getElementById("chartType"),{
    type:"doughnut",
    data:{
      labels:Object.keys(typeMap),
-     datasets:[{data:Object.values(typeMap)}]
+     datasets:[{
+       data:Object.values(typeMap)
+     }]
    }
  });
 
