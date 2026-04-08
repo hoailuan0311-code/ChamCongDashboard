@@ -94,14 +94,14 @@ const html = `
 <div class="zalo-popup" id="zaloPopup">
     <img src="https://i.imgur.com/2DhmtJ4.png">
     <div class="name">Mỹ Huyền</div>
-    <div class="desc">Tư vấn tài chính • Hỗ trợ 24/7</div>
+    <div class="desc">Chuyên viên hổ trợ tài chính • Hỗ trợ chi tiêu thẻ Tín Dụng (1.7%)</div>
     <a href="https://zalo.me/0971517862" target="_blank" id="zaloLink">
         Nhắn Zalo ngay
     </a>
 </div>
 
 <div class="zalo-float" id="zaloBtn">
-    <img src="https://i.imgur.com/2DhmtJ4.png">
+    <img src="https://i.ibb.co/N0qdhCJ/Image-98.jpg">
     Mỹ Huyền
 </div>
 `;
