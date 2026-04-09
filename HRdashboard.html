@@ -161,7 +161,6 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 /* ═══════════════════════════════════════
    ORG CHART STYLES
 ═══════════════════════════════════════ */
-#view-orgchart{display:none}
 
 /* RYOBI Header Banner */
 .org-banner{
@@ -443,11 +442,11 @@ let ORG_CHILD  = {}; // name → [children] (built from RAW)
 //  TAB
 // ════════════════════════════════════════════
 function switchTab(tab) {
-  document.getElementById('view-dashboard').style.display = tab === 'dashboard' ? '' : 'none';
-  document.getElementById('view-orgchart').style.display  = tab === 'orgchart'  ? '' : 'none';
+  document.getElementById('view-dashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
+  document.getElementById('view-orgchart').style.display  = tab === 'orgchart'  ? 'block' : 'none';
   document.getElementById('tab-dashboard').classList.toggle('active', tab === 'dashboard');
   document.getElementById('tab-orgchart').classList.toggle('active', tab === 'orgchart');
-  if (tab === 'orgchart') renderOrgChart();
+  if (tab === 'orgchart') { if (!RAW.length) { setTimeout(()=>renderOrgChart(),300); return; } renderOrgChart(); }
 }
 
 // ════════════════════════════════════════════
@@ -631,7 +630,7 @@ function renderOrgChart() {
 //  ORG DRILL VIEW
 // ════════════════════════════════════════════
 function renderOrgDrill() {
-  document.getElementById('org-drill-view').style.display='';
+  document.getElementById('org-drill-view').style.display='block';
   document.getElementById('org-schema-view').style.display='none';
 
   const emp = getEmp(ORG_CUR);
@@ -658,7 +657,7 @@ function renderOrgDrill() {
         <div class="org-focus-stats">
           <div class="org-focus-stat"><span class="org-focus-stat-val">${totalDesc}</span><span class="org-focus-stat-label">Total Reports</span></div>
           <div class="org-focus-stat"><span class="org-focus-stat-val">${direct.length}</span><span class="org-focus-stat-label">Direct Reports</span></div>
-          <div class="org-focus-stat"><span class="org-focus-stat-val">${RAW.filter(e=>e.su===ORG_CUR||e.name===ORG_CUR).filter(e=>e.lwd&&e.lwd!=='0').length}</span><span class="org-focus-stat-label">Has LWD</span></div>
+          <div class="org-focus-stat"><span class="org-focus-stat-val">${RAW.filter(e=>e.sup===ORG_CUR||e.name===ORG_CUR).filter(e=>e.lwd&&e.lwd!=='0').length}</span><span class="org-focus-stat-label">Has LWD</span></div>
         </div>
       </div>
       ${ORG_TRAIL.length>0?`<button class="org-btn" onclick="orgGoTrail(${ORG_TRAIL.length-1})" style="flex-shrink:0">← Back</button>`:''}
@@ -739,7 +738,7 @@ function orgGoTrail(idx) {
 //  ORG SEARCH RESULTS
 // ════════════════════════════════════════════
 function renderOrgSearchResults(matches, q) {
-  document.getElementById('org-drill-view').style.display='';
+  document.getElementById('org-drill-view').style.display='block';
   document.getElementById('org-schema-view').style.display='none';
 
   const navEl=document.getElementById('org-nav');
@@ -770,7 +769,7 @@ function renderOrgSearchResults(matches, q) {
 // ════════════════════════════════════════════
 function renderOrgSchema() {
   document.getElementById('org-drill-view').style.display='none';
-  document.getElementById('org-schema-view').style.display='';
+  document.getElementById('org-schema-view').style.display='block';
   document.getElementById('org-nav').innerHTML='';
 
   // Build a simplified tree showing only key management nodes
@@ -805,7 +804,7 @@ function renderSchemaNode(name, level) {
 
   const nodeHtml=`
     <div style="display:inline-flex;flex-direction:column;align-items:center;min-width:${level===0?200:140}px;max-width:${level===0?220:160}px">
-      <div onclick="orgDrill_schema('${name.replace(/'/g,"\\'")}');switchTab('dashboard');switchTab('orgchart');setOrgMode('drill')"
+      <div onclick="orgDrill_schema('${name.replace(/'/g,"\\'")}')"
            style="background:${schemaNodeBg(level)};border-radius:10px;padding:${level===0?'16px 18px':'10px 12px'};cursor:pointer;
                   border:1px solid rgba(255,255,255,.15);transition:transform .2s;width:100%;text-align:center"
            onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
