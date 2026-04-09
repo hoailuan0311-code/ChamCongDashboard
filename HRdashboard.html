@@ -19,18 +19,8 @@
 body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 /* ── LOGIN ── */
-#login{
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;background:var(--bg);
-  background-image:radial-gradient(ellipse at 20% 50%,rgba(79,142,247,.08) 0%,transparent 60%),
-                   radial-gradient(ellipse at 80% 20%,rgba(167,139,250,.06) 0%,transparent 50%);
-}
-.login-box{
-  background:var(--bg2);border:1px solid var(--border2);border-radius:20px;
-  padding:48px 44px;width:380px;
-  box-shadow:0 32px 64px rgba(0,0,0,.5);
-  animation:fadeUp .4s ease;
-}
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);background-image:radial-gradient(ellipse at 20% 50%,rgba(79,142,247,.08) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(167,139,250,.06) 0%,transparent 50%)}
+.login-box{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:48px 44px;width:380px;box-shadow:0 32px 64px rgba(0,0,0,.5);animation:fadeUp .4s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .login-logo{text-align:center;margin-bottom:32px}
 .login-logo h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
@@ -38,19 +28,10 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .login-logo p{font-size:12px;color:var(--text3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
-.field input{
-  width:100%;padding:11px 14px;background:var(--bg3);
-  border:1px solid var(--border2);border-radius:var(--rs);
-  color:var(--text);font-size:14px;font-family:inherit;
-  transition:border-color .2s,box-shadow .2s;outline:none;
-}
+.field input{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:14px;font-family:inherit;transition:border-color .2s,box-shadow .2s;outline:none}
 .field input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,.15)}
 .login-err{font-size:12px;color:var(--red);margin-bottom:14px;display:none;padding:10px 12px;background:rgba(248,113,113,.1);border-radius:var(--rs);border:1px solid rgba(248,113,113,.2)}
-.btn-login{
-  width:100%;padding:12px;background:var(--blue);border:none;
-  border-radius:var(--rs);color:#fff;font-size:14px;font-weight:600;
-  cursor:pointer;font-family:inherit;transition:opacity .2s,transform .1s;
-}
+.btn-login{width:100%;padding:12px;background:var(--blue);border:none;border-radius:var(--rs);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .2s,transform .1s}
 .btn-login:hover{opacity:.9}
 .btn-login:active{transform:scale(.98)}
 
@@ -60,7 +41,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .app-in{animation:fadeIn .3s ease}
 
 /* Header */
-.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .hdr-left h2{font-size:20px;font-weight:700;letter-spacing:-.3px}
 .hdr-left h2 span{color:var(--blue)}
 .hdr-left p{font-size:12px;color:var(--text3);margin-top:3px;font-family:'DM Mono',monospace}
@@ -71,16 +52,18 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .btn-blue:hover{opacity:.88;color:#fff}
 .user-badge{font-size:12px;color:var(--text3);padding:8px 14px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--border)}
 
+/* ── TAB NAV ── */
+.tab-bar{display:flex;gap:4px;margin-bottom:24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:5px;width:fit-content}
+.tab-btn{padding:8px 20px;border-radius:var(--rs);border:none;background:transparent;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.02em;display:flex;align-items:center;gap:7px}
+.tab-btn:hover{color:var(--text);background:var(--bg3)}
+.tab-btn.active{background:var(--blue);color:#fff}
+
 /* Section label */
 .sec{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
 
 /* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}
-.kpi-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
-  padding:18px 20px;position:relative;overflow:hidden;
-  transition:border-color .2s,transform .15s;cursor:default;
-}
+.kpi-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;transition:border-color .2s,transform .15s;cursor:default}
 .kpi-card.clickable{cursor:pointer}
 .kpi-card.clickable:hover{border-color:var(--border2);transform:translateY(-2px)}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--blue));border-radius:var(--r) var(--r) 0 0}
@@ -103,10 +86,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 
 /* Supervisor section */
 .sup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.sup-card{
-  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
-  padding:16px 18px;cursor:pointer;transition:border-color .2s,transform .15s;
-}
+.sup-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;cursor:pointer;transition:border-color .2s,transform .15s}
 .sup-card:hover{border-color:var(--blue);transform:translateY(-2px)}
 .sup-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
 .avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
@@ -119,6 +99,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .b-red{background:rgba(248,113,113,.15);color:var(--red);border:1px solid rgba(248,113,113,.25)}
 .b-blue{background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.2)}
 .b-green{background:rgba(52,211,153,.12);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.b-teal{background:rgba(45,212,191,.12);color:var(--teal);border:1px solid rgba(45,212,191,.2)}
 .sstats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:12px}
 .sstat{background:var(--bg3);border-radius:var(--rs);padding:8px 10px}
 .sstat-l{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:3px}
@@ -142,17 +123,9 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .no-res{font-size:11px;color:var(--text3);font-style:italic;padding:4px 0}
 
 /* ── MODAL ── */
-.overlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
-  z-index:1000;align-items:center;justify-content:center;
-  backdrop-filter:blur(3px);
-}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 .overlay.open{display:flex;animation:fadeIn .2s ease}
-.modal{
-  background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
-  width:min(820px,95vw);max-height:90vh;display:flex;flex-direction:column;
-  animation:fadeUp .25s ease;overflow:hidden;
-}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:min(820px,95vw);max-height:90vh;display:flex;flex-direction:column;animation:fadeUp .25s ease;overflow:hidden}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border)}
 .modal-hdr h3{font-size:16px;font-weight:700}
 .modal-hdr p{font-size:12px;color:var(--text3);margin-top:2px}
@@ -169,8 +142,6 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .emp-table td:first-child{color:var(--text);font-weight:500}
 .btn-transfer{font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--blue);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s;white-space:nowrap}
 .btn-transfer:hover{background:rgba(79,142,247,.12);border-color:var(--blue)}
-
-/* Transfer panel inside table row */
 .transfer-row td{padding:0 8px 10px;background:var(--bg3)}
 .transfer-panel{display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg4);border-radius:var(--rs);border:1px solid var(--border2)}
 .transfer-panel select{flex:1;padding:7px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:12px;font-family:inherit;outline:none;cursor:pointer}
@@ -186,11 +157,129 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+
+/* ═══════════════════════════════════════
+   ORG CHART STYLES
+═══════════════════════════════════════ */
+#view-orgchart{display:none}
+
+/* RYOBI Header Banner */
+.org-banner{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,#0a5c6b 0%,#0d7a8a 50%,#0a5c6b 100%);
+  border-radius:var(--r);padding:0;margin-bottom:20px;overflow:hidden;
+  border:1px solid rgba(45,212,191,.3);
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.org-banner-left{
+  background:#000;padding:16px 24px;display:flex;align-items:center;
+  height:100%;min-width:160px;
+}
+.ryobi-logo{font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;font-style:italic}
+.ryobi-logo span{
+  display:inline-block;background:#bed62f;color:#000;padding:2px 6px;
+  border-radius:3px;font-style:normal;
+}
+.org-banner-center{flex:1;text-align:center;padding:20px}
+.org-banner-title{font-size:22px;font-weight:800;color:#bed62f;letter-spacing:.04em;text-transform:uppercase}
+.org-banner-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.org-banner-right{background:rgba(0,0,0,.3);padding:16px 24px;display:flex;align-items:center;justify-content:center;min-width:100px}
+.tti-logo{font-size:22px;font-weight:900;color:#fff;letter-spacing:2px}
+
+/* Org chart controls */
+.org-controls{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.org-search{padding:8px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);font-size:13px;font-family:inherit;outline:none;width:240px}
+.org-search:focus{border-color:var(--blue)}
+.org-btn{padding:7px 14px;border-radius:var(--rs);border:1px solid var(--border2);background:var(--bg2);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.org-btn:hover{background:var(--bg3);color:var(--text)}
+.org-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.org-legend{display:flex;gap:12px;margin-left:auto}
+.org-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.org-leg-dot{width:10px;height:10px;border-radius:2px}
+
+/* Org breadcrumb */
+.org-nav{display:flex;align-items:center;gap:6px;margin-bottom:16px;flex-wrap:wrap;min-height:24px}
+.org-crumb{font-size:12px;color:var(--text3);cursor:pointer;padding:3px 8px;border-radius:var(--rs);transition:all .2s}
+.org-crumb:hover{background:var(--bg3);color:var(--text)}
+.org-crumb.active{color:var(--text);font-weight:600;cursor:default}
+.org-crumb.active:hover{background:none}
+.org-crumb-sep{color:var(--text3);font-size:12px}
+
+/* Focus node (top card in org view) */
+.org-focus-card{
+  background:var(--bg2);border:1px solid rgba(45,212,191,.4);border-radius:var(--r);
+  padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;gap:20px;
+  position:relative;overflow:hidden;
+}
+.org-focus-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+.org-focus-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;border:2px solid rgba(45,212,191,.4)}
+.org-focus-info{flex:1}
+.org-focus-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.org-focus-title{font-size:13px;color:var(--text2);margin-bottom:8px}
+.org-focus-stats{display:flex;gap:20px}
+.org-focus-stat{display:flex;flex-direction:column;gap:2px}
+.org-focus-stat-val{font-size:20px;font-weight:700;font-family:'DM Mono',monospace;color:var(--teal)}
+.org-focus-stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+
+/* ── Tree grid of reports ── */
+.org-section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.org-tree-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:32px}
+.org-node{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.org-node:hover{border-color:var(--teal);transform:translateY(-2px)}
+.org-node.has-children:hover{border-color:var(--blue)}
+.org-node::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--nc,var(--bg3));border-radius:var(--r) 0 0 var(--r)}
+.org-node-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.org-node-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.org-node-info{flex:1;min-width:0}
+.org-node-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.org-node-title{font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.org-node-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.org-node-stat{background:var(--bg3);border-radius:6px;padding:6px 8px;text-align:center}
+.org-node-stat-v{font-size:14px;font-weight:700;font-family:'DM Mono',monospace}
+.org-node-stat-l{font-size:9px;color:var(--text3);margin-top:1px}
+.org-node-arrow{position:absolute;top:14px;right:14px;color:var(--text3);font-size:14px;transition:transform .2s}
+.org-node:hover .org-node-arrow{color:var(--blue);transform:translateX(2px)}
+.org-node-badge{position:absolute;bottom:8px;right:10px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px}
+
+/* Overview/schematic tree */
+.org-schematic{overflow-x:auto;padding:24px 0}
+.org-tree{display:flex;flex-direction:column;align-items:center;min-width:900px}
+.tree-row{display:flex;justify-content:center;gap:0;position:relative;margin-bottom:0}
+.tree-row.connecting{height:40px;position:relative}
+.tree-connector-v{width:2px;background:rgba(45,212,191,.3);position:absolute;left:50%;top:0;bottom:0}
+.tree-connector-h{height:2px;background:rgba(45,212,191,.3);position:absolute;top:0}
+.tree-node-wrap{display:flex;flex-direction:column;align-items:center;padding:0 6px;flex:1;min-width:120px;max-width:180px}
+.tree-node-line-v{width:2px;height:24px;background:rgba(45,212,191,.3)}
+.tree-node-line-h-container{height:2px;position:relative;width:100%}
+.tree-node{
+  background:var(--bg2);border:1px solid rgba(45,212,191,.3);border-radius:10px;
+  padding:12px 14px;cursor:pointer;transition:all .2s;width:100%;text-align:center;
+  position:relative;
+}
+.tree-node:hover{border-color:var(--teal);background:var(--bg3)}
+.tree-node.root{border-color:var(--teal);background:linear-gradient(135deg,var(--bg3),rgba(45,212,191,.08));padding:16px 20px}
+.tree-node.level2{border-color:rgba(79,142,247,.4)}
+.tree-node.level2:hover{border-color:var(--blue)}
+.tree-node-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 8px}
+.tree-node.root .tree-node-ava{width:48px;height:48px;font-size:16px}
+.tree-node-name{font-size:11px;font-weight:600;line-height:1.3;margin-bottom:3px}
+.tree-node.root .tree-node-name{font-size:13px}
+.tree-node-title{font-size:9px;color:var(--text3);line-height:1.3}
+.tree-node-count{font-size:10px;font-weight:700;font-family:'DM Mono',monospace;color:var(--teal);margin-top:4px}
+.tree-children{display:flex;justify-content:center;position:relative;padding-top:0;width:100%}
+.tree-children::before{content:'';position:absolute;top:0;left:50%;right:50%;height:2px;background:rgba(45,212,191,.3);transition:left .3s,right .3s}
+.tree-level{display:flex;gap:8px;justify-content:center}
+
+/* Highlight for search */
+.org-node.highlight{border-color:var(--amber)!important;background:rgba(251,191,36,.06)!important}
+.org-node.dimmed{opacity:.35}
 </style>
 </head>
 <body>
 
-<!-- Loading -->
 <div id="loading-overlay"><div class="spinner"></div><p style="font-size:13px;color:var(--text2)">Đang tải dữ liệu...</p></div>
 
 <!-- LOGIN -->
@@ -211,7 +300,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 <div id="app">
   <div class="hdr" id="main-hdr">
     <div class="hdr-left">
-      <h2>Warehouse <span>Headcount</span> Dashboard</h2>
+      <h2>Warehouse <span>HR</span> Dashboard</h2>
       <p id="date-lbl"></p>
     </div>
     <div class="hdr-right">
@@ -222,29 +311,72 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
     </div>
   </div>
 
-  <!-- Filter bar (visible when Power BI passes URL params) -->
-  <div id="filter-bar" style="display:none;background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;display:none;align-items:center;gap:8px;flex-wrap:wrap">
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" id="tab-orgchart" onclick="switchTab('orgchart')">🏢 Org Chart</button>
+  </div>
+
+  <!-- Filter bar -->
+  <div id="filter-bar" style="display:none;background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);border-radius:var(--r);padding:10px 16px;margin-bottom:16px;align-items:center;gap:8px;flex-wrap:wrap">
     <span style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em">🔗 Power BI Filter</span>
     <div id="filter-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
     <span style="font-size:11px;color:var(--text3);margin-left:auto">Data is being filtered by Power BI slicer</span>
   </div>
 
-  <!-- KPI -->
-  <div class="sec">Overview</div>
-  <div class="kpi-grid" id="kpi-grid"></div>
-
-  <!-- Charts -->
-  <div class="sec">Staff Allocation</div>
-  <div class="charts-grid">
-    <div class="chart-card"><div class="chart-title">By BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
-    <div class="chart-card"><div class="chart-title">By Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
-    <div class="chart-card"><div class="chart-title">Headcount by Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
-    <div class="chart-card"><div class="chart-title">Permanent vs Outsource</div><div style="position:relative;height:180px"><canvas id="stackChart"></canvas></div></div>
+  <!-- VIEW: Dashboard -->
+  <div id="view-dashboard">
+    <div class="sec">Overview</div>
+    <div class="kpi-grid" id="kpi-grid"></div>
+    <div class="sec">Staff Allocation</div>
+    <div class="charts-grid">
+      <div class="chart-card"><div class="chart-title">By BU</div><div class="donut-wrap"><div class="donut-c"><canvas id="buChart"></canvas></div><div class="dlegend" id="buLeg"></div></div></div>
+      <div class="chart-card"><div class="chart-title">By Manager</div><div class="donut-wrap"><div class="donut-c"><canvas id="mgrChart"></canvas></div><div class="dlegend" id="mgrLeg"></div></div></div>
+      <div class="chart-card"><div class="chart-title">Headcount by Supervisor</div><div style="position:relative;height:180px"><canvas id="supBarChart"></canvas></div></div>
+      <div class="chart-card"><div class="chart-title">Permanent vs Outsource</div><div style="position:relative;height:180px"><canvas id="stackChart"></canvas></div></div>
+    </div>
+    <div class="sec">Detail by Supervisor <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">— click card to view employees</span></div>
+    <div class="sup-grid" id="sup-grid"></div>
   </div>
 
-  <!-- Supervisor cards -->
-  <div class="sec">Detail by Supervisor <span style="color:var(--text3);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0">— click card to view employees</span></div>
-  <div class="sup-grid" id="sup-grid"></div>
+  <!-- VIEW: Org Chart -->
+  <div id="view-orgchart" style="display:none">
+    <!-- RYOBI Banner -->
+    <div class="org-banner">
+      <div class="org-banner-left">
+        <div class="ryobi-logo"><span>RYOBI</span></div>
+      </div>
+      <div class="org-banner-center">
+        <div class="org-banner-title">RYOBI WAREHOUSE ORG-CHART</div>
+        <div class="org-banner-sub" id="org-banner-sub">Vietnam Operations · All Business Units</div>
+      </div>
+      <div class="org-banner-right">
+        <div class="tti-logo">TTi</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="org-controls">
+      <input class="org-search" id="org-search" placeholder="🔍  Tìm kiếm tên nhân viên..." oninput="orgSearch(this.value)">
+      <button class="org-btn active" id="org-mode-drill" onclick="setOrgMode('drill')">📂 Drill Down</button>
+      <button class="org-btn" id="org-mode-schema" onclick="setOrgMode('schema')">🗂 Sơ đồ tổng thể</button>
+      <div class="org-legend">
+        <div class="org-leg-item"><div class="org-leg-dot" style="background:#1D9E75"></div>CPT</div>
+        <div class="org-leg-item"><div class="org-leg-dot" style="background:#185FA5"></div>OP</div>
+        <div class="org-leg-item"><div class="org-leg-dot" style="background:#534AB7"></div>D2</div>
+        <div class="org-leg-item"><div class="org-leg-dot" style="background:#E24B4A"></div>Has LWD</div>
+      </div>
+    </div>
+
+    <!-- Breadcrumb nav -->
+    <div class="org-nav" id="org-nav"></div>
+
+    <!-- Drill-down view -->
+    <div id="org-drill-view"></div>
+
+    <!-- Schematic overview view -->
+    <div id="org-schema-view" style="display:none"></div>
+  </div>
 </div>
 
 <!-- MODAL: Resign KPI detail -->
@@ -266,9 +398,7 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
       <div><h3 id="sup-modal-title"></h3><p id="sup-modal-sub"></p></div>
       <button class="modal-close" onclick="closeModal('modal-sup')">×</button>
     </div>
-    <div class="modal-body">
-      <div id="sup-modal-body"></div>
-    </div>
+    <div class="modal-body"><div id="sup-modal-body"></div></div>
     <div class="modal-foot">
       <button class="btn" onclick="closeModal('modal-sup')">Close</button>
       <button class="btn btn-blue" onclick="exportSupXLSX()">⬇ Export this list</button>
@@ -283,145 +413,112 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 const USERS = [
   { username: 'cris',  password: '123456' },
   { username: 'letai', password: '123123' },
-  // Thêm user tại đây: { username: 'user2', password: 'pass' },
 ];
-
 const DATA_URL = 'dataHRdashboard.js';
+
+// Hierarchy mapping: manager code → actual parent name in the data
+const MGR_PARENT = {
+  'Raki':    null,                    // root
+  'Sharp':   'Sharp Lu Hao Lin',
+  'Siva':    'Rajendiran Sivakumar',
+  'Razel':   'Cezar Razel Dichoson',
+  'FGs TP4': 'Luces Raquel Rubis',    // Danh Bình Phú reports directly to Director
+  'FGs OP':  'Luces Raquel Rubis',    // Trần Quốc Phương reports directly to Director
+};
 
 // ════════════════════════════════════════════
 //  STATE
 // ════════════════════════════════════════════
-let RAW = [];         // full dataset (post-transfers)
-let CHARTS = {};      // chart instances
-let CURRENT_SUP = ''; // for modal export
+let RAW = [];
+let CHARTS = {};
+let CURRENT_SUP = '';
+
+// Org chart state
+let ORG_MODE   = 'drill'; // 'drill' | 'schema'
+let ORG_CUR    = 'Luces Raquel Rubis';
+let ORG_TRAIL  = []; // breadcrumb stack
+let ORG_CHILD  = {}; // name → [children] (built from RAW)
+
+// ════════════════════════════════════════════
+//  TAB
+// ════════════════════════════════════════════
+function switchTab(tab) {
+  document.getElementById('view-dashboard').style.display = tab === 'dashboard' ? '' : 'none';
+  document.getElementById('view-orgchart').style.display  = tab === 'orgchart'  ? '' : 'none';
+  document.getElementById('tab-dashboard').classList.toggle('active', tab === 'dashboard');
+  document.getElementById('tab-orgchart').classList.toggle('active', tab === 'orgchart');
+  if (tab === 'orgchart') renderOrgChart();
+}
 
 // ════════════════════════════════════════════
 //  URL PARAM FILTER  (Power BI integration)
-//  Supported params:
-//    embed=1        → skip login, hide header chrome
-//    bu=CPT,OP      → filter by BU (comma-separated)
-//    mgr=Sharp      → filter by Manager
-//    sup=BuiXuanNam → filter by Supervisor (URL-encoded)
-//    month=3        → filter resign month (optional)
-//    year=2026      → filter resign year  (optional)
 // ════════════════════════════════════════════
 function getURLFilters() {
   const p = new URLSearchParams(window.location.search);
-  const split = key => p.has(key)
-    ? p.get(key).split(',').map(s => decodeURIComponent(s.trim())).filter(Boolean)
-    : null;
-  return {
-    embed:  p.get('embed') === '1',
-    bu:     split('bu'),
-    mgr:    split('mgr'),
-    sup:    split('sup'),
-    month:  p.has('month') ? parseInt(p.get('month')) : null,
-    year:   p.has('year')  ? parseInt(p.get('year'))  : null,
-  };
+  const split = key => p.has(key) ? p.get(key).split(',').map(s=>decodeURIComponent(s.trim())).filter(Boolean) : null;
+  return { embed:p.get('embed')==='1', bu:split('bu'), mgr:split('mgr'), sup:split('sup'), month:p.has('month')?parseInt(p.get('month')):null, year:p.has('year')?parseInt(p.get('year')):null };
 }
-
-// Returns filtered subset of RAW based on URL params
 function getViewData() {
-  const f = getURLFilters();
-  let d = RAW;
-  if (f.bu  && f.bu.length)  d = d.filter(e => f.bu.includes(e.bu));
-  if (f.mgr && f.mgr.length) d = d.filter(e => f.mgr.includes(e.manager));
-  if (f.sup && f.sup.length) d = d.filter(e => f.sup.includes(e.sup));
+  const f = getURLFilters(); let d = RAW;
+  if(f.bu&&f.bu.length) d=d.filter(e=>f.bu.includes(e.bu));
+  if(f.mgr&&f.mgr.length) d=d.filter(e=>f.mgr.includes(e.manager));
+  if(f.sup&&f.sup.length) d=d.filter(e=>f.sup.includes(e.sup));
   return d;
 }
-
-// Show/hide filter bar in header
 function syncFilterBar() {
-  const f = getURLFilters();
-  const tags = [];
-  if (f.bu)  tags.push(...f.bu.map(v  => `<span class="badge b-blue"  style="font-size:11px">BU: ${v}</span>`));
-  if (f.mgr) tags.push(...f.mgr.map(v => `<span class="badge b-blue"  style="font-size:11px">Manager: ${v}</span>`));
-  if (f.sup) tags.push(...f.sup.map(v => `<span class="badge b-green" style="font-size:11px">Sup: ${v}</span>`));
-  if (f.month) tags.push(`<span class="badge b-blue" style="font-size:11px">Tháng: ${f.month}/${f.year || new Date().getFullYear()}</span>`);
-  const bar = document.getElementById('filter-bar');
-  if (tags.length) {
-    document.getElementById('filter-tags').innerHTML = tags.join('');
-    bar.style.display = 'flex';
-  } else {
-    bar.style.display = 'none';
-  }
+  const f=getURLFilters(),tags=[];
+  if(f.bu) tags.push(...f.bu.map(v=>`<span class="badge b-blue" style="font-size:11px">BU: ${v}</span>`));
+  if(f.mgr) tags.push(...f.mgr.map(v=>`<span class="badge b-blue" style="font-size:11px">Manager: ${v}</span>`));
+  if(f.sup) tags.push(...f.sup.map(v=>`<span class="badge b-green" style="font-size:11px">Sup: ${v}</span>`));
+  if(f.month) tags.push(`<span class="badge b-blue" style="font-size:11px">Tháng: ${f.month}/${f.year||new Date().getFullYear()}</span>`);
+  const bar=document.getElementById('filter-bar');
+  if(tags.length){document.getElementById('filter-tags').innerHTML=tags.join('');bar.style.display='flex';}
+  else bar.style.display='none';
 }
-
-// Embed mode: auto-login, hide non-essential UI
 function initEmbedMode() {
-  const f = getURLFilters();
-  if (!f.embed) return false;
-  // Show app immediately — no login needed in embed mode
-  // Auth is controlled by Power BI access, not this screen
-  document.getElementById('login').style.display   = 'none';
-  document.getElementById('app').style.display     = 'block';
-  document.getElementById('user-badge').style.display = 'none';
-  document.getElementById('btn-logout').style.display = 'none';
-  document.getElementById('btn-reset').style.display  = 'none';
-  document.getElementById('main-hdr').style.marginBottom = '10px';
-  loadData();
-  return true;
+  const f=getURLFilters(); if(!f.embed) return false;
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('user-badge').style.display='none';
+  document.getElementById('btn-logout').style.display='none';
+  document.getElementById('btn-reset').style.display='none';
+  document.getElementById('main-hdr').style.marginBottom='10px';
+  loadData(); return true;
 }
-
-
-
 
 // ════════════════════════════════════════════
-//  TRANSFER PERSISTENCE (localStorage)
+//  TRANSFER PERSISTENCE
 // ════════════════════════════════════════════
-const TF_KEY = 'hr_transfers_v1';
-
-function loadTFMap()  { try { return JSON.parse(localStorage.getItem(TF_KEY) || '{}'); } catch { return {}; } }
-function saveTFMap(m) { localStorage.setItem(TF_KEY, JSON.stringify(m)); }
-
-function applyTransfers(data) {
-  const m = loadTFMap();
-  data.forEach(e => { if (m[e.id]) e.sup = m[e.id]; });
-  return data;
-}
-
-function syncResetBtn() {
-  const m = loadTFMap();
-  document.getElementById('btn-reset').style.display = Object.keys(m).length ? 'inline-block' : 'none';
-}
-
-function resetTransfers() {
-  if (!confirm('Reset all transfers to original data?')) return;
-  localStorage.removeItem(TF_KEY);
-  loadData();
-}
+const TF_KEY='hr_transfers_v1';
+function loadTFMap(){try{return JSON.parse(localStorage.getItem(TF_KEY)||'{}')}catch{return{}}}
+function saveTFMap(m){localStorage.setItem(TF_KEY,JSON.stringify(m))}
+function applyTransfers(data){const m=loadTFMap();data.forEach(e=>{if(m[e.id])e.sup=m[e.id]});return data}
+function syncResetBtn(){const m=loadTFMap();document.getElementById('btn-reset').style.display=Object.keys(m).length?'inline-block':'none'}
+function resetTransfers(){if(!confirm('Reset all transfers to original data?'))return;localStorage.removeItem(TF_KEY);loadData()}
 
 // ════════════════════════════════════════════
 //  AUTH
 // ════════════════════════════════════════════
 function doLogin() {
-  const u = document.getElementById('inp-user').value.trim();
-  const p = document.getElementById('inp-pass').value;
-  const match = USERS.find(x => x.username === u && x.password === p);
-  if (!match) {
-    document.getElementById('login-err').style.display = 'block';
-    return;
-  }
-  sessionStorage.setItem('hr_user', u);
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
+  const u=document.getElementById('inp-user').value.trim();
+  const p=document.getElementById('inp-pass').value;
+  const match=USERS.find(x=>x.username===u&&x.password===p);
+  if(!match){document.getElementById('login-err').style.display='block';return}
+  sessionStorage.setItem('hr_user',u);
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='block';
   document.getElementById('app').classList.add('app-in');
-  document.getElementById('user-badge').textContent = '👤 ' + u;
+  document.getElementById('user-badge').textContent='👤 '+u;
   loadData();
 }
-document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('inp-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+function doLogout(){sessionStorage.removeItem('hr_user');location.reload()}
 
-function doLogout() {
-  sessionStorage.removeItem('hr_user');
-  location.reload();
-}
-
-// Boot sequence: embed mode → session restore → show login
-if (!initEmbedMode()) {
-  if (sessionStorage.getItem('hr_user')) {
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('user-badge').textContent = '👤 ' + sessionStorage.getItem('hr_user');
+if(!initEmbedMode()){
+  if(sessionStorage.getItem('hr_user')){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('user-badge').textContent='👤 '+sessionStorage.getItem('hr_user');
     loadData();
   }
 }
@@ -431,297 +528,469 @@ if (!initEmbedMode()) {
 // ════════════════════════════════════════════
 function loadData() {
   document.getElementById('loading-overlay').classList.add('show');
-  fetch(DATA_URL + '?t=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      RAW = applyTransfers(data);  // apply any saved transfers
+  fetch(DATA_URL+'?t='+Date.now())
+    .then(r=>r.json())
+    .then(data=>{
+      RAW=applyTransfers(data);
+      buildOrgTree();
       document.getElementById('loading-overlay').classList.remove('show');
-      syncResetBtn();
-      syncFilterBar();   // show Power BI filter tags if URL params present
-      render();
+      syncResetBtn(); syncFilterBar(); render();
     })
-    .catch(err => {
-      document.getElementById('loading-overlay').classList.remove('show');
-      alert('Cannot load data: ' + err.message);
-    });
+    .catch(err=>{document.getElementById('loading-overlay').classList.remove('show');alert('Cannot load data: '+err.message)});
+}
+
+// ════════════════════════════════════════════
+//  BUILD ORG TREE from RAW
+// ════════════════════════════════════════════
+function buildOrgTree() {
+  ORG_CHILD = {};
+  const names = new Set(RAW.map(e=>e.name));
+
+  // Add virtual "Mike Liu Yuan Jun" node (not in data directly)
+  const mikeFake = {
+    id:'MIKE_V', name:'Mike Liu Yuan Jun', title:'Senior Warehouse Supervisor',
+    bu:'CPT', lwd:'0', manager:'Sharp', sup:'Sharp Lu Hao Lin', check:'TTI'
+  };
+  const allData = names.has('Mike Liu Yuan Jun') ? RAW : [...RAW, mikeFake];
+
+  allData.forEach(e => {
+    if(!ORG_CHILD[e.name]) ORG_CHILD[e.name] = [];
+    let parent;
+    if(e.sup === e.name) {
+      // Self-referential = supervisor node; parent determined by manager code
+      parent = MGR_PARENT[e.manager] || null;
+    } else {
+      parent = e.sup;
+    }
+    if(parent) {
+      if(!ORG_CHILD[parent]) ORG_CHILD[parent] = [];
+      // avoid duplicates
+      if(!ORG_CHILD[parent].find(c=>c.name===e.name)) {
+        ORG_CHILD[parent].push(e);
+      }
+    }
+  });
+}
+
+function countDesc(name) {
+  return (ORG_CHILD[name]||[]).reduce((s,c)=>s+1+countDesc(c.name),0);
+}
+
+// Get employee record from RAW (or virtual)
+function getEmp(name) {
+  return RAW.find(e=>e.name===name) || {
+    name, title:'Senior Warehouse Supervisor', bu:'CPT', lwd:'0', manager:'Sharp'
+  };
+}
+
+// ════════════════════════════════════════════
+//  ORG CHART HELPERS
+// ════════════════════════════════════════════
+function orgAvatarBg(bu) {
+  return {CPT:'#1D9E75',OP:'#185FA5',D2:'#534AB7'}[bu]||'#888780';
+}
+function orgInitials(name) {
+  const p=name.trim().split(/\s+/);
+  return p.length===1?p[0][0].toUpperCase():(p[0][0]+p[p.length-1][0]).toUpperCase();
+}
+function lwdBadge(emp) {
+  if(!emp||emp.lwd==='0'||!emp.lwd) return '';
+  const d=parseDate(emp.lwd);
+  if(!d) return '';
+  const t=today();
+  if(d<t) return `<div class="org-node-badge" style="background:rgba(248,113,113,.2);color:var(--red);border:1px solid rgba(248,113,113,.3)">Left ${fmtDate(emp.lwd)}</div>`;
+  return `<div class="org-node-badge" style="background:rgba(251,191,36,.15);color:var(--amber);border:1px solid rgba(251,191,36,.25)">LWD ${fmtDate(emp.lwd)}</div>`;
+}
+function buPill(bu) {
+  const c={CPT:'#1D9E75',OP:'#185FA5',D2:'#534AB7'}[bu]||'#888';
+  return `<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:99px;background:${c}22;color:${c};border:1px solid ${c}44">${bu}</span>`;
+}
+
+function setOrgMode(mode) {
+  ORG_MODE=mode;
+  document.getElementById('org-mode-drill').classList.toggle('active',mode==='drill');
+  document.getElementById('org-mode-schema').classList.toggle('active',mode==='schema');
+  document.getElementById('org-search').value='';
+  renderOrgChart();
+}
+
+function orgSearch(q) {
+  if(!q.trim()){renderOrgChart();return}
+  const ql=q.toLowerCase();
+  // Search across all employees
+  const matches=RAW.filter(e=>e.name.toLowerCase().includes(ql)||e.title.toLowerCase().includes(ql));
+  renderOrgSearchResults(matches,q);
+}
+
+function renderOrgChart() {
+  if(ORG_MODE==='drill') renderOrgDrill();
+  else renderOrgSchema();
+}
+
+// ════════════════════════════════════════════
+//  ORG DRILL VIEW
+// ════════════════════════════════════════════
+function renderOrgDrill() {
+  document.getElementById('org-drill-view').style.display='';
+  document.getElementById('org-schema-view').style.display='none';
+
+  const emp = getEmp(ORG_CUR);
+  const direct = ORG_CHILD[ORG_CUR] || [];
+  const totalDesc = countDesc(ORG_CUR);
+
+  // Breadcrumb
+  const navEl = document.getElementById('org-nav');
+  navEl.innerHTML = [
+    `<span class="org-crumb" onclick="orgGoRoot()">🏠 Root</span>`
+  ].concat(ORG_TRAIL.map((n,i)=>`<span class="org-crumb-sep">›</span><span class="org-crumb" onclick="orgGoTrail(${i})">${n.split(' ').slice(-1)[0]||n}</span>`))
+  .concat([`<span class="org-crumb-sep">›</span><span class="org-crumb active">${ORG_CUR.split(' ').slice(-1)[0]||ORG_CUR}</span>`])
+  .join('');
+
+  const avaBg = orgAvatarBg(emp.bu);
+
+  // Focus card
+  const focusHtml = `
+    <div class="org-focus-card">
+      <div class="org-focus-avatar" style="background:${avaBg};color:#fff">${orgInitials(ORG_CUR)}</div>
+      <div class="org-focus-info">
+        <div class="org-focus-name">${ORG_CUR}</div>
+        <div class="org-focus-title">${emp.title} ${buPill(emp.bu)}</div>
+        <div class="org-focus-stats">
+          <div class="org-focus-stat"><span class="org-focus-stat-val">${totalDesc}</span><span class="org-focus-stat-label">Total Reports</span></div>
+          <div class="org-focus-stat"><span class="org-focus-stat-val">${direct.length}</span><span class="org-focus-stat-label">Direct Reports</span></div>
+          <div class="org-focus-stat"><span class="org-focus-stat-val">${RAW.filter(e=>e.su===ORG_CUR||e.name===ORG_CUR).filter(e=>e.lwd&&e.lwd!=='0').length}</span><span class="org-focus-stat-label">Has LWD</span></div>
+        </div>
+      </div>
+      ${ORG_TRAIL.length>0?`<button class="org-btn" onclick="orgGoTrail(${ORG_TRAIL.length-1})" style="flex-shrink:0">← Back</button>`:''}
+    </div>`;
+
+  // If direct has zero
+  if(direct.length===0){
+    document.getElementById('org-drill-view').innerHTML = focusHtml + `<div style="text-align:center;padding:48px;color:var(--text3);font-size:13px">No direct reports under this person</div>`;
+    return;
+  }
+
+  // Group: managers first, then supervisors, then others
+  const hasMgr = direct.filter(e=>e.title&&e.title.toLowerCase().includes('manager'));
+  const hasSup = direct.filter(e=>e.title&&e.title.toLowerCase().includes('supervisor')&&!hasMgr.includes(e));
+  const rest   = direct.filter(e=>!hasMgr.includes(e)&&!hasSup.includes(e));
+
+  const groupRender = (arr, label, color) => {
+    if(!arr.length) return '';
+    return `<div class="org-section-label" style="color:${color||'var(--text3)'}">${label} <span style="font-weight:400;color:var(--text3)">(${arr.length})</span></div>
+    <div class="org-tree-grid">
+      ${arr.map(e=>orgNodeCard(e)).join('')}
+    </div>`;
+  };
+
+  document.getElementById('org-drill-view').innerHTML = focusHtml
+    + groupRender(hasMgr, 'Managers', 'var(--purple)')
+    + groupRender(hasSup, 'Supervisors', 'var(--teal)')
+    + groupRender(rest, 'Team Members', 'var(--text3)');
+}
+
+function orgNodeCard(emp) {
+  const dc = countDesc(emp.name);
+  const hasKids = (ORG_CHILD[emp.name]||[]).length > 0;
+  const avaBg = orgAvatarBg(emp.bu);
+  const lwd = emp.lwd&&emp.lwd!=='0';
+  const lwdHtml = lwd ? `<div style="margin-top:6px;font-size:9px;color:var(--red)">⚠ LWD: ${fmtDate(emp.lwd)}</div>` : '';
+
+  // Color accent based on BU
+  const nc = avaBg;
+
+  return `<div class="org-node ${hasKids?'has-children':''}" style="--nc:${nc}" onclick="orgDrill('${emp.name.replace(/'/g,"\\'")}')">
+    <div class="org-node-top">
+      <div class="org-node-avatar" style="background:${avaBg};color:#fff${lwd?';opacity:.7':''}">${orgInitials(emp.name)}</div>
+      <div class="org-node-info">
+        <div class="org-node-name">${emp.name}</div>
+        <div class="org-node-title">${emp.title}</div>
+      </div>
+      ${hasKids?`<span class="org-node-arrow">›</span>`:''}
+    </div>
+    ${hasKids?`<div class="org-node-stats">
+      <div class="org-node-stat"><div class="org-node-stat-v">${dc}</div><div class="org-node-stat-l">Reports</div></div>
+      <div class="org-node-stat"><div class="org-node-stat-v">${(ORG_CHILD[emp.name]||[]).length}</div><div class="org-node-stat-l">Direct</div></div>
+      <div class="org-node-stat"><div class="org-node-stat-v" style="font-size:9px;padding-top:3px">${buPill(emp.bu)}</div><div class="org-node-stat-l">BU</div></div>
+    </div>`:
+    `<div style="display:flex;align-items:center;gap:8px">${buPill(emp.bu)}${lwdHtml}</div>`}
+  </div>`;
+}
+
+function orgDrill(name) {
+  ORG_TRAIL.push(ORG_CUR);
+  ORG_CUR = name;
+  document.getElementById('org-search').value='';
+  renderOrgDrill();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function orgGoRoot() {
+  ORG_TRAIL=[]; ORG_CUR='Luces Raquel Rubis';
+  document.getElementById('org-search').value='';
+  renderOrgDrill();
+}
+function orgGoTrail(idx) {
+  ORG_CUR=ORG_TRAIL[idx];
+  ORG_TRAIL=ORG_TRAIL.slice(0,idx);
+  renderOrgDrill();
+}
+
+// ════════════════════════════════════════════
+//  ORG SEARCH RESULTS
+// ════════════════════════════════════════════
+function renderOrgSearchResults(matches, q) {
+  document.getElementById('org-drill-view').style.display='';
+  document.getElementById('org-schema-view').style.display='none';
+
+  const navEl=document.getElementById('org-nav');
+  navEl.innerHTML=`<span style="font-size:12px;color:var(--amber)">🔍 Kết quả cho "<strong>${q}</strong>" — ${matches.length} nhân viên</span>`;
+
+  if(!matches.length){
+    document.getElementById('org-drill-view').innerHTML=`<div style="text-align:center;padding:48px;color:var(--text3);font-size:13px">Không tìm thấy nhân viên nào</div>`;
+    return;
+  }
+
+  // Group by supervisor
+  const bySup={};
+  matches.forEach(e=>{
+    if(!bySup[e.sup])bySup[e.sup]=[];
+    bySup[e.sup].push(e);
+  });
+
+  let html='';
+  Object.entries(bySup).forEach(([sup,emps])=>{
+    html+=`<div class="org-section-label">Supervisor: <strong style="color:var(--text)">${sup}</strong> <span>(${emps.length})</span></div>
+    <div class="org-tree-grid">${emps.map(e=>orgNodeCard(e)).join('')}</div>`;
+  });
+  document.getElementById('org-drill-view').innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+//  ORG SCHEMATIC VIEW — Sơ đồ tổng thể
+// ════════════════════════════════════════════
+function renderOrgSchema() {
+  document.getElementById('org-drill-view').style.display='none';
+  document.getElementById('org-schema-view').style.display='';
+  document.getElementById('org-nav').innerHTML='';
+
+  // Build a simplified tree showing only key management nodes
+  // Level 0: Luces Raquel Rubis
+  // Level 1: Direct reports to Luces (Sharp, Danh Bình Phú, Trần Quốc Phương, Cezar Razel)
+  // Level 2: Direct reports to each L1 (main supervisors)
+  // Level 3: Direct reports to L2 supervisors
+
+  const root='Luces Raquel Rubis';
+  const schematic=document.getElementById('org-schema-view');
+
+  schematic.innerHTML=`<div class="org-schematic"><div id="schema-tree"></div></div>`;
+
+  // Render top 3 levels as visual tree
+  const treeEl=document.getElementById('schema-tree');
+  treeEl.innerHTML=renderSchemaNode(root,0);
+}
+
+function schemaNodeBg(level) {
+  return ['linear-gradient(135deg,#0d7a8a,#0a5c6b)',
+          'linear-gradient(135deg,#1D3A5F,#185FA5)',
+          'linear-gradient(135deg,#1D3A2E,#1D9E75)',
+          'linear-gradient(135deg,#2a1f3d,#534AB7)'][Math.min(level,3)];
+}
+
+function renderSchemaNode(name, level) {
+  const emp=getEmp(name);
+  const direct=(ORG_CHILD[name]||[]);
+  const dc=countDesc(name);
+  const avaBg=orgAvatarBg(emp.bu);
+  const isLeaf=direct.length===0||level>=2;
+
+  const nodeHtml=`
+    <div style="display:inline-flex;flex-direction:column;align-items:center;min-width:${level===0?200:140}px;max-width:${level===0?220:160}px">
+      <div onclick="orgDrill_schema('${name.replace(/'/g,"\\'")}');switchTab('dashboard');switchTab('orgchart');setOrgMode('drill')"
+           style="background:${schemaNodeBg(level)};border-radius:10px;padding:${level===0?'16px 18px':'10px 12px'};cursor:pointer;
+                  border:1px solid rgba(255,255,255,.15);transition:transform .2s;width:100%;text-align:center"
+           onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
+        <div style="width:${level===0?44:32}px;height:${level===0?44:32}px;border-radius:50%;background:${avaBg}33;border:2px solid ${avaBg}88;
+                    display:flex;align-items:center;justify-content:center;font-size:${level===0?15:11}px;font-weight:700;color:#fff;margin:0 auto ${level===0?10:6}px">
+          ${orgInitials(name)}
+        </div>
+        <div style="font-size:${level===0?13:10}px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:3px">${name}</div>
+        <div style="font-size:${level===0?10:9}px;color:rgba(255,255,255,.6);line-height:1.3;margin-bottom:6px">${emp.title}</div>
+        <div style="font-size:10px;font-weight:700;color:#bed62f;font-family:'DM Mono',monospace">${dc} reports</div>
+      </div>
+    </div>`;
+
+  if(isLeaf || direct.length===0) return nodeHtml;
+
+  // With children
+  return `<div style="display:flex;flex-direction:column;align-items:center">
+    ${nodeHtml}
+    <div style="width:2px;height:20px;background:rgba(45,212,191,.4)"></div>
+    <div style="position:relative;display:flex;justify-content:center;gap:${level===0?16:8}px;padding-top:0">
+      <div style="position:absolute;top:0;left:50%;right:50%;height:2px;background:rgba(45,212,191,.3);
+                  left:${direct.length>1?'calc(50% / '+direct.length+' * '+Math.round(direct.length/2)+')':'50%'};
+                  right:${direct.length>1?'calc(50% / '+direct.length+' * '+Math.round(direct.length/2)+')':'50%'}"></div>
+      ${direct.map(c=>`
+        <div style="display:flex;flex-direction:column;align-items:center">
+          <div style="width:2px;height:16px;background:rgba(45,212,191,.4)"></div>
+          ${renderSchemaNode(c.name,level+1)}
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function orgDrill_schema(name){
+  ORG_TRAIL=[]; ORG_CUR=name; setOrgMode('drill');
 }
 
 // ════════════════════════════════════════════
 //  DATE UTILS
 // ════════════════════════════════════════════
-function today() {
-  const d = new Date(); d.setHours(0, 0, 0, 0); return d;
+function today(){const d=new Date();d.setHours(0,0,0,0);return d}
+function monthStart(){const t=today();return new Date(t.getFullYear(),t.getMonth(),1)}
+function monthEnd(){const t=today();return new Date(t.getFullYear(),t.getMonth()+1,0,23,59,59)}
+function parseDate(s){
+  if(s===null||s===undefined||s===''||s===0||s==='0'||s==='null')return null;
+  const num=typeof s==='number'?s:(/^\d+(\.\d+)?$/.test(String(s).trim())?parseFloat(s):NaN);
+  if(!isNaN(num)&&num>1000){const d=new Date(Math.round((num-25569)*86400*1000));return isNaN(d.getTime())?null:d}
+  const d=new Date(s);return isNaN(d.getTime())?null:d;
 }
-function monthStart() {
-  const t = today(); return new Date(t.getFullYear(), t.getMonth(), 1);
-}
-function monthEnd() {
-  const t = today(); return new Date(t.getFullYear(), t.getMonth() + 1, 0, 23, 59, 59);
-}
-
-/**
- * Safely parse a date value from dataHRdashboard.js.
- * Handles: null/undefined/empty → null (still working)
- *          Excel serial number (e.g. 46122) → proper JS Date
- *          ISO string ("2026-03-21") → proper JS Date
- */
-function parseDate(s) {
-  // Explicit null / empty / zero → no LWD, still working
-  if (s === null || s === undefined || s === '' || s === 0 || s === '0' || s === 'null') return null;
-
-  // Numeric value OR numeric-looking string → Excel serial date
-  // Excel serials for dates after 2000 are > 36526; guard with > 1000 to be safe
-  const num = typeof s === 'number' ? s : (/^\d+(\.\d+)?$/.test(String(s).trim()) ? parseFloat(s) : NaN);
-  if (!isNaN(num) && num > 1000) {
-    // Excel epoch is Dec 30, 1899; subtract 25569 days to get Unix epoch days
-    const d = new Date(Math.round((num - 25569) * 86400 * 1000));
-    return isNaN(d.getTime()) ? null : d;
-  }
-
-  // Regular date string
-  const d = new Date(s);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-function fmtDate(s) {
-  if (s === null || s === undefined || s === '' || s === 0) return '—';
-  const d = parseDate(s);
-  if (!d) return '—';
-  // dd/mm/yyyy
-  return d.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', year:'numeric' });
+function fmtDate(s){
+  if(s===null||s===undefined||s===''||s===0)return'—';
+  const d=parseDate(s);if(!d)return'—';
+  return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'});
 }
 
 // ════════════════════════════════════════════
-//  PROCESS  (uses URL-filtered view of RAW)
+//  PROCESS
 // ════════════════════════════════════════════
-function process() {
-  const T = today(), MS = monthStart(), ME = monthEnd();
-  const bu = {}, mgr = {}, supMap = {};
-  const VIEW = getViewData(); // RAW filtered by URL params (Power BI slicers)
-
-  VIEW.forEach(e => {
-    const lwd = parseDate(e.lwd);
-    e._lwd    = lwd;
-    e._isAlready  = lwd !== null && lwd < T;
-    e._isUpcoming = lwd !== null && lwd >= T && lwd <= ME;
-    e._inMonth    = lwd !== null && lwd >= MS && lwd <= ME;
-
-    bu[e.bu]       = (bu[e.bu]       || 0) + 1;
-    mgr[e.manager] = (mgr[e.manager] || 0) + 1;
-
-    if (!supMap[e.sup]) supMap[e.sup] = {
-      name: e.sup, bu: new Set(), manager: '', total: 0,
-      perm: 0, out: 0, wsk: 0,
-      already: 0, upcoming: 0, total_month: 0,
-      resignees: [],
-    };
-    const s = supMap[e.sup];
-    s.total++; s.bu.add(e.bu); s.manager = e.manager;
-    if (e.check === 'TTI') s.perm++;
-    else s.out++;
-    if (e.title === 'Warehouse Shift Keeper') s.wsk++;
-    if (e._isAlready)  s.already++;
-    if (e._isUpcoming) s.upcoming++;
-    if (e._inMonth)    s.total_month++;
-    if (lwd !== null) s.resignees.push({ ...e });
+function process(){
+  const T=today(),MS=monthStart(),ME=monthEnd();
+  const bu={},mgr={},supMap={};
+  const VIEW=getViewData();
+  VIEW.forEach(e=>{
+    const lwd=parseDate(e.lwd);
+    e._lwd=lwd;
+    e._isAlready=lwd!==null&&lwd<T;
+    e._isUpcoming=lwd!==null&&lwd>=T&&lwd<=ME;
+    e._inMonth=lwd!==null&&lwd>=MS&&lwd<=ME;
+    bu[e.bu]=(bu[e.bu]||0)+1;
+    mgr[e.manager]=(mgr[e.manager]||0)+1;
+    if(!supMap[e.sup])supMap[e.sup]={name:e.sup,bu:new Set(),manager:'',total:0,perm:0,out:0,wsk:0,already:0,upcoming:0,total_month:0,resignees:[]};
+    const s=supMap[e.sup];
+    s.total++;s.bu.add(e.bu);s.manager=e.manager;
+    if(e.check==='TTI')s.perm++;else s.out++;
+    if(e.title==='Warehouse Shift Keeper')s.wsk++;
+    if(e._isAlready)s.already++;
+    if(e._isUpcoming)s.upcoming++;
+    if(e._inMonth)s.total_month++;
+    if(lwd!==null)s.resignees.push({...e});
   });
-
-  const sups = Object.values(supMap).map(s => ({ ...s, bu: [...s.bu].sort().join(', ') }))
-                                    .sort((a, b) => b.total - a.total);
-
-  // Sort resignees by LWD
-  sups.forEach(s => s.resignees.sort((a, b) => a._lwd - b._lwd));
-
-  const total  = VIEW.length;
-  const perm   = VIEW.filter(e => e.check === 'TTI').length;
-  const out    = VIEW.filter(e => e.check === 'Outsource').length;
-  const alr    = VIEW.filter(e => e._isAlready).length;
-  const upc    = VIEW.filter(e => e._isUpcoming).length;
-  const totMon = VIEW.filter(e => e._inMonth).length;
-
-  return { bu, mgr, sups, total, perm, out, alr, upc, totMon };
+  const sups=Object.values(supMap).map(s=>({...s,bu:[...s.bu].sort().join(', ')})).sort((a,b)=>b.total-a.total);
+  sups.forEach(s=>s.resignees.sort((a,b)=>a._lwd-b._lwd));
+  const total=VIEW.length,perm=VIEW.filter(e=>e.check==='TTI').length,out=VIEW.filter(e=>e.check==='Outsource').length;
+  const alr=VIEW.filter(e=>e._isAlready).length,upc=VIEW.filter(e=>e._isUpcoming).length,totMon=VIEW.filter(e=>e._inMonth).length;
+  return{bu,mgr,sups,total,perm,out,alr,upc,totMon};
 }
 
 // ════════════════════════════════════════════
-//  RENDER
+//  RENDER DASHBOARD
 // ════════════════════════════════════════════
-const BU_COLORS  = ['#4f8ef7','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf'];
-const MGR_COLORS = ['#a78bfa','#2dd4bf','#fbbf24','#4f8ef7','#f87171','#888','#34d399','#f97316'];
-const AVATAR_C   = [
-  ['#1e3a5f','#4f8ef7'],['#1a3d2e','#34d399'],['#3b2569','#a78bfa'],
-  ['#3d2b00','#fbbf24'],['#3b1515','#f87171'],['#1a3535','#2dd4bf'],
-  ['#1f3060','#60a5fa'],['#2e1f3d','#c084fc'],['#1e3830','#6ee7b7'],
-  ['#2d2000','#f59e0b'],['#1f1f3d','#818cf8'],['#2d1515','#fca5a5'],
-  ['#1a2d1a','#86efac'],['#2d1f00','#fdba74'],
-];
-function initials(n) { const p = n.trim().split(' '); return (p[0][0]+(p[p.length-1][0]||'')).toUpperCase(); }
+const BU_COLORS=['#4f8ef7','#34d399','#fbbf24','#f87171','#a78bfa','#2dd4bf'];
+const MGR_COLORS=['#a78bfa','#2dd4bf','#fbbf24','#4f8ef7','#f87171','#888','#34d399','#f97316'];
+const AVATAR_C=[['#1e3a5f','#4f8ef7'],['#1a3d2e','#34d399'],['#3b2569','#a78bfa'],['#3d2b00','#fbbf24'],['#3b1515','#f87171'],['#1a3535','#2dd4bf'],['#1f3060','#60a5fa'],['#2e1f3d','#c084fc'],['#1e3830','#6ee7b7'],['#2d2000','#f59e0b'],['#1f1f3d','#818cf8'],['#2d1515','#fca5a5'],['#1a2d1a','#86efac'],['#2d1f00','#fdba74']];
+function initials(n){const p=n.trim().split(' ');return(p[0][0]+(p[p.length-1][0]||'')).toUpperCase()}
 
-function render() {
-  const P = process();
-  const T = today();
-
-  // Header date
-  const mn = T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  document.getElementById('date-lbl').textContent = 'Updated: ' + T.toLocaleDateString('en-US') + ' · ' + mn;
+function render(){
+  const P=process(),T=today();
+  const mn=T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  document.getElementById('date-lbl').textContent='Updated: '+T.toLocaleDateString('en-US')+' · '+mn;
 
   // KPI
-  const kpi = document.getElementById('kpi-grid');
-  kpi.innerHTML = `
+  document.getElementById('kpi-grid').innerHTML=`
     <div class="kpi-card" style="--ac:var(--blue);--ib:rgba(79,142,247,.1)">
-      <div class="kpi-icon">👥</div>
-      <div class="kpi-label">Total Employees</div>
+      <div class="kpi-icon">👥</div><div class="kpi-label">Total Employees</div>
       <div class="kpi-val">${P.total}</div>
-      <div class="kpi-sub">${P.total - P.alr - P.upc} currently working · ${P.alr+P.upc} have LWD</div>
+      <div class="kpi-sub">${P.total-P.alr-P.upc} currently working · ${P.alr+P.upc} have LWD</div>
     </div>
     <div class="kpi-card" style="--ac:var(--green);--ib:rgba(52,211,153,.1)">
-      <div class="kpi-icon">✅</div>
-      <div class="kpi-label">Full-time Employees</div>
+      <div class="kpi-icon">✅</div><div class="kpi-label">Full-time Employees</div>
       <div class="kpi-val">${P.perm}</div>
       <div class="kpi-sub">${Math.round(P.perm/P.total*100)}% of total</div>
     </div>
     <div class="kpi-card" style="--ac:var(--amber);--ib:rgba(251,191,36,.1)">
-      <div class="kpi-icon">🏢</div>
-      <div class="kpi-label">Outsource Employees</div>
+      <div class="kpi-icon">🏢</div><div class="kpi-label">Outsource Employees</div>
       <div class="kpi-val">${P.out}</div>
       <div class="kpi-sub">${Math.round(P.out/P.total*100)}% of total</div>
     </div>
     <div class="kpi-card clickable" style="--ac:var(--red);--ib:rgba(248,113,113,.1)" onclick="showResignModal()">
-      <div class="kpi-icon">⚠️</div>
-      <div class="kpi-label">Resignations in ${mn}</div>
+      <div class="kpi-icon">⚠️</div><div class="kpi-label">Resignations in ${mn}</div>
       <div class="kpi-val" style="color:var(--red)">${P.totMon}</div>
       <div class="kpi-sub">${P.alr} have resigned · ${P.upc} are upcoming · <span style="color:var(--blue)">view details →</span></div>
     </div>`;
 
-  // Donuts
-  renderDonut('buChart', 'buLeg', P.bu, BU_COLORS);
-  renderDonut('mgrChart', 'mgrLeg', P.mgr, MGR_COLORS);
+  renderDonut('buChart','buLeg',P.bu,BU_COLORS);
+  renderDonut('mgrChart','mgrLeg',P.mgr,MGR_COLORS);
 
-  // Bar charts
-  const supLabels = P.sups.map(s => s.name.split(' ').slice(-1)[0]);
-  const gc = 'rgba(255,255,255,.05)';
-  const tc = '#555e72';
+  const supLabels=P.sups.map(s=>s.name.split(' ').slice(-1)[0]);
+  const gc='rgba(255,255,255,.05)',tc='#555e72';
+  const topLabelPlugin={id:'topLabel',afterDatasetsDraw(chart){const{ctx}=chart;const isStacked=!!chart.options.scales?.y?.stacked;const nDatasets=chart.data.datasets.length;const meta=chart.getDatasetMeta(nDatasets-1);ctx.save();ctx.font="500 10px 'DM Mono',monospace";ctx.fillStyle='#8b92a8';ctx.textAlign='center';ctx.textBaseline='bottom';meta.data.forEach((bar,i)=>{const val=isStacked?chart.data.datasets.reduce((s,ds)=>s+(Number(ds.data[i])||0),0):Number(chart.data.datasets[0].data[i]);if(val>0)ctx.fillText(val,bar.x,bar.y-3)});ctx.restore()}};
 
-  // Inline plugin: draw value labels above bars (no external dependency)
-  const topLabelPlugin = {
-    id: 'topLabel',
-    afterDatasetsDraw(chart) {
-      const { ctx } = chart;
-      const isStacked = !!chart.options.scales?.y?.stacked;
-      const nDatasets = chart.data.datasets.length;
-      // Only draw on the last (topmost) dataset to avoid duplicates on stacked
-      const meta = chart.getDatasetMeta(nDatasets - 1);
-      ctx.save();
-      ctx.font = "500 10px 'DM Mono', monospace";
-      ctx.fillStyle = '#8b92a8';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      meta.data.forEach((bar, i) => {
-        const val = isStacked
-          ? chart.data.datasets.reduce((s, ds) => s + (Number(ds.data[i]) || 0), 0)
-          : Number(chart.data.datasets[0].data[i]);
-        if (val > 0) ctx.fillText(val, bar.x, bar.y - 3);
-      });
-      ctx.restore();
-    }
-  };
+  if(CHARTS.supBar)CHARTS.supBar.destroy();
+  CHARTS.supBar=new Chart(document.getElementById('supBarChart'),{type:'bar',data:{labels:supLabels,datasets:[{data:P.sups.map(s=>s.total),backgroundColor:'#4f8ef7',borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}}},scales:{x:{ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{ticks:{font:{size:10},color:tc},grid:{color:gc}}},onClick:(e,items)=>{if(items.length)showSupModal(P.sups[items[0].index].name)}},plugins:[topLabelPlugin]});
 
-  if (CHARTS.supBar) CHARTS.supBar.destroy();
-  CHARTS.supBar = new Chart(document.getElementById('supBarChart'), {
-    type: 'bar',
-    data: { labels: supLabels, datasets: [{ data: P.sups.map(s=>s.total), backgroundColor: '#4f8ef7', borderRadius: 4, borderSkipped: false }] },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      layout: { padding: { top: 20 } },
-      plugins: { legend:{display:false}, tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}} },
-      scales: { x:{ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}}, y:{ticks:{font:{size:10},color:tc},grid:{color:gc}} },
-      onClick: (e,items) => { if(items.length) showSupModal(P.sups[items[0].index].name); }
-    },
-    plugins: [topLabelPlugin]
-  });
+  if(CHARTS.stack)CHARTS.stack.destroy();
+  CHARTS.stack=new Chart(document.getElementById('stackChart'),{type:'bar',data:{labels:supLabels,datasets:[{label:'Permanent',data:P.sups.map(s=>s.perm),backgroundColor:'#34d399',stack:'s',borderRadius:0},{label:'Outsource',data:P.sups.map(s=>s.out),backgroundColor:'#fbbf24',stack:'s',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:20}},plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}}},scales:{x:{stacked:true,ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}},y:{stacked:true,ticks:{font:{size:10},color:tc},grid:{color:gc}}},onClick:(e,items)=>{if(items.length)showSupModal(P.sups[items[0].index].name)}},plugins:[topLabelPlugin]});
 
-  if (CHARTS.stack) CHARTS.stack.destroy();
-  CHARTS.stack = new Chart(document.getElementById('stackChart'), {
-    type: 'bar',
-    data: { labels: supLabels, datasets: [
-      { label:'Permanent', data:P.sups.map(s=>s.perm), backgroundColor:'#34d399', stack:'s', borderRadius:0 },
-      { label:'Outsource',  data:P.sups.map(s=>s.out),  backgroundColor:'#fbbf24', stack:'s', borderRadius:4 },
-    ]},
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      layout: { padding: { top: 20 } },
-      plugins: { legend:{display:false}, tooltip:{callbacks:{title:i=>P.sups[i[0].dataIndex].name}} },
-      scales: { x:{stacked:true,ticks:{font:{size:10},maxRotation:38,color:tc},grid:{color:gc}}, y:{stacked:true,ticks:{font:{size:10},color:tc},grid:{color:gc}} },
-      onClick: (e,items) => { if(items.length) showSupModal(P.sups[items[0].index].name); }
-    },
-    plugins: [topLabelPlugin]
-  });
-
-  // Supervisor cards
   renderSupCards(P.sups);
 }
 
-function renderDonut(canvasId, legId, dataMap, colors) {
-  if (CHARTS[canvasId]) CHARTS[canvasId].destroy();
-  const labels = Object.keys(dataMap).sort((a,b) => dataMap[b]-dataMap[a]);
-  const vals   = labels.map(k => dataMap[k]);
-  CHARTS[canvasId] = new Chart(document.getElementById(canvasId), {
-    type: 'doughnut',
-    data: { labels, datasets: [{ data: vals, backgroundColor: colors.slice(0, labels.length), borderWidth: 0, hoverOffset: 4 }] },
-    options: { responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} NV`}}} }
-  });
-  document.getElementById(legId).innerHTML = labels.map((l,i)=>
-    `<div class="dleg-row"><span class="dleg-name"><span class="dleg-dot" style="background:${colors[i]}"></span>${l}</span><span class="dleg-val">${vals[i]}</span></div>`
-  ).join('');
+function renderDonut(canvasId,legId,dataMap,colors){
+  if(CHARTS[canvasId])CHARTS[canvasId].destroy();
+  const labels=Object.keys(dataMap).sort((a,b)=>dataMap[b]-dataMap[a]);
+  const vals=labels.map(k=>dataMap[k]);
+  CHARTS[canvasId]=new Chart(document.getElementById(canvasId),{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:colors.slice(0,labels.length),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:true,cutout:'70%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw} NV`}}}}});
+  document.getElementById(legId).innerHTML=labels.map((l,i)=>`<div class="dleg-row"><span class="dleg-name"><span class="dleg-dot" style="background:${colors[i]}"></span>${l}</span><span class="dleg-val">${vals[i]}</span></div>`).join('');
 }
 
-function renderSupCards(sups) {
-  const grid = document.getElementById('sup-grid');
-  grid.innerHTML = '';
-  sups.forEach((s, i) => {
-    const [bg, fg] = AVATAR_C[i % AVATAR_C.length];
-    const permPct = s.total ? Math.round(s.perm/s.total*100) : 0;
-    const wskPct  = s.total ? Math.round(s.wsk/s.total*100) : 0;
+function renderSupCards(sups){
+  const grid=document.getElementById('sup-grid');
+  grid.innerHTML='';
+  sups.forEach((s,i)=>{
+    const[bg,fg]=AVATAR_C[i%AVATAR_C.length];
+    const permPct=s.total?Math.round(s.perm/s.total*100):0;
+    const wskPct=s.total?Math.round(s.wsk/s.total*100):0;
 
-    let badges = '';
-    if (s.total_month > 0) {
-      badges += `<span class="badge b-blue">This month: ${s.total_month}</span>`;
-      if (s.upcoming > 0) badges += `<span class="badge b-yellow">Upcoming: ${s.upcoming}</span>`;
-      if (s.already  > 0) badges += `<span class="badge b-red">Resigned: ${s.already}</span>`;
+    // Resolve manager display name
+    const mgrDisplay=MGR_PARENT[s.manager]
+      ? `<span style="color:var(--teal)">${MGR_PARENT[s.manager]}</span>`
+      : s.manager;
+
+    let badges='';
+    if(s.total_month>0){badges+=`<span class="badge b-blue">This month: ${s.total_month}</span>`;if(s.upcoming>0)badges+=`<span class="badge b-yellow">Upcoming: ${s.upcoming}</span>`;if(s.already>0)badges+=`<span class="badge b-red">Resigned: ${s.already}</span>`}
+
+    let resRows='<div class="no-res">No resignations</div>';
+    if(s.resignees.length>0){
+      resRows=`<table class="res-table"><thead><tr><th>ID</th><th>Name</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
+      <tbody>${s.resignees.map(r=>`<tr><td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${r.id}</td><td>${r.name}</td><td style="color:var(--text3);font-size:10px">${r.title}</td><td style="font-family:'DM Mono',monospace;font-size:10px">${fmtDate(r.lwd)}</td><td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Has resigned':'Upcoming'}</span></td></tr>`).join('')}</tbody></table>`;
     }
 
-    let resRows = '<div class="no-res">No resignations</div>';
-    if (s.resignees.length > 0) {
-      resRows = `<table class="res-table">
-        <thead><tr><th>ID</th><th>Name</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
-        <tbody>${s.resignees.map(r =>
-          `<tr>
-            <td style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">${r.id}</td>
-            <td>${r.name}</td>
-            <td style="color:var(--text3);font-size:10px">${r.title}</td>
-            <td style="font-family:'DM Mono',monospace;font-size:10px">${fmtDate(r.lwd)}</td>
-            <td><span class="pill ${r._isAlready?'p-r':'p-y'}">${r._isAlready?'Has resigned':'Upcoming'}</span></td>
-          </tr>`
-        ).join('')}</tbody>
-      </table>`;
-    }
-
-    const card = document.createElement('div');
-    card.className = 'sup-card';
-    card.onclick = () => showSupModal(s.name);
-    card.innerHTML = `
+    const card=document.createElement('div');
+    card.className='sup-card';
+    card.onclick=()=>showSupModal(s.name);
+    card.innerHTML=`
       <div class="sup-hdr">
         <div class="avatar" style="background:${bg};color:${fg}">${initials(s.name)}</div>
         <div class="sup-info">
           <div class="sup-name">${s.name}</div>
-          <div class="sup-meta">Mgr: ${s.manager} · BU: ${s.bu}</div>
+          <div class="sup-meta">Mgr: ${mgrDisplay} · BU: ${s.bu}</div>
         </div>
         <div class="badges">${badges}</div>
       </div>
       <div class="sstats">
-        <div class="sstat"><div class="sstat-l">Total Employees</div><div class="sstat-v">${s.total}</div></div>
+        <div class="sstat"><div class="sstat-l">Total</div><div class="sstat-v">${s.total}</div></div>
         <div class="sstat"><div class="sstat-l">Permanent</div><div class="sstat-v">${s.perm}</div></div>
         <div class="sstat"><div class="sstat-l">Outsource</div><div class="sstat-v">${s.out}</div></div>
-        <div class="sstat"><div class="sstat-l">Upcoming Resignations</div><div class="sstat-v y">${s.upcoming}</div></div>
+        <div class="sstat"><div class="sstat-l">Upcoming Resign</div><div class="sstat-v y">${s.upcoming}</div></div>
         <div class="sstat"><div class="sstat-l">Resigned</div><div class="sstat-v r">${s.already}</div></div>
       </div>
       <div class="bars">
@@ -730,87 +999,61 @@ function renderSupCards(sups) {
       </div>
       <div class="res-divider"></div>
       <div class="res-title">Resignation</div>
-      ${resRows}`;
+      ${resRows}
+      <button class="btn" style="margin-top:10px;font-size:11px;padding:5px 12px;color:var(--teal);border-color:rgba(45,212,191,.3)"
+        onclick="event.stopPropagation();viewInOrgChart('${s.name.replace(/'/g,"\\'")}')">🏢 Xem trong Org Chart →</button>`;
     grid.appendChild(card);
   });
+}
+
+function viewInOrgChart(supName) {
+  // Navigate to org chart and drill to this supervisor
+  ORG_TRAIL=[];
+  ORG_CUR=supName;
+  ORG_MODE='drill';
+  switchTab('orgchart');
 }
 
 // ════════════════════════════════════════════
 //  MODALS
 // ════════════════════════════════════════════
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(el=>{el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')})});
 
-// Click outside to close
-document.querySelectorAll('.overlay').forEach(el => {
-  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
-});
-
-// Resign KPI modal
-function showResignModal() {
-  const T = today(), MS = monthStart(), ME = monthEnd();
-  const mn = T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
-  const list = getViewData().filter(e => e._inMonth).sort((a,b) => a._lwd - b._lwd);
-
-  document.getElementById('resign-modal-title').textContent = `Resignations for ${mn}`;
-  document.getElementById('resign-modal-sub').textContent = `${list.length} employees`;
-
-  document.getElementById('resign-modal-body').innerHTML = list.length === 0
-    ? '<p style="color:var(--text3);font-size:13px">No resignations this month.</p>'
-    : `<table class="emp-table">
-        <thead><tr><th>ID</th><th>Name</th><th>Supervisor</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
-        <tbody>${list.map(e=>`
-          <tr>
-            <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
-            <td>${e.name}</td>
-            <td style="color:var(--text3)">${e.sup}</td>
-            <td style="color:var(--text3)">${e.title}</td>
-            <td style="font-family:'DM Mono',monospace;font-size:11px">${fmtDate(e.lwd)}</td>
-            <td><span class="pill ${e._isAlready?'p-r':'p-y'}">${e._isAlready?'Has resigned':'Upcoming'}</span></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
+function showResignModal(){
+  const T=today(),MS=monthStart(),ME=monthEnd();
+  const mn=T.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const list=getViewData().filter(e=>e._inMonth).sort((a,b)=>a._lwd-b._lwd);
+  document.getElementById('resign-modal-title').textContent=`Resignations for ${mn}`;
+  document.getElementById('resign-modal-sub').textContent=`${list.length} employees`;
+  document.getElementById('resign-modal-body').innerHTML=list.length===0
+    ?'<p style="color:var(--text3);font-size:13px">No resignations this month.</p>'
+    :`<table class="emp-table"><thead><tr><th>ID</th><th>Name</th><th>Supervisor</th><th>Position</th><th>LWD</th><th>Status</th></tr></thead>
+    <tbody>${list.map(e=>`<tr><td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td><td>${e.name}</td><td style="color:var(--text3)">${e.sup}</td><td style="color:var(--text3)">${e.title}</td><td style="font-family:'DM Mono',monospace;font-size:11px">${fmtDate(e.lwd)}</td><td><span class="pill ${e._isAlready?'p-r':'p-y'}">${e._isAlready?'Has resigned':'Upcoming'}</span></td></tr>`).join('')}</tbody></table>`;
   openModal('modal-resign');
 }
 
-// Supervisor employee list modal
-function showSupModal(supName) {
-  CURRENT_SUP = supName;
-  const emps = getViewData().filter(e => e.sup === supName);
-  const allSups = [...new Set(RAW.map(e => e.sup))].filter(s => s !== supName).sort();
-
-  document.getElementById('sup-modal-title').textContent = supName;
-  document.getElementById('sup-modal-sub').textContent = `${emps.length} employees`;
-
-  renderSupModalBody(emps, allSups);
+function showSupModal(supName){
+  CURRENT_SUP=supName;
+  const emps=getViewData().filter(e=>e.sup===supName);
+  const allSups=[...new Set(RAW.map(e=>e.sup))].filter(s=>s!==supName).sort();
+  document.getElementById('sup-modal-title').textContent=supName;
+  document.getElementById('sup-modal-sub').textContent=`${emps.length} employees`;
+  renderSupModalBody(emps,allSups);
   openModal('modal-sup');
 }
 
-function renderSupModalBody(emps, allSups) {
-  const supList = allSups || [...new Set(RAW.map(e=>e.sup))].filter(s=>s!==CURRENT_SUP).sort();
-  const empsNow = emps || RAW.filter(e=>e.sup===CURRENT_SUP);
-
-  document.getElementById('sup-modal-body').innerHTML = `
+function renderSupModalBody(emps,allSups){
+  const supList=allSups||[...new Set(RAW.map(e=>e.sup))].filter(s=>s!==CURRENT_SUP).sort();
+  const empsNow=emps||RAW.filter(e=>e.sup===CURRENT_SUP);
+  document.getElementById('sup-modal-body').innerHTML=`
     <table class="emp-table" id="sup-emp-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Position</th>
-          <th>LWD</th>
-          <th>Status</th>
-          <th>Transfer</th>
-        </tr>
-      </thead>
-      <tbody>${empsNow.map(e => {
-        const lwdColor = e._isAlready ? 'var(--red)' : e._isUpcoming ? 'var(--amber)' : 'var(--text3)';
-        const statusPill = e._isAlready
-          ? `<span class="pill p-r">Has resigned</span>`
-          : e._isUpcoming
-            ? `<span class="pill p-y">Upcoming</span>`
-            : `<span style="font-size:11px;color:var(--text3)">Currently employed</span>`;
-        return `
-        <tr id="tr-${e.id}">
+      <thead><tr><th>ID</th><th>Name</th><th>Position</th><th>LWD</th><th>Status</th><th>Transfer</th></tr></thead>
+      <tbody>${empsNow.map(e=>{
+        const lwdColor=e._isAlready?'var(--red)':e._isUpcoming?'var(--amber)':'var(--text3)';
+        const statusPill=e._isAlready?`<span class="pill p-r">Has resigned</span>`:e._isUpcoming?`<span class="pill p-y">Upcoming</span>`:`<span style="font-size:11px;color:var(--text3)">Currently employed</span>`;
+        return `<tr id="tr-${e.id}">
           <td style="color:var(--text3);font-family:'DM Mono',monospace;font-size:11px">${e.id}</td>
           <td>${e.name}</td>
           <td style="color:var(--text3);font-size:11px">${e.title}</td>
@@ -819,106 +1062,36 @@ function renderSupModalBody(emps, allSups) {
           <td><button class="btn-transfer" onclick="toggleTransfer(${e.id})">Transfer →</button></td>
         </tr>
         <tr class="transfer-row" id="tp-${e.id}" style="display:none">
-          <td colspan="6">
-            <div class="transfer-panel">
-              <span style="font-size:12px;color:var(--text2);white-space:nowrap">Chuyển sang:</span>
-              <select id="sel-${e.id}">
-                <option value="">— Chọn Supervisor —</option>
-                ${supList.map(s=>`<option value="${s}">${s}</option>`).join('')}
-              </select>
-              <button class="btn btn-blue" onclick="doTransfer(${e.id})" style="font-size:12px;padding:6px 14px">✓ Xác nhận</button>
-              <button class="btn" onclick="cancelTransfer(${e.id})" style="font-size:12px;padding:6px 10px">✕</button>
-            </div>
-          </td>
+          <td colspan="6"><div class="transfer-panel">
+            <span style="font-size:12px;color:var(--text2);white-space:nowrap">Chuyển sang:</span>
+            <select id="sel-${e.id}"><option value="">— Chọn Supervisor —</option>${supList.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>
+            <button class="btn btn-blue" onclick="doTransfer(${e.id})" style="font-size:12px;padding:6px 14px">✓ Xác nhận</button>
+            <button class="btn" onclick="cancelTransfer(${e.id})" style="font-size:12px;padding:6px 10px">✕</button>
+          </div></td>
         </tr>`;
-      }).join('')}
-      </tbody>
+      }).join('')}</tbody>
     </table>`;
 }
 
-function toggleTransfer(id) {
-  const tp = document.getElementById('tp-'+id);
-  const showing = tp.style.display !== 'none';
-  document.querySelectorAll('.transfer-row').forEach(r => r.style.display='none');
-  if (!showing) tp.style.display = 'table-row';
-}
-function cancelTransfer(id) {
-  document.getElementById('tp-'+id).style.display = 'none';
-}
-
-function doTransfer(id) {
-  const sel = document.getElementById('sel-'+id);
-  const newSup = sel.value;
-  if (!newSup) { sel.style.borderColor='var(--red)'; setTimeout(()=>sel.style.borderColor='',1200); return; }
-
-  // 1. Update in-memory RAW
-  const emp = RAW.find(e => e.id === id);
-  if (!emp) return;
-  emp.sup = newSup;
-
-  // 2. Persist to localStorage so it survives page refresh
-  const m = loadTFMap();
-  m[id] = newSup;
-  saveTFMap(m);
-  syncResetBtn();
-
-  // 3. Flash confirmation on the row before closing
-  const row = document.getElementById('tr-'+id);
-  if (row) {
-    row.style.background = 'rgba(52,211,153,.12)';
-    row.cells[1].innerHTML = `<span style="text-decoration:line-through;color:var(--text3)">${emp.name}</span> <span style="color:var(--green);font-size:11px">→ ${newSup}</span>`;
-  }
-
-  // 4. After brief delay: close modal, re-render everything, re-open current sup
-  setTimeout(() => {
-    closeModal('modal-sup');
-    render();
-    showSupModal(CURRENT_SUP);
-  }, 600);
+function toggleTransfer(id){const tp=document.getElementById('tp-'+id);const showing=tp.style.display!=='none';document.querySelectorAll('.transfer-row').forEach(r=>r.style.display='none');if(!showing)tp.style.display='table-row'}
+function cancelTransfer(id){document.getElementById('tp-'+id).style.display='none'}
+function doTransfer(id){
+  const sel=document.getElementById('sel-'+id),newSup=sel.value;
+  if(!newSup){sel.style.borderColor='var(--red)';setTimeout(()=>sel.style.borderColor='',1200);return}
+  const emp=RAW.find(e=>e.id===id);if(!emp)return;
+  emp.sup=newSup;
+  const m=loadTFMap();m[id]=newSup;saveTFMap(m);syncResetBtn();
+  const row=document.getElementById('tr-'+id);
+  if(row){row.style.background='rgba(52,211,153,.12)';row.cells[1].innerHTML=`<span style="text-decoration:line-through;color:var(--text3)">${emp.name}</span> <span style="color:var(--green);font-size:11px">→ ${newSup}</span>`}
+  setTimeout(()=>{closeModal('modal-sup');buildOrgTree();render();showSupModal(CURRENT_SUP)},600);
 }
 
 // ════════════════════════════════════════════
 //  EXPORT
 // ════════════════════════════════════════════
-function loadXLSX(cb) {
-  if (window.XLSX) { cb(); return; }
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-  s.onload = cb;
-  document.head.appendChild(s);
-}
-
-function exportXLSX() {
-  loadXLSX(() => {
-    const rows = RAW.map(e => ({
-      'ID': e.id, 'Full Name': e.name, 'BU': e.bu,
-      'Manager': e.manager, 'Supervisor': e.sup,
-      'Position': e.title, 'Contract Type': e.type,
-      'Classification': e.check === 'TTI' ? 'Permanent' : 'Outsource',
-      'Join Date': e.join, 'LWD': e.lwd || '',
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, 'HR_Dashboard_' + new Date().toISOString().slice(0,10) + '.xlsx');
-  });
-}
-
-function exportSupXLSX() {
-  loadXLSX(() => {
-    const rows = RAW.filter(e => e.sup === CURRENT_SUP).map(e => ({
-      'ID': e.id, 'Full Name': e.name, 'BU': e.bu,
-      'Supervisor': e.sup, 'Position': e.title,
-      'Contract Type': e.type,
-      'Classification': e.check === 'TTI' ? 'Permanent' : 'Outsource',
-      'Join Date': e.join, 'LWD': e.lwd || '',
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, CURRENT_SUP.slice(0,25));
-    XLSX.writeFile(wb, 'Sup_' + CURRENT_SUP.replace(/\s+/g,'_') + '.xlsx');
-  });
-}
+function loadXLSX(cb){if(window.XLSX){cb();return}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=cb;document.head.appendChild(s)}
+function exportXLSX(){loadXLSX(()=>{const rows=RAW.map(e=>({'ID':e.id,'Full Name':e.name,'BU':e.bu,'Manager':e.manager,'Supervisor':e.sup,'Position':e.title,'Contract Type':e.type,'Classification':e.check==='TTI'?'Permanent':'Outsource','Join Date':e.join,'LWD':e.lwd||''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data');XLSX.writeFile(wb,'HR_Dashboard_'+new Date().toISOString().slice(0,10)+'.xlsx')})}
+function exportSupXLSX(){loadXLSX(()=>{const rows=RAW.filter(e=>e.sup===CURRENT_SUP).map(e=>({'ID':e.id,'Full Name':e.name,'BU':e.bu,'Supervisor':e.sup,'Position':e.title,'Contract Type':e.type,'Classification':e.check==='TTI'?'Permanent':'Outsource','Join Date':e.join,'LWD':e.lwd||''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,CURRENT_SUP.slice(0,25));XLSX.writeFile(wb,'Sup_'+CURRENT_SUP.replace(/\s+/g,'_')+'.xlsx')})}
 </script>
 </body>
 </html>
