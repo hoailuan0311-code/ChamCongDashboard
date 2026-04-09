@@ -96,7 +96,7 @@ const html = `
     <div class="name">Mỹ Huyền</div>
     <div class="desc">Chuyên viên hổ trợ giải pháp tài chính • Hỗ trợ chi tiêu thẻ Tín Dụng (Phí rút chỉ: 1.7%)</div>
     <a href="https://zalo.me/0971517862" target="_blank" id="zaloLink">
-        Nhắn Zalo ngay
+        Zalo ngay: 0971517862
     </a>
 </div>
 
