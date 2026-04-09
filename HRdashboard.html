@@ -715,9 +715,9 @@ function renderOrgDrill() {
   };
 
   document.getElementById('org-drill-view').innerHTML = focusHtml
+    + groupRender(rest, 'Director', 'var(--text3)');
     + groupRender(hasMgr, 'Managers', 'var(--purple)')
     + groupRender(hasSup, 'Supervisors', 'var(--teal)')
-    + groupRender(rest, 'Team Members', 'var(--text3)');
 }
 
 function orgNodeCard(emp) {
