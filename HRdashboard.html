@@ -243,34 +243,35 @@ body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--te
 .org-node:hover .org-node-arrow{color:var(--blue);transform:translateX(2px)}
 .org-node-badge{position:absolute;bottom:8px;right:10px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px}
 
-/* Overview/schematic tree */
-.org-schematic{overflow-x:auto;padding:24px 0}
-.org-tree{display:flex;flex-direction:column;align-items:center;min-width:900px}
-.tree-row{display:flex;justify-content:center;gap:0;position:relative;margin-bottom:0}
-.tree-row.connecting{height:40px;position:relative}
-.tree-connector-v{width:2px;background:rgba(45,212,191,.3);position:absolute;left:50%;top:0;bottom:0}
-.tree-connector-h{height:2px;background:rgba(45,212,191,.3);position:absolute;top:0}
-.tree-node-wrap{display:flex;flex-direction:column;align-items:center;padding:0 6px;flex:1;min-width:120px;max-width:180px}
-.tree-node-line-v{width:2px;height:24px;background:rgba(45,212,191,.3)}
-.tree-node-line-h-container{height:2px;position:relative;width:100%}
-.tree-node{
-  background:var(--bg2);border:1px solid rgba(45,212,191,.3);border-radius:10px;
-  padding:12px 14px;cursor:pointer;transition:all .2s;width:100%;text-align:center;
-  position:relative;
-}
-.tree-node:hover{border-color:var(--teal);background:var(--bg3)}
-.tree-node.root{border-color:var(--teal);background:linear-gradient(135deg,var(--bg3),rgba(45,212,191,.08));padding:16px 20px}
-.tree-node.level2{border-color:rgba(79,142,247,.4)}
-.tree-node.level2:hover{border-color:var(--blue)}
-.tree-node-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin:0 auto 8px}
-.tree-node.root .tree-node-ava{width:48px;height:48px;font-size:16px}
-.tree-node-name{font-size:11px;font-weight:600;line-height:1.3;margin-bottom:3px}
-.tree-node.root .tree-node-name{font-size:13px}
-.tree-node-title{font-size:9px;color:var(--text3);line-height:1.3}
-.tree-node-count{font-size:10px;font-weight:700;font-family:'DM Mono',monospace;color:var(--teal);margin-top:4px}
-.tree-children{display:flex;justify-content:center;position:relative;padding-top:0;width:100%}
-.tree-children::before{content:'';position:absolute;top:0;left:50%;right:50%;height:2px;background:rgba(45,212,191,.3);transition:left .3s,right .3s}
-.tree-level{display:flex;gap:8px;justify-content:center}
+/* ─── Schema / Schematic tree ─── */
+.org-schematic{overflow-x:auto;overflow-y:visible;padding:20px 16px 32px;min-width:100%}
+/* CSS tree using ul/li connector technique */
+.ctree,.ctree ul,.ctree li{position:relative}
+.ctree ul{display:flex;flex-wrap:nowrap;justify-content:center;list-style:none;padding:0;gap:0}
+.ctree li{display:flex;flex-direction:column;align-items:center;padding:0 8px}
+/* Vertical line from parent node down */
+.ctree li>.v-line{width:2px;height:24px;background:rgba(45,212,191,.35);flex-shrink:0}
+/* Horizontal bar + vertical drops for children row */
+.ctree ul::before{content:'';position:absolute;top:0;height:2px;background:rgba(45,212,191,.35);
+  left:calc(50% - (var(--hw,0px)));right:calc(50% - (var(--hw,0px)))}
+.ctree li::before{content:'';position:absolute;top:0;left:50%;width:2px;height:24px;background:rgba(45,212,191,.35)}
+
+/* Schema node cards */
+.sn{cursor:pointer;border-radius:10px;padding:12px 14px;text-align:center;min-width:130px;max-width:180px;
+    border:1px solid rgba(255,255,255,.1);transition:transform .15s,border-color .15s;position:relative}
+.sn:hover{transform:translateY(-3px);border-color:var(--teal)!important}
+.sn-ava{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+        font-size:12px;font-weight:700;margin:0 auto 8px;border:2px solid rgba(255,255,255,.2)}
+.sn-name{font-size:11px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:3px}
+.sn-title{font-size:9px;color:rgba(255,255,255,.55);line-height:1.3;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sn-hc{font-size:11px;font-weight:700;color:#bed62f;font-family:'DM Mono',monospace;margin-bottom:6px}
+.sn-breakdown{font-size:9px;color:rgba(255,255,255,.4);line-height:1.6;text-align:left}
+.sn.lv0{background:linear-gradient(135deg,#0d7a8a,#0a5c6b);min-width:180px;padding:16px 20px}
+.sn.lv0 .sn-ava{width:48px;height:48px;font-size:16px}
+.sn.lv0 .sn-name{font-size:14px}
+.sn.lv1{background:linear-gradient(135deg,#1a2d4a,#185FA5)}
+.sn.lv2{background:linear-gradient(135deg,#1a2d22,#1D9E75)}
+.sn.lv3{background:linear-gradient(135deg,#2a2238,#534AB7);min-width:120px;max-width:160px}
 
 /* Highlight for search */
 .org-node.highlight{border-color:var(--amber)!important;background:rgba(251,191,36,.06)!important}
@@ -417,13 +418,20 @@ const DATA_URL = 'dataHRdashboard.js';
 
 // Hierarchy mapping: manager code → actual parent name in the data
 const MGR_PARENT = {
-  'Raki':    null,                    // root
+  'Raki':    null,                       // root = Luces
   'Sharp':   'Sharp Lu Hao Lin',
   'Siva':    'Rajendiran Sivakumar',
   'Razel':   'Cezar Razel Dichoson',
-  'FGs TP4': 'Luces Raquel Rubis',    // Danh Bình Phú reports directly to Director
-  'FGs OP':  'Luces Raquel Rubis',    // Trần Quốc Phương reports directly to Director
+  'FGs TP4': 'Nguyễn Thị Kim Chi',      // Danh Bình Phú → Kim Chi → Luces
+  'FGs OP':  'Nguyễn Thị Kim Chi',      // Trần Quốc Phương → Kim Chi → Luces
+  'FGs':     'Luces Raquel Rubis',       // Kim Chi reports to Luces
 };
+
+// Virtual nodes not present in data file
+const VIRTUAL_NODES = [
+  { id:'MIKE_V',   name:'Mike Liu Yuan Jun',   title:'Senior Warehouse Supervisor', bu:'CPT', lwd:'0', manager:'Sharp', sup:'Sharp Lu Hao Lin', check:'TTI', type:'Permanent' },
+  { id:'KIMCHI_V', name:'Nguyễn Thị Kim Chi',  title:'FGs Warehouse Manager',       bu:'CPT', lwd:'0', manager:'FGs',   sup:'Luces Raquel Rubis', check:'TTI', type:'Permanent' },
+];
 
 // ════════════════════════════════════════════
 //  STATE
@@ -545,12 +553,9 @@ function buildOrgTree() {
   ORG_CHILD = {};
   const names = new Set(RAW.map(e=>e.name));
 
-  // Add virtual "Mike Liu Yuan Jun" node (not in data directly)
-  const mikeFake = {
-    id:'MIKE_V', name:'Mike Liu Yuan Jun', title:'Senior Warehouse Supervisor',
-    bu:'CPT', lwd:'0', manager:'Sharp', sup:'Sharp Lu Hao Lin', check:'TTI'
-  };
-  const allData = names.has('Mike Liu Yuan Jun') ? RAW : [...RAW, mikeFake];
+  // Add virtual nodes (Mike, Kim Chi) not present in data file
+  const extras = VIRTUAL_NODES.filter(v => !names.has(v.name));
+  const allData = extras.length ? [...RAW, ...extras] : RAW;
 
   allData.forEach(e => {
     if(!ORG_CHILD[e.name]) ORG_CHILD[e.name] = [];
@@ -663,13 +668,40 @@ function renderOrgDrill() {
       ${ORG_TRAIL.length>0?`<button class="org-btn" onclick="orgGoTrail(${ORG_TRAIL.length-1})" style="flex-shrink:0">← Back</button>`:''}
     </div>`;
 
-  // If direct has zero
-  if(direct.length===0){
-    document.getElementById('org-drill-view').innerHTML = focusHtml + `<div style="text-align:center;padding:48px;color:var(--text3);font-size:13px">No direct reports under this person</div>`;
+  // If no direct children: show HC breakdown by title
+  if (direct.length === 0) {
+    const bd = titleBreakdown(ORG_CUR);
+    const total = bd.reduce((s,[,c])=>s+c, 0);
+    const bdRows = bd.map(([t,c])=>{
+      const pct = total ? Math.round(c/total*100) : 0;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--border)">
+        <span style="flex:1;font-size:12px;color:var(--text2)">${t}</span>
+        <div style="width:120px;height:4px;background:var(--bg4);border-radius:3px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:var(--teal);border-radius:3px"></div>
+        </div>
+        <span style="font-size:12px;font-weight:700;font-family:'DM Mono',monospace;min-width:28px;text-align:right">${c}</span>
+        <span style="font-size:10px;color:var(--text3);min-width:32px">${pct}%</span>
+      </div>`;
+    }).join('');
+    const bdCard = total > 0 ? `
+      <div class="org-focus-card" style="margin-top:12px;padding:16px 20px">
+        <div style="width:100%">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">
+            Headcount by Title — ${total} employees
+          </div>
+          ${bdRows}
+        </div>
+      </div>
+      <div style="margin-top:12px;text-align:center">
+        <button class="org-btn" onclick="showSupModal('${ORG_CUR.replace(/'/g,"\'")}')">
+          📋 View all ${total} employees
+        </button>
+      </div>` : `<div style="text-align:center;padding:48px;color:var(--text3);font-size:13px">No employees under this supervisor</div>`;
+    document.getElementById('org-drill-view').innerHTML = focusHtml + bdCard;
     return;
   }
 
-  // Group: managers first, then supervisors, then others
+  // Has children → group: managers, supervisors, then others
   const hasMgr = direct.filter(e=>e.title&&e.title.toLowerCase().includes('manager'));
   const hasSup = direct.filter(e=>e.title&&e.title.toLowerCase().includes('supervisor')&&!hasMgr.includes(e));
   const rest   = direct.filter(e=>!hasMgr.includes(e)&&!hasSup.includes(e));
@@ -707,11 +739,16 @@ function orgNodeCard(emp) {
       </div>
       ${hasKids?`<span class="org-node-arrow">›</span>`:''}
     </div>
-    ${hasKids?`<div class="org-node-stats">
-      <div class="org-node-stat"><div class="org-node-stat-v">${dc}</div><div class="org-node-stat-l">Reports</div></div>
-      <div class="org-node-stat"><div class="org-node-stat-v">${(ORG_CHILD[emp.name]||[]).length}</div><div class="org-node-stat-l">Direct</div></div>
-      <div class="org-node-stat"><div class="org-node-stat-v" style="font-size:9px;padding-top:3px">${buPill(emp.bu)}</div><div class="org-node-stat-l">BU</div></div>
-    </div>`:
+    ${hasKids ? (() => {
+      const isSupLeaf = (ORG_CHILD[emp.name]||[]).length === 0 || 
+        !(ORG_CHILD[emp.name]||[]).some(c=>c.title&&(c.title.includes('Manager')||c.title.includes('Supervisor')));
+      const bdLine = isSupLeaf ? titleBreakdown(emp.name).slice(0,3).map(([t,c])=>`${c} ${shortTitle(t)}`).join(' · ') : '';
+      return `<div class="org-node-stats">
+        <div class="org-node-stat"><div class="org-node-stat-v">${dc}</div><div class="org-node-stat-l">HC Total</div></div>
+        <div class="org-node-stat"><div class="org-node-stat-v">${(ORG_CHILD[emp.name]||[]).length}</div><div class="org-node-stat-l">Direct</div></div>
+        <div class="org-node-stat"><div class="org-node-stat-v" style="font-size:9px;padding-top:3px">${buPill(emp.bu)}</div><div class="org-node-stat-l">BU</div></div>
+      </div>${bdLine?`<div style="font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5">${bdLine}</div>`:''}`;
+    })() :
     `<div style="display:flex;align-items:center;gap:8px">${buPill(emp.bu)}${lwdHtml}</div>`}
   </div>`;
 }
@@ -765,76 +802,68 @@ function renderOrgSearchResults(matches, q) {
 }
 
 // ════════════════════════════════════════════
-//  ORG SCHEMATIC VIEW — Sơ đồ tổng thể
+//  ORG SCHEMATIC — proper CSS branching tree
 // ════════════════════════════════════════════
 function renderOrgSchema() {
   document.getElementById('org-drill-view').style.display='none';
   document.getElementById('org-schema-view').style.display='block';
-  document.getElementById('org-nav').innerHTML='';
-
-  // Build a simplified tree showing only key management nodes
-  // Level 0: Luces Raquel Rubis
-  // Level 1: Direct reports to Luces (Sharp, Danh Bình Phú, Trần Quốc Phương, Cezar Razel)
-  // Level 2: Direct reports to each L1 (main supervisors)
-  // Level 3: Direct reports to L2 supervisors
-
-  const root='Luces Raquel Rubis';
-  const schematic=document.getElementById('org-schema-view');
-
-  schematic.innerHTML=`<div class="org-schematic"><div id="schema-tree"></div></div>`;
-
-  // Render top 3 levels as visual tree
-  const treeEl=document.getElementById('schema-tree');
-  treeEl.innerHTML=renderSchemaNode(root,0);
+  document.getElementById('org-nav').innerHTML=
+    '<span style="font-size:11px;color:var(--text3)">Sơ đồ phân nhánh tổng thể · Click node để drill down</span>';
+  document.getElementById('org-schema-view').innerHTML=
+    `<div class="org-schematic"><div class="ctree">${renderSchemaLi('Luces Raquel Rubis',0)}</div></div>`;
+  requestAnimationFrame(fixSchemaConnectors);
 }
 
-function schemaNodeBg(level) {
-  return ['linear-gradient(135deg,#0d7a8a,#0a5c6b)',
-          'linear-gradient(135deg,#1D3A5F,#185FA5)',
-          'linear-gradient(135deg,#1D3A2E,#1D9E75)',
-          'linear-gradient(135deg,#2a1f3d,#534AB7)'][Math.min(level,3)];
-}
-
-function renderSchemaNode(name, level) {
-  const emp=getEmp(name);
-  const direct=(ORG_CHILD[name]||[]);
-  const dc=countDesc(name);
-  const avaBg=orgAvatarBg(emp.bu);
-  const isLeaf=direct.length===0||level>=2;
-
-  const nodeHtml=`
-    <div style="display:inline-flex;flex-direction:column;align-items:center;min-width:${level===0?200:140}px;max-width:${level===0?220:160}px">
-      <div onclick="orgDrill_schema('${name.replace(/'/g,"\\'")}')"
-           style="background:${schemaNodeBg(level)};border-radius:10px;padding:${level===0?'16px 18px':'10px 12px'};cursor:pointer;
-                  border:1px solid rgba(255,255,255,.15);transition:transform .2s;width:100%;text-align:center"
-           onmouseenter="this.style.transform='translateY(-3px)'" onmouseleave="this.style.transform=''">
-        <div style="width:${level===0?44:32}px;height:${level===0?44:32}px;border-radius:50%;background:${avaBg}33;border:2px solid ${avaBg}88;
-                    display:flex;align-items:center;justify-content:center;font-size:${level===0?15:11}px;font-weight:700;color:#fff;margin:0 auto ${level===0?10:6}px">
-          ${orgInitials(name)}
-        </div>
-        <div style="font-size:${level===0?13:10}px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:3px">${name}</div>
-        <div style="font-size:${level===0?10:9}px;color:rgba(255,255,255,.6);line-height:1.3;margin-bottom:6px">${emp.title}</div>
-        <div style="font-size:10px;font-weight:700;color:#bed62f;font-family:'DM Mono',monospace">${dc} reports</div>
-      </div>
-    </div>`;
-
-  if(isLeaf || direct.length===0) return nodeHtml;
-
-  // With children
-  return `<div style="display:flex;flex-direction:column;align-items:center">
-    ${nodeHtml}
-    <div style="width:2px;height:20px;background:rgba(45,212,191,.4)"></div>
-    <div style="position:relative;display:flex;justify-content:center;gap:${level===0?16:8}px;padding-top:0">
-      <div style="position:absolute;top:0;left:50%;right:50%;height:2px;background:rgba(45,212,191,.3);
-                  left:${direct.length>1?'calc(50% / '+direct.length+' * '+Math.round(direct.length/2)+')':'50%'};
-                  right:${direct.length>1?'calc(50% / '+direct.length+' * '+Math.round(direct.length/2)+')':'50%'}"></div>
-      ${direct.map(c=>`
-        <div style="display:flex;flex-direction:column;align-items:center">
-          <div style="width:2px;height:16px;background:rgba(45,212,191,.4)"></div>
-          ${renderSchemaNode(c.name,level+1)}
-        </div>`).join('')}
+function renderSchemaLi(name, level) {
+  const emp  = getEmp(name);
+  const kids = (ORG_CHILD[name]||[]);
+  const dc   = countDesc(name);
+  const bg   = orgAvatarBg(emp.bu);
+  let bdHtml = '';
+  if (level >= 2 && dc > 0) {
+    const bd = titleBreakdown(name);
+    bdHtml = `<div class="sn-breakdown">${bd.slice(0,4).map(([t,c])=>`${c} ${shortTitle(t)}`).join(' · ')}</div>`;
+  }
+  const safeN = name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const nodeCard = `<div class="sn lv${Math.min(level,3)}" onclick="orgDrill_schema('${safeN}')">
+    <div class="sn-ava" style="background:${bg}33;border-color:${bg}66">
+      <span style="color:#fff;font-weight:700;font-size:${level===0?16:12}px">${orgInitials(name)}</span>
     </div>
+    <div class="sn-name">${name}</div>
+    <div class="sn-title">${emp.title}</div>
+    <div class="sn-hc">${dc} HC</div>
+    ${bdHtml}
   </div>`;
+  if (!kids.length) return `<li>${nodeCard}</li>`;
+  return `<li>
+    ${nodeCard}
+    <div class="v-line"></div>
+    <ul data-kids="${kids.length}">
+      ${kids.map(c=>renderSchemaLi(c.name, level+1)).join('')}
+    </ul>
+  </li>`;
+}
+
+function fixSchemaConnectors() {
+  document.querySelectorAll('.ctree ul[data-kids]').forEach(ul=>{
+    const items = ul.querySelectorAll(':scope > li');
+    if (items.length < 2) { ul.style.setProperty('--hw','0px'); return; }
+    const first = items[0].getBoundingClientRect();
+    const last  = items[items.length-1].getBoundingClientRect();
+    const hw = (last.left + last.width/2 - (first.left + first.width/2)) / 2;
+    ul.style.setProperty('--hw', Math.max(0,hw)+'px');
+  });
+}
+
+function titleBreakdown(supName) {
+  const emps = RAW.filter(e=>e.sup===supName);
+  const c={};
+  emps.forEach(e=>{ c[e.title]=(c[e.title]||0)+1; });
+  return Object.entries(c).sort((a,b)=>b[1]-a[1]);
+}
+
+function shortTitle(t) {
+  return t.replace('Warehouse ','').replace('Senior ','Sr ').replace('Assistant ','Asst ');
 }
 
 function orgDrill_schema(name){
@@ -959,9 +988,10 @@ function renderSupCards(sups){
     const permPct=s.total?Math.round(s.perm/s.total*100):0;
     const wskPct=s.total?Math.round(s.wsk/s.total*100):0;
 
-    // Resolve manager display name
-    const mgrDisplay=MGR_PARENT[s.manager]
-      ? `<span style="color:var(--teal)">${MGR_PARENT[s.manager]}</span>`
+    // Resolve manager display name (FGs TP4/OP → Kim Chi, FGs → Luces)
+    const mgrParent = MGR_PARENT[s.manager];
+    const mgrDisplay = mgrParent
+      ? `<span style="color:var(--teal)">${mgrParent}</span>`
       : s.manager;
 
     let badges='';
