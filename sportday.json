@@ -272,11 +272,11 @@
             { "msnv": "511586", "name": "Phạm Thị Thu",  "jerseyNumber":"#1", "position": "Đầu dây", "tenThiDau": "Thu Phạm", "bu": "OP", "slogan": "" },
             { "msnv": "619348", "name": "Nguyễn Tuyết Nhi",  "jerseyNumber":"#2", "position": "Giữa dây","tenThiDau": "Tuyết Nhi", "bu": "OP", "slogan": "" },
             { "msnv": "542132", "name": "Ngô Thị Dung",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": "Ngô Dung", "bu": "OP", "slogan": "" },
-            { "msnv": "591207", "name": "Lê Thị Ngọc",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": "Lê Ngọc", "bu": "CPT", "slogan": "" },
-            { "msnv": "591208", "name": "Nguyễn Thị Trúc Ly",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": "Lily", "bu": "CPT", "slogan": "" },
-            { "msnv": "3214", "name": "Thái Anh Thư",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": "Thái Anh Thư", "bu": "CPT", "slogan": "" },
-            { "msnv": "518461", "name": "Dương Thị Kim Thân",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": "Kim Thân", "bu": "CPT", "slogan": "" },
-            { "msnv": "390116", "name": "Nguyễn Trọng Thị Thùy Linh",    "jerseyNumber":"#4", "position": "Cuối dây","tenThiDau": "Thùy Linh", "bu": "OP", "slogan": "" }
+            { "msnv": "591207", "name": "Lê Thị Ngọc",      "jerseyNumber":"#4", "position": "Giữa dây","tenThiDau": "Lê Ngọc", "bu": "CPT", "slogan": "" },
+            { "msnv": "591208", "name": "Nguyễn Thị Trúc Ly",      "jerseyNumber":"#5", "position": "Giữa dây","tenThiDau": "Lily", "bu": "CPT", "slogan": "" },
+            { "msnv": "3214", "name": "Thái Anh Thư",      "jerseyNumber":"#6", "position": "Giữa dây","tenThiDau": "Thái Anh Thư", "bu": "CPT", "slogan": "" },
+            { "msnv": "518461", "name": "Dương Thị Kim Thân",      "jerseyNumber":"#7", "position": "Giữa dây","tenThiDau": "Kim Thân", "bu": "CPT", "slogan": "" },
+            { "msnv": "390116", "name": "Nguyễn Trọng Thị Thùy Linh",    "jerseyNumber":"#8", "position": "Cuối dây","tenThiDau": "Thùy Linh", "bu": "OP", "slogan": "" }
           ]
         },
         {
