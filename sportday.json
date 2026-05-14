@@ -163,7 +163,7 @@
           "slogan": "Một mình một chiến tuyến",
           "color": "#0d9488",
           "athletes": [
-            { "msnv": "RYB401", "name": "Nguyễn Hoàng Long", "jerseyNumber": "SM-1", "position": "Đơn Nam", "tenThiDau": 1993, "bu": "WHS-1", "slogan": "Cú smash huyền thoại" },
+            { "msnv": "RYB401", "name": "Trần Quang Trung", "jerseyNumber": "SM-1", "position": "Đơn Nam", "tenThiDau": 1993, "bu": "WHS-1", "slogan": "Cú smash huyền thoại" },
             { "msnv": "RYB402", "name": "Trần Mạnh Cường",   "jerseyNumber": "SM-2", "position": "Đơn Nam", "tenThiDau": 1995, "bu": "WHS-2", "slogan": "Nhanh như chớp" }
           ]
         },
