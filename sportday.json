@@ -90,10 +90,16 @@
           "slogan": "Đập tan mọi giới hạn",
           "color": "#0284c7",
           "athletes": [
-            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": 1997, "bu": "OP", "slogan": "Cú đập sấm sét" },
-            { "msnv": "RYB202", "name": "Trần Đăng Khoa",   "jerseyNumber": 5, "position": "Phụ công",  "tenThiDau": 1992, "bu": "WHS-2", "slogan": "Chắn lưới như tường" },
-            { "msnv": "RYB203", "name": "Lê Bá Hùng",       "jerseyNumber": 7, "position": "Chuyền hai", "tenThiDau": 1991, "bu": "OFFICE","slogan": "Đôi tay vàng" },
-            { "msnv": "RYB204", "name": "Vũ Đình Quân",     "jerseyNumber": 9, "position": "Libero",    "tenThiDau": 1994, "bu": "WHS-3", "slogan": "Lá chắn cuối cùng" }
+            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": Cris, "bu": "OP", "slogan": "Captain" },
+            { "msnv": "2720", "name": "Danh Trên",   "jerseyNumber": 05, "position": "Chủ công",  "tenThiDau": Mét Bảy Ba, "bu": "CPT", "slogan": "" },
+            { "msnv": "539644", "name": "Nguyễn Văn Hiệp",       "jerseyNumber": 66, "position": "Chuyền hai", "tenThiDau": Nguyễn Hiệp, "bu": "OP","slogan": "" },
+	    { "msnv": "569617", "name": "Bùi Đình Hùng",       "jerseyNumber": 18, "position": "Phụ công", "tenThiDau": Hùng Bùi, "bu": "OP","slogan": "" },
+            { "msnv": "501600", "name": "Lâm My Dol",       "jerseyNumber": 06, "position": "Libero", "tenThiDau": Ngộ, "bu": "CPT","slogan": "" },
+            { "msnv": "4584", "name": "Hồ Minh Nhường",       "jerseyNumber": 03, "position": "Chủ công", "tenThiDau": Minh Nhường, "bu": "OP","slogan": "" },
+            { "msnv": "1966", "name": "Bùi Xuân Nam",       "jerseyNumber": 19, "position": "Phụ công", "tenThiDau": Xuân Nam, "bu": "CPT","slogan": "" },
+            { "msnv": "2590", "name": "Võ Thành Công",       "jerseyNumber": 67, "position": "Phụ công", "tenThiDau": Thành Công, "bu": "CPT","slogan": "" },
+            { "msnv": "593548", "name": "Lê Quốc Thái",       "jerseyNumber": 98, "position": "Libero", "tenThiDau": Quốc Thái, "bu": "CPT","slogan": "" },
+            { "msnv": "1278", "name": "Nguyễn Triết Giang",     "jerseyNumber": 66, "position": "Libero",    "tenThiDau": Triết Giang, "bu": "CPT", "slogan": "" }
           ]
         },
         {
