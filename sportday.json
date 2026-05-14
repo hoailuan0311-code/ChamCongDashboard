@@ -86,11 +86,11 @@
       "teams": [
         {
           "id": "vb_sky",
-          "name": "Sky Spikers",
+          "name": "Warehouse JIT",
           "slogan": "Đập tan mọi giới hạn",
           "color": "#0284c7",
           "athletes": [
-            { "msnv": "RYB201", "name": "Nguyễn Tuấn Kiệt", "jerseyNumber": 1, "position": "Chủ công",  "birthYear": 1993, "bu": "WHS-1", "slogan": "Cú đập sấm sét" },
+            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "birthYear": 1997, "bu": "OP", "slogan": "Cú đập sấm sét" },
             { "msnv": "RYB202", "name": "Trần Đăng Khoa",   "jerseyNumber": 5, "position": "Phụ công",  "birthYear": 1992, "bu": "WHS-2", "slogan": "Chắn lưới như tường" },
             { "msnv": "RYB203", "name": "Lê Bá Hùng",       "jerseyNumber": 7, "position": "Chuyền hai", "birthYear": 1991, "bu": "OFFICE","slogan": "Đôi tay vàng" },
             { "msnv": "RYB204", "name": "Vũ Đình Quân",     "jerseyNumber": 9, "position": "Libero",    "birthYear": 1994, "bu": "WHS-3", "slogan": "Lá chắn cuối cùng" }
