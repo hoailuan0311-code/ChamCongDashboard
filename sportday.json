@@ -20,11 +20,11 @@
           "slogan": "Sấm chớp giữa sân cỏ",
           "color": "#ef4444",
           "athletes": [
-            { "msnv": "RYB001", "name": "Nguyễn Văn An", "jerseyNumber": 1,  "position": "Thủ môn",   "birthYear": 1992, "bu": "WHS-1",   "slogan": "Bức tường không thể vượt qua" },
-            { "msnv": "RYB002", "name": "Trần Minh Bảo", "jerseyNumber": 4,  "position": "Hậu vệ",    "birthYear": 1994, "bu": "WHS-1",   "slogan": "Lùi để tiến" },
-            { "msnv": "RYB003", "name": "Lê Quốc Cường","jerseyNumber": 7,  "position": "Tiền vệ",   "birthYear": 1995, "bu": "WHS-2",   "slogan": "Nhịp tim của đội" },
-            { "msnv": "RYB004", "name": "Phạm Hoàng Dũng","jerseyNumber": 10, "position": "Tiền đạo",  "birthYear": 1993, "bu": "WHS-2",   "slogan": "Sút là vào" },
-            { "msnv": "RYB005", "name": "Hoàng Văn Em",  "jerseyNumber": 11, "position": "Tiền đạo",  "birthYear": 1996, "bu": "OFFICE", "slogan": "Tốc độ ánh sáng" }
+            { "msnv": "RYB001", "name": "Nguyễn Văn An", "jerseyNumber": 1,  "position": "Thủ môn",   "tenThiDau": 1992, "bu": "WHS-1",   "slogan": "Bức tường không thể vượt qua" },
+            { "msnv": "RYB002", "name": "Trần Minh Bảo", "jerseyNumber": 4,  "position": "Hậu vệ",    "tenThiDau": 1994, "bu": "WHS-1",   "slogan": "Lùi để tiến" },
+            { "msnv": "RYB003", "name": "Lê Quốc Cường","jerseyNumber": 7,  "position": "Tiền vệ",   "tenThiDau": 1995, "bu": "WHS-2",   "slogan": "Nhịp tim của đội" },
+            { "msnv": "RYB004", "name": "Phạm Hoàng Dũng","jerseyNumber": 10, "position": "Tiền đạo",  "tenThiDau": 1993, "bu": "WHS-2",   "slogan": "Sút là vào" },
+            { "msnv": "RYB005", "name": "Hoàng Văn Em",  "jerseyNumber": 11, "position": "Tiền đạo",  "tenThiDau": 1996, "bu": "OFFICE", "slogan": "Tốc độ ánh sáng" }
           ]
         },
         {
@@ -33,10 +33,10 @@
           "slogan": "Tái sinh từ tro tàn",
           "color": "#f59e0b",
           "athletes": [
-            { "msnv": "RYB011", "name": "Đinh Gia Phúc", "jerseyNumber": 1,  "position": "Thủ môn",   "birthYear": 1991, "bu": "WHS-3", "slogan": "Cánh tay vàng" },
-            { "msnv": "RYB012", "name": "Vũ Tấn Quang", "jerseyNumber": 5,  "position": "Hậu vệ",    "birthYear": 1990, "bu": "WHS-3", "slogan": "Đá thép" },
-            { "msnv": "RYB013", "name": "Bùi Hữu Sang", "jerseyNumber": 8,  "position": "Tiền vệ",   "birthYear": 1997, "bu": "WHS-4", "slogan": "Người mở khóa" },
-            { "msnv": "RYB014", "name": "Đặng Minh Tâm","jerseyNumber": 9,  "position": "Tiền đạo",  "birthYear": 1994, "bu": "WHS-4", "slogan": "Sát thủ vòng cấm" }
+            { "msnv": "RYB011", "name": "Đinh Gia Phúc", "jerseyNumber": 1,  "position": "Thủ môn",   "tenThiDau": 1991, "bu": "WHS-3", "slogan": "Cánh tay vàng" },
+            { "msnv": "RYB012", "name": "Vũ Tấn Quang", "jerseyNumber": 5,  "position": "Hậu vệ",    "tenThiDau": 1990, "bu": "WHS-3", "slogan": "Đá thép" },
+            { "msnv": "RYB013", "name": "Bùi Hữu Sang", "jerseyNumber": 8,  "position": "Tiền vệ",   "tenThiDau": 1997, "bu": "WHS-4", "slogan": "Người mở khóa" },
+            { "msnv": "RYB014", "name": "Đặng Minh Tâm","jerseyNumber": 9,  "position": "Tiền đạo",  "tenThiDau": 1994, "bu": "WHS-4", "slogan": "Sát thủ vòng cấm" }
           ]
         }
       ]
@@ -57,9 +57,9 @@
           "slogan": "Mềm mại nhưng kiên cường",
           "color": "#db2777",
           "athletes": [
-            { "msnv": "RYB101", "name": "Nguyễn Thị Hương", "jerseyNumber": 7, "position": "Tiền vệ",  "birthYear": 1996, "bu": "OFFICE", "slogan": "Trái tim sân cỏ" },
-            { "msnv": "RYB102", "name": "Trần Mai Lan",     "jerseyNumber": 9, "position": "Tiền đạo", "birthYear": 1998, "bu": "WHS-1",  "slogan": "Cánh hồng có gai" },
-            { "msnv": "RYB103", "name": "Lê Thị Ngọc",      "jerseyNumber": 4, "position": "Hậu vệ",   "birthYear": 1995, "bu": "WHS-2",  "slogan": "Bức tường sắt" }
+            { "msnv": "RYB101", "name": "Nguyễn Thị Hương", "jerseyNumber": 7, "position": "Tiền vệ",  "tenThiDau": 1996, "bu": "OFFICE", "slogan": "Trái tim sân cỏ" },
+            { "msnv": "RYB102", "name": "Trần Mai Lan",     "jerseyNumber": 9, "position": "Tiền đạo", "tenThiDau": 1998, "bu": "WHS-1",  "slogan": "Cánh hồng có gai" },
+            { "msnv": "RYB103", "name": "Lê Thị Ngọc",      "jerseyNumber": 4, "position": "Hậu vệ",   "tenThiDau": 1995, "bu": "WHS-2",  "slogan": "Bức tường sắt" }
           ]
         },
         {
@@ -68,8 +68,8 @@
           "slogan": "Cuốn phăng mọi đối thủ",
           "color": "#8b5cf6",
           "athletes": [
-            { "msnv": "RYB111", "name": "Phạm Thanh Vy", "jerseyNumber": 1,  "position": "Thủ môn",   "birthYear": 1997, "bu": "WHS-3", "slogan": "Bão tới rồi" },
-            { "msnv": "RYB112", "name": "Hoàng Thuỳ Linh","jerseyNumber":10, "position": "Tiền đạo",  "birthYear": 1999, "bu": "WHS-3", "slogan": "Tia sét" }
+            { "msnv": "RYB111", "name": "Phạm Thanh Vy", "jerseyNumber": 1,  "position": "Thủ môn",   "tenThiDau": 1997, "bu": "WHS-3", "slogan": "Bão tới rồi" },
+            { "msnv": "RYB112", "name": "Hoàng Thuỳ Linh","jerseyNumber":10, "position": "Tiền đạo",  "tenThiDau": 1999, "bu": "WHS-3", "slogan": "Tia sét" }
           ]
         }
       ]
@@ -90,10 +90,10 @@
           "slogan": "Đập tan mọi giới hạn",
           "color": "#0284c7",
           "athletes": [
-            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "birthYear": 1997, "bu": "OP", "slogan": "Cú đập sấm sét" },
-            { "msnv": "RYB202", "name": "Trần Đăng Khoa",   "jerseyNumber": 5, "position": "Phụ công",  "birthYear": 1992, "bu": "WHS-2", "slogan": "Chắn lưới như tường" },
-            { "msnv": "RYB203", "name": "Lê Bá Hùng",       "jerseyNumber": 7, "position": "Chuyền hai", "birthYear": 1991, "bu": "OFFICE","slogan": "Đôi tay vàng" },
-            { "msnv": "RYB204", "name": "Vũ Đình Quân",     "jerseyNumber": 9, "position": "Libero",    "birthYear": 1994, "bu": "WHS-3", "slogan": "Lá chắn cuối cùng" }
+            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": 1997, "bu": "OP", "slogan": "Cú đập sấm sét" },
+            { "msnv": "RYB202", "name": "Trần Đăng Khoa",   "jerseyNumber": 5, "position": "Phụ công",  "tenThiDau": 1992, "bu": "WHS-2", "slogan": "Chắn lưới như tường" },
+            { "msnv": "RYB203", "name": "Lê Bá Hùng",       "jerseyNumber": 7, "position": "Chuyền hai", "tenThiDau": 1991, "bu": "OFFICE","slogan": "Đôi tay vàng" },
+            { "msnv": "RYB204", "name": "Vũ Đình Quân",     "jerseyNumber": 9, "position": "Libero",    "tenThiDau": 1994, "bu": "WHS-3", "slogan": "Lá chắn cuối cùng" }
           ]
         },
         {
@@ -102,8 +102,8 @@
           "slogan": "Bay cao, đập mạnh",
           "color": "#dc2626",
           "athletes": [
-            { "msnv": "RYB211", "name": "Phạm Anh Tú",     "jerseyNumber": 2, "position": "Chủ công",  "birthYear": 1996, "bu": "WHS-4", "slogan": "Lửa chiến" },
-            { "msnv": "RYB212", "name": "Hoàng Trọng Phú", "jerseyNumber": 6, "position": "Phụ công",  "birthYear": 1995, "bu": "WHS-4", "slogan": "Vua không trung" }
+            { "msnv": "RYB211", "name": "Phạm Anh Tú",     "jerseyNumber": 2, "position": "Chủ công",  "tenThiDau": 1996, "bu": "WHS-4", "slogan": "Lửa chiến" },
+            { "msnv": "RYB212", "name": "Hoàng Trọng Phú", "jerseyNumber": 6, "position": "Phụ công",  "tenThiDau": 1995, "bu": "WHS-4", "slogan": "Vua không trung" }
           ]
         }
       ]
@@ -124,9 +124,9 @@
           "slogan": "Chạy là hít thở",
           "color": "#ea580c",
           "athletes": [
-            { "msnv": "RYB301", "name": "Nguyễn Hoàng Phi", "jerseyNumber": 101, "position": "5km Nam",  "birthYear": 1995, "bu": "WHS-1", "slogan": "Gió cũng phải nhường" },
-            { "msnv": "RYB302", "name": "Trần Văn Lực",     "jerseyNumber": 102, "position": "5km Nam",  "birthYear": 1993, "bu": "WHS-2", "slogan": "Chân không mỏi" },
-            { "msnv": "RYB303", "name": "Lê Minh Đức",      "jerseyNumber": 103, "position": "10km Nam", "birthYear": 1992, "bu": "OFFICE","slogan": "Bền bỉ đến cùng" }
+            { "msnv": "RYB301", "name": "Nguyễn Hoàng Phi", "jerseyNumber": 101, "position": "5km Nam",  "tenThiDau": 1995, "bu": "WHS-1", "slogan": "Gió cũng phải nhường" },
+            { "msnv": "RYB302", "name": "Trần Văn Lực",     "jerseyNumber": 102, "position": "5km Nam",  "tenThiDau": 1993, "bu": "WHS-2", "slogan": "Chân không mỏi" },
+            { "msnv": "RYB303", "name": "Lê Minh Đức",      "jerseyNumber": 103, "position": "10km Nam", "tenThiDau": 1992, "bu": "OFFICE","slogan": "Bền bỉ đến cùng" }
           ]
         },
         {
@@ -135,8 +135,8 @@
           "slogan": "Mạnh mẽ và uyển chuyển",
           "color": "#ec4899",
           "athletes": [
-            { "msnv": "RYB311", "name": "Phạm Thu Hà",   "jerseyNumber": 201, "position": "3km Nữ", "birthYear": 1997, "bu": "WHS-3", "slogan": "Tốc độ là phong cách" },
-            { "msnv": "RYB312", "name": "Hoàng Lan Anh", "jerseyNumber": 202, "position": "5km Nữ", "birthYear": 1996, "bu": "WHS-3", "slogan": "Không bỏ cuộc" }
+            { "msnv": "RYB311", "name": "Phạm Thu Hà",   "jerseyNumber": 201, "position": "3km Nữ", "tenThiDau": 1997, "bu": "WHS-3", "slogan": "Tốc độ là phong cách" },
+            { "msnv": "RYB312", "name": "Hoàng Lan Anh", "jerseyNumber": 202, "position": "5km Nữ", "tenThiDau": 1996, "bu": "WHS-3", "slogan": "Không bỏ cuộc" }
           ]
         }
       ]
@@ -157,8 +157,8 @@
           "slogan": "Một mình một chiến tuyến",
           "color": "#0d9488",
           "athletes": [
-            { "msnv": "RYB401", "name": "Nguyễn Hoàng Long", "jerseyNumber": "SM-1", "position": "Đơn Nam", "birthYear": 1993, "bu": "WHS-1", "slogan": "Cú smash huyền thoại" },
-            { "msnv": "RYB402", "name": "Trần Mạnh Cường",   "jerseyNumber": "SM-2", "position": "Đơn Nam", "birthYear": 1995, "bu": "WHS-2", "slogan": "Nhanh như chớp" }
+            { "msnv": "RYB401", "name": "Nguyễn Hoàng Long", "jerseyNumber": "SM-1", "position": "Đơn Nam", "tenThiDau": 1993, "bu": "WHS-1", "slogan": "Cú smash huyền thoại" },
+            { "msnv": "RYB402", "name": "Trần Mạnh Cường",   "jerseyNumber": "SM-2", "position": "Đơn Nam", "tenThiDau": 1995, "bu": "WHS-2", "slogan": "Nhanh như chớp" }
           ]
         },
         {
@@ -167,8 +167,8 @@
           "slogan": "Bản lĩnh phái yếu",
           "color": "#db2777",
           "athletes": [
-            { "msnv": "RYB411", "name": "Lê Thanh Hằng", "jerseyNumber": "SW-1", "position": "Đơn Nữ", "birthYear": 1996, "bu": "OFFICE", "slogan": "Cô gái vàng" },
-            { "msnv": "RYB412", "name": "Phạm Thuý Diễm","jerseyNumber": "SW-2", "position": "Đơn Nữ", "birthYear": 1998, "bu": "WHS-3",  "slogan": "Cú đập tinh tế" }
+            { "msnv": "RYB411", "name": "Lê Thanh Hằng", "jerseyNumber": "SW-1", "position": "Đơn Nữ", "tenThiDau": 1996, "bu": "OFFICE", "slogan": "Cô gái vàng" },
+            { "msnv": "RYB412", "name": "Phạm Thuý Diễm","jerseyNumber": "SW-2", "position": "Đơn Nữ", "tenThiDau": 1998, "bu": "WHS-3",  "slogan": "Cú đập tinh tế" }
           ]
         },
         {
@@ -177,8 +177,8 @@
           "slogan": "Hai trái tim, một nhịp đập",
           "color": "#a855f7",
           "athletes": [
-            { "msnv": "RYB421", "name": "Vũ Đức Tài",    "jerseyNumber": "MX-1A", "position": "Đôi Nam Nữ (Nam)", "birthYear": 1994, "bu": "WHS-4", "slogan": "Đồng đội là tất cả", "pairWith": "RYB422" },
-            { "msnv": "RYB422", "name": "Đặng Khánh Linh","jerseyNumber":"MX-1B", "position": "Đôi Nam Nữ (Nữ)", "birthYear": 1995, "bu": "WHS-4", "slogan": "Cùng nhau chiến thắng", "pairWith": "RYB421" }
+            { "msnv": "RYB421", "name": "Vũ Đức Tài",    "jerseyNumber": "MX-1A", "position": "Đôi Nam Nữ (Nam)", "tenThiDau": 1994, "bu": "WHS-4", "slogan": "Đồng đội là tất cả", "pairWith": "RYB422" },
+            { "msnv": "RYB422", "name": "Đặng Khánh Linh","jerseyNumber":"MX-1B", "position": "Đôi Nam Nữ (Nữ)", "tenThiDau": 1995, "bu": "WHS-4", "slogan": "Cùng nhau chiến thắng", "pairWith": "RYB421" }
           ]
         }
       ]
@@ -199,9 +199,9 @@
           "slogan": "Trí tuệ là vũ khí",
           "color": "#1e293b",
           "athletes": [
-            { "msnv": "RYB501", "name": "Nguyễn Trí Minh",  "jerseyNumber": "GM-1", "position": "Kỳ thủ",      "birthYear": 1990, "bu": "OFFICE", "slogan": "Tính trước 10 nước" },
-            { "msnv": "RYB502", "name": "Trần Bảo Quốc",    "jerseyNumber": "GM-2", "position": "Kỳ thủ",      "birthYear": 1988, "bu": "WHS-1",  "slogan": "Tốt thí cũng có giá trị" },
-            { "msnv": "RYB503", "name": "Lê Khôi Nguyên",   "jerseyNumber": "GM-3", "position": "Kỳ thủ trẻ",  "birthYear": 2000, "bu": "WHS-2",  "slogan": "Hậu sinh khả uý" }
+            { "msnv": "RYB501", "name": "Nguyễn Trí Minh",  "jerseyNumber": "GM-1", "position": "Kỳ thủ",      "tenThiDau": 1990, "bu": "OFFICE", "slogan": "Tính trước 10 nước" },
+            { "msnv": "RYB502", "name": "Trần Bảo Quốc",    "jerseyNumber": "GM-2", "position": "Kỳ thủ",      "tenThiDau": 1988, "bu": "WHS-1",  "slogan": "Tốt thí cũng có giá trị" },
+            { "msnv": "RYB503", "name": "Lê Khôi Nguyên",   "jerseyNumber": "GM-3", "position": "Kỳ thủ trẻ",  "tenThiDau": 2000, "bu": "WHS-2",  "slogan": "Hậu sinh khả uý" }
           ]
         }
       ]
@@ -222,11 +222,11 @@
           "slogan": "Cùng nhau, chúng ta là rồng",
           "color": "#facc15",
           "athletes": [
-            { "msnv": "RYB601", "name": "Nguyễn Minh Khôi","jerseyNumber":"TOP",  "position": "Đường Trên",   "birthYear": 1998, "bu": "WHS-1",  "slogan": "Solo là chết" },
-            { "msnv": "RYB602", "name": "Trần Hữu Phước",  "jerseyNumber":"JG",   "position": "Đi Rừng",      "birthYear": 1999, "bu": "WHS-2",  "slogan": "Vua gank" },
-            { "msnv": "RYB603", "name": "Lê Tiến Đạt",     "jerseyNumber":"MID",  "position": "Đường Giữa",   "birthYear": 2000, "bu": "OFFICE", "slogan": "Carry hết game" },
-            { "msnv": "RYB604", "name": "Vũ Anh Khoa",     "jerseyNumber":"ADC",  "position": "Xạ Thủ",       "birthYear": 1997, "bu": "WHS-3",  "slogan": "Dame thật, hit thật" },
-            { "msnv": "RYB605", "name": "Phạm Đăng Khang", "jerseyNumber":"SUP",  "position": "Hỗ Trợ",       "birthYear": 1996, "bu": "WHS-4",  "slogan": "Tôi protect ADC" }
+            { "msnv": "RYB601", "name": "Nguyễn Minh Khôi","jerseyNumber":"TOP",  "position": "Đường Trên",   "tenThiDau": 1998, "bu": "WHS-1",  "slogan": "Solo là chết" },
+            { "msnv": "RYB602", "name": "Trần Hữu Phước",  "jerseyNumber":"JG",   "position": "Đi Rừng",      "tenThiDau": 1999, "bu": "WHS-2",  "slogan": "Vua gank" },
+            { "msnv": "RYB603", "name": "Lê Tiến Đạt",     "jerseyNumber":"MID",  "position": "Đường Giữa",   "tenThiDau": 2000, "bu": "OFFICE", "slogan": "Carry hết game" },
+            { "msnv": "RYB604", "name": "Vũ Anh Khoa",     "jerseyNumber":"ADC",  "position": "Xạ Thủ",       "tenThiDau": 1997, "bu": "WHS-3",  "slogan": "Dame thật, hit thật" },
+            { "msnv": "RYB605", "name": "Phạm Đăng Khang", "jerseyNumber":"SUP",  "position": "Hỗ Trợ",       "tenThiDau": 1996, "bu": "WHS-4",  "slogan": "Tôi protect ADC" }
           ]
         },
         {
@@ -235,11 +235,11 @@
           "slogan": "Trong bóng tối, chúng ta tỏa sáng",
           "color": "#7c3aed",
           "athletes": [
-            { "msnv": "RYB611", "name": "Hoàng Trung Hiếu","jerseyNumber":"TOP",  "position": "Đường Trên", "birthYear": 1998, "bu": "WHS-1", "slogan": "Tank cứng như đá" },
-            { "msnv": "RYB612", "name": "Đặng Quốc Anh",   "jerseyNumber":"JG",   "position": "Đi Rừng",    "birthYear": 1999, "bu": "WHS-2", "slogan": "Bóng đêm trỗi dậy" },
-            { "msnv": "RYB613", "name": "Bùi Mạnh Tường",  "jerseyNumber":"MID",  "position": "Đường Giữa", "birthYear": 2000, "bu": "OFFICE","slogan": "Pháp sư ánh sáng" },
-            { "msnv": "RYB614", "name": "Đinh Hoài Nam",   "jerseyNumber":"ADC",  "position": "Xạ Thủ",     "birthYear": 1997, "bu": "WHS-3", "slogan": "1 shot 1 kill" },
-            { "msnv": "RYB615", "name": "Cao Thành Long",  "jerseyNumber":"SUP",  "position": "Hỗ Trợ",     "birthYear": 1996, "bu": "WHS-4", "slogan": "Người hùng thầm lặng" }
+            { "msnv": "RYB611", "name": "Hoàng Trung Hiếu","jerseyNumber":"TOP",  "position": "Đường Trên", "tenThiDau": 1998, "bu": "WHS-1", "slogan": "Tank cứng như đá" },
+            { "msnv": "RYB612", "name": "Đặng Quốc Anh",   "jerseyNumber":"JG",   "position": "Đi Rừng",    "tenThiDau": 1999, "bu": "WHS-2", "slogan": "Bóng đêm trỗi dậy" },
+            { "msnv": "RYB613", "name": "Bùi Mạnh Tường",  "jerseyNumber":"MID",  "position": "Đường Giữa", "tenThiDau": 2000, "bu": "OFFICE","slogan": "Pháp sư ánh sáng" },
+            { "msnv": "RYB614", "name": "Đinh Hoài Nam",   "jerseyNumber":"ADC",  "position": "Xạ Thủ",     "tenThiDau": 1997, "bu": "WHS-3", "slogan": "1 shot 1 kill" },
+            { "msnv": "RYB615", "name": "Cao Thành Long",  "jerseyNumber":"SUP",  "position": "Hỗ Trợ",     "tenThiDau": 1996, "bu": "WHS-4", "slogan": "Người hùng thầm lặng" }
           ]
         }
       ]
@@ -260,10 +260,10 @@
           "slogan": "Sức mạnh là tất cả",
           "color": "#b45309",
           "athletes": [
-            { "msnv": "RYB701", "name": "Nguyễn Văn Hùng",  "jerseyNumber":"#1", "position": "Đầu dây", "birthYear": 1990, "bu": "WHS-1", "slogan": "Tay không bóp nát quả cam" },
-            { "msnv": "RYB702", "name": "Trần Mạnh Phong",  "jerseyNumber":"#2", "position": "Giữa dây","birthYear": 1991, "bu": "WHS-1", "slogan": "Vững như núi" },
-            { "msnv": "RYB703", "name": "Lê Đức Cảnh",      "jerseyNumber":"#3", "position": "Giữa dây","birthYear": 1992, "bu": "WHS-1", "slogan": "Kéo là thắng" },
-            { "msnv": "RYB704", "name": "Vũ Quang Tuấn",    "jerseyNumber":"#4", "position": "Cuối dây","birthYear": 1989, "bu": "WHS-1", "slogan": "Trụ chốt thép" }
+            { "msnv": "RYB701", "name": "Nguyễn Văn Hùng",  "jerseyNumber":"#1", "position": "Đầu dây", "tenThiDau": 1990, "bu": "WHS-1", "slogan": "Tay không bóp nát quả cam" },
+            { "msnv": "RYB702", "name": "Trần Mạnh Phong",  "jerseyNumber":"#2", "position": "Giữa dây","tenThiDau": 1991, "bu": "WHS-1", "slogan": "Vững như núi" },
+            { "msnv": "RYB703", "name": "Lê Đức Cảnh",      "jerseyNumber":"#3", "position": "Giữa dây","tenThiDau": 1992, "bu": "WHS-1", "slogan": "Kéo là thắng" },
+            { "msnv": "RYB704", "name": "Vũ Quang Tuấn",    "jerseyNumber":"#4", "position": "Cuối dây","tenThiDau": 1989, "bu": "WHS-1", "slogan": "Trụ chốt thép" }
           ]
         },
         {
@@ -272,8 +272,8 @@
           "slogan": "Hợp lực thành công",
           "color": "#15803d",
           "athletes": [
-            { "msnv": "RYB711", "name": "Phạm Văn Toàn",     "jerseyNumber":"#1", "position": "Đầu dây", "birthYear": 1988, "bu": "WHS-2", "slogan": "Cánh tay sắt" },
-            { "msnv": "RYB712", "name": "Hoàng Đình Sơn",    "jerseyNumber":"#2", "position": "Giữa dây","birthYear": 1990, "bu": "WHS-2", "slogan": "Một kéo là rơi" }
+            { "msnv": "RYB711", "name": "Phạm Văn Toàn",     "jerseyNumber":"#1", "position": "Đầu dây", "tenThiDau": 1988, "bu": "WHS-2", "slogan": "Cánh tay sắt" },
+            { "msnv": "RYB712", "name": "Hoàng Đình Sơn",    "jerseyNumber":"#2", "position": "Giữa dây","tenThiDau": 1990, "bu": "WHS-2", "slogan": "Một kéo là rơi" }
           ]
         }
       ]
@@ -294,8 +294,8 @@
           "slogan": "Nhảy như thỏ, nhanh như chớp",
           "color": "#f43f5e",
           "athletes": [
-            { "msnv": "RYB801", "name": "Nguyễn Mỹ Linh",   "jerseyNumber":"R1", "position": "Vận động viên", "birthYear": 1997, "bu": "OFFICE", "slogan": "Boing boing boing!" },
-            { "msnv": "RYB802", "name": "Trần Thuỳ Trang",  "jerseyNumber":"R2", "position": "Vận động viên", "birthYear": 1998, "bu": "WHS-1",  "slogan": "Nhảy đến đích" }
+            { "msnv": "RYB801", "name": "Nguyễn Mỹ Linh",   "jerseyNumber":"R1", "position": "Vận động viên", "tenThiDau": 1997, "bu": "OFFICE", "slogan": "Boing boing boing!" },
+            { "msnv": "RYB802", "name": "Trần Thuỳ Trang",  "jerseyNumber":"R2", "position": "Vận động viên", "tenThiDau": 1998, "bu": "WHS-1",  "slogan": "Nhảy đến đích" }
           ]
         },
         {
@@ -304,8 +304,8 @@
           "slogan": "Cú nhảy của đại lục",
           "color": "#f59e0b",
           "athletes": [
-            { "msnv": "RYB811", "name": "Lê Hồng Sơn",     "jerseyNumber":"K1", "position": "Vận động viên", "birthYear": 1995, "bu": "WHS-2", "slogan": "Bay luôn vạch đích" },
-            { "msnv": "RYB812", "name": "Phạm Tuấn Anh",   "jerseyNumber":"K2", "position": "Vận động viên", "birthYear": 1996, "bu": "WHS-3", "slogan": "Nhảy là thắng" }
+            { "msnv": "RYB811", "name": "Lê Hồng Sơn",     "jerseyNumber":"K1", "position": "Vận động viên", "tenThiDau": 1995, "bu": "WHS-2", "slogan": "Bay luôn vạch đích" },
+            { "msnv": "RYB812", "name": "Phạm Tuấn Anh",   "jerseyNumber":"K2", "position": "Vận động viên", "tenThiDau": 1996, "bu": "WHS-3", "slogan": "Nhảy là thắng" }
           ]
         }
       ]
