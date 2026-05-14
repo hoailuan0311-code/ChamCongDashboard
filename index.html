@@ -116,6 +116,32 @@ h2 {
 .btn-viewpass { background: linear-gradient(135deg,#8e44ad,#9b59b6); }
 .btn-chot { background: linear-gradient(135deg,#f59f00,#f08b00); }
 .btn-late { background: linear-gradient(135deg,#d43d2a,#c33a2a); box-shadow:0 4px 18px rgba(196,57,57,0.25); }
+.btn-sport {
+    background: linear-gradient(135deg,#ff6b6b 0%,#feca57 25%,#48dbfb 50%,#1dd1a1 75%,#a55eea 100%);
+    background-size: 200% 200%;
+    animation: sportBtnShine 4s ease infinite;
+    box-shadow: 0 4px 20px rgba(255,107,107,0.35);
+    position: relative;
+    overflow: hidden;
+}
+.btn-sport::before {
+    content:'';
+    position:absolute;
+    top:0; left:-100%;
+    width:50%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+    animation: sportBtnSheen 2.8s ease-in-out infinite;
+}
+@keyframes sportBtnShine {
+    0%   { background-position:   0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position:   0% 50%; }
+}
+@keyframes sportBtnSheen {
+    0%   { left:-100%; }
+    60%  { left: 200%; }
+    100% { left: 200%; }
+}
 
 @media (max-width: 880px) {
     .search-bar input { width: 60%; }
@@ -351,8 +377,7 @@ audio { display: none; }
     <button id="feedbackBtn" class="btn btn-feedback">📝 Phản hồi Chấm Công</button>
     <button id="passBtn" class="btn btn-pass">🔐 Quên Pass CADENA</button>
     <button id="viewPassBtn" class="btn btn-viewpass">📁 Xem Pass CADENA</button>
-    <button id="viewChotBtn" class="btn btn-chot">📊 Xem Chốt Công</button>
-    <button id="lateBtn" class="btn btn-late">⏱️ Late • Early • Missing</button>
+    <button id="sportDayBtn" class="btn btn-sport">🏆 GP-Sport Day 2026</button>
 </div>
 
 <h2 style="margin-top:28px;">Danh sách chi tiết</h2>
@@ -899,8 +924,7 @@ function renderAll(data){
 document.getElementById("feedbackBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wSm7WHpgCw","_blank"));
 document.getElementById("passBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wMUXy1P6P1","_blank"));
 document.getElementById("viewPassBtn").addEventListener("click", () => window.open("passCadena.html","_blank"));
-document.getElementById("viewChotBtn").addEventListener("click", () => window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/chotcong","_blank"));
-document.getElementById("lateBtn").addEventListener("click", () => window.open("https://hoailuan0311-code.github.io/ChamCongDashboard/LateEarly","_blank"));
+document.getElementById("sportDayBtn").addEventListener("click", () => window.open("sportday.html","_blank"));
 
 /* MUSIC */
 document.addEventListener("click",  ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
