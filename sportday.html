@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>🏆 GP-Sport Day 2026 – Warehouse Ryobi</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@400;600;800;900&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ===================== RESET ===================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+    font-family: "Be Vietnam Pro", sans-serif;
+    background: #05060a;
+    color: #fff;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+
+/* ===================== APP CONTAINER ===================== */
+#app {
+    position: fixed; inset: 0;
+    overflow: hidden;
+}
+
+/* ===================== TOP BAR ===================== */
+.topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 64px;
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 1000;
+    background: linear-gradient(180deg, rgba(5,6,10,0.92) 0%, rgba(5,6,10,0) 100%);
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+}
+.topbar > * { pointer-events: auto; }
+.topbar-left, .topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#1dd1a1,#a55eea);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShift 5s ease infinite;
+}
+@keyframes titleShift {
+    0%,100% { background-position: 0% 50%; }
+    50%     { background-position: 100% 50%; }
+}
+.topbar-btn {
+    width: 38px; height: 38px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .15s;
+}
+.topbar-btn:hover { background: rgba(255,255,255,0.14); transform: translateY(-2px); }
+.topbar-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ===================== VIEWS ===================== */
+.view {
+    position: absolute; inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .6s ease;
+    overflow: auto;
+}
+.view.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ===================== VIEW: LOADING ===================== */
+#view-loading {
+    background: radial-gradient(circle at 50% 50%, #0c1023 0%, #05060a 100%);
+    display: flex; align-items: center; justify-content: center; flex-direction: column;
+}
+.loading-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 9vw, 110px);
+    letter-spacing: 6px;
+    background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#1dd1a1,#a55eea);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShift 3s ease infinite, logoPulse 1.4s ease-in-out infinite alternate;
+    text-shadow: 0 0 60px rgba(255,107,107,0.3);
+}
+@keyframes logoPulse {
+    0%   { transform: scale(0.96); filter: brightness(0.95); }
+    100% { transform: scale(1.04); filter: brightness(1.15); }
+}
+.loading-sub {
+    margin-top: 10px;
+    font-size: 13px; letter-spacing: 6px;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+}
+.loading-bar {
+    margin-top: 30px;
+    width: 220px; height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 99px; overflow: hidden;
+    position: relative;
+}
+.loading-bar::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, #48dbfb, transparent);
+    animation: loadingScan 1.4s ease-in-out infinite;
+}
+@keyframes loadingScan {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* ===================== VIEW: HUB (Sport Selection) ===================== */
+#view-hub {
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(255,107,107,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(72,219,251,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(168,85,247,0.08) 0%, transparent 70%),
+        #05060a;
+    padding: 90px 32px 32px;
+}
+.hub-bg-grid {
+    position: fixed; inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+.hub-header {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: fadeUp .9s ease both;
+}
+.hub-header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 7vw, 90px);
+    letter-spacing: 5px;
+    line-height: 1;
+    background: linear-gradient(90deg,#ff6b6b,#feca57,#48dbfb,#1dd1a1,#a55eea);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShift 4s ease infinite;
+    margin-bottom: 6px;
+}
+.hub-header p {
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+}
+.hub-header .event-date {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 16px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sports-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+.sport-card {
+    position: relative;
+    aspect-ratio: 4/3;
+    border-radius: 22px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #0e1018;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform .35s cubic-bezier(.2,.9,.3,1.4), box-shadow .35s, border-color .35s;
+    opacity: 0;
+    animation: cardFadeIn .7s ease forwards;
+}
+@keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(30px) scale(.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.sport-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    border-color: rgba(255,255,255,0.25);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.5), 0 0 0 1px var(--sport-color, #fff);
+}
+.sport-card-bg {
+    position: absolute; inset: 0;
+    background: var(--sport-gradient, linear-gradient(135deg,#1a1d27,#0a0c14));
+    transition: transform .8s ease;
+}
+.sport-card:hover .sport-card-bg { transform: scale(1.1); }
+.sport-card-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.85) 100%);
+}
+.sport-card-icon {
+    position: absolute;
+    top: 18px; right: 18px;
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    transition: transform .35s;
+}
+.sport-card:hover .sport-card-icon { transform: rotate(-12deg) scale(1.15); }
+.sport-card-shortname {
+    position: absolute;
+    top: 22px; left: 22px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+}
+.sport-card-content {
+    position: absolute;
+    left: 22px; right: 22px; bottom: 18px;
+    z-index: 2;
+}
+.sport-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    line-height: 1.05;
+    margin-bottom: 6px;
+}
+.sport-card-meta {
+    display: flex; gap: 8px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+}
+.sport-card-meta span {
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+.sport-card-glow {
+    position: absolute;
+    inset: -2px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--sport-color, #fff), transparent 60%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity .35s;
+    filter: blur(20px);
+}
+.sport-card:hover .sport-card-glow { opacity: 0.6; }
+
+/* ===================== SPORT BACKGROUND THEMES ===================== */
+.bg-football   { background: linear-gradient(135deg,#0a4d2c 0%,#16a34a 50%,#0a4d2c 100%); }
+.bg-football::before {
+    content:''; position:absolute; inset:0;
+    background:
+        repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(255,255,255,0.06) 38px, rgba(255,255,255,0.06) 40px),
+        radial-gradient(circle at 50% 50%, transparent 40px, rgba(255,255,255,0.04) 40px, rgba(255,255,255,0.04) 42px, transparent 42px);
+}
+.bg-football_w { background: linear-gradient(135deg,#831843 0%,#ec4899 50%,#0a4d2c 100%); }
+.bg-football_w::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(90deg, transparent, transparent 38px, rgba(255,255,255,0.06) 38px, rgba(255,255,255,0.06) 40px);
+}
+.bg-volleyball { background: linear-gradient(135deg,#0c4a6e 0%,#0ea5e9 50%,#0c4a6e 100%); }
+.bg-volleyball::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 16px, rgba(255,255,255,0.08) 16px, rgba(255,255,255,0.08) 17px);
+}
+.bg-running    { background: linear-gradient(135deg,#7c2d12 0%,#f97316 50%,#fbbf24 100%); }
+.bg-running::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(255,255,255,0.07) 30px, rgba(255,255,255,0.07) 32px);
+}
+.bg-badminton  { background: linear-gradient(135deg,#134e4a 0%,#14b8a6 50%,#0f766e 100%); }
+.bg-badminton::before {
+    content:''; position:absolute; inset:0;
+    background:
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,0.15) 48%, rgba(255,255,255,0.15) 52%, transparent 52%),
+        linear-gradient(0deg,  transparent 30%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent 70%);
+}
+.bg-chess      { background: linear-gradient(135deg,#1e293b 0%,#475569 50%,#1e293b 100%); }
+.bg-chess::before {
+    content:''; position:absolute; inset:0;
+    background-image:
+        linear-gradient(45deg, rgba(255,255,255,0.07) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.07) 75%),
+        linear-gradient(45deg, rgba(255,255,255,0.07) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.07) 75%);
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+}
+.bg-esport     { background: linear-gradient(135deg,#1a0633 0%,#7c3aed 35%,#d946ef 70%,#1a0633 100%); }
+.bg-esport::before {
+    content:''; position:absolute; inset:0;
+    background:
+        linear-gradient(rgba(217,70,239,0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(217,70,239,0.18) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 80%);
+}
+.bg-tugofwar   { background: linear-gradient(135deg,#451a03 0%,#92400e 50%,#d97706 100%); }
+.bg-tugofwar::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(45deg, rgba(0,0,0,0.18), rgba(0,0,0,0.18) 12px, transparent 12px, transparent 24px);
+}
+.bg-sackrace   { background: linear-gradient(135deg,#7f1d1d 0%,#dc2626 35%,#f97316 70%,#facc15 100%); }
+.bg-sackrace::before {
+    content:''; position:absolute; inset:0;
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.18) 3px, transparent 4px),
+        radial-gradient(circle at 70% 60%, rgba(255,255,255,0.18) 4px, transparent 5px),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.18) 3px, transparent 4px),
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,0.18) 5px, transparent 6px);
+    background-size: 220px 220px, 280px 280px, 200px 200px, 260px 260px;
+}
+
+/* ===================== VIEW: TEAMS ===================== */
+#view-teams {
+    position: relative;
+    padding: 90px 32px 32px;
+}
+.teams-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+.teams-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(5,6,10,0.65) 0%, rgba(5,6,10,0.9) 100%);
+}
+.teams-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+.teams-header {
+    margin-bottom: 30px;
+    animation: fadeUp .8s ease both;
+}
+.teams-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    transition: background .2s;
+}
+.teams-back:hover { background: rgba(255,255,255,0.18); }
+.teams-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 8vw, 90px);
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.teams-subtitle {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.65);
+    text-transform: uppercase;
+}
+
+.teams-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+.team-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(12px);
+    padding: 26px 24px;
+    min-height: 200px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    transition: transform .35s cubic-bezier(.2,.9,.3,1.4), border-color .35s, box-shadow .35s;
+    opacity: 0;
+    animation: cardFadeIn .7s ease forwards;
+}
+.team-card:hover {
+    transform: translateY(-5px) scale(1.015);
+    border-color: var(--team-color, #fff);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.4), 0 0 30px var(--team-color, #fff)40;
+}
+.team-card::before {
+    content:'';
+    position: absolute;
+    top:0; left:0; right:0;
+    height: 3px;
+    background: var(--team-color, #fff);
+}
+.team-card-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.5);
+}
+.team-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1.05;
+    letter-spacing: 2px;
+    color: #fff;
+    margin: 6px 0 10px;
+}
+.team-card-slogan {
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.4;
+}
+.team-card-meta {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-top: 16px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.team-card-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,0.7);
+}
+.team-card-play {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--team-color, #fff);
+    color: #000;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: transform .25s;
+}
+.team-card:hover .team-card-play { transform: scale(1.15); }
+
+/* ===================== VIEW: SHOWCASE (Athlete Slideshow) ===================== */
+#view-showcase {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+.showcase-bg {
+    position: absolute; inset: 0;
+    z-index: 0;
+}
+.showcase-bg::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse at 30% 50%, transparent 0%, rgba(0,0,0,0.4) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.8) 100%);
+}
+.showcase-particles {
+    position: absolute; inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+.particle {
+    position: absolute;
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.55);
+    box-shadow: 0 0 8px currentColor;
+    animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+    0%   { transform: translate(0,0) scale(1); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translate(var(--dx,40px), calc(var(--dy,-100vh))) scale(0.4); opacity: 0; }
+}
+
+.showcase-overlay {
+    position: absolute; inset: 0;
+    z-index: 2;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* Athlete card layout */
+.athlete-stage {
+    position: relative;
+    width: min(1200px, 95vw);
+    height: min(720px, 88vh);
+    display: grid;
+    grid-template-columns: 1.1fr 1.4fr;
+    gap: 40px;
+    align-items: center;
+}
+@media (max-width: 880px) {
+    .athlete-stage {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto;
+        gap: 20px;
+        height: 95vh;
+    }
+}
+
+/* === Photo with neon border === */
+.athlete-photo-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    max-height: 70vh;
+    margin: 0 auto;
+    perspective: 1200px;
+}
+.athlete-photo-bg-glow {
+    position: absolute;
+    inset: -50px;
+    background: conic-gradient(from 0deg, var(--accent1,#ff6b6b), var(--accent2,#48dbfb), var(--accent3,#1dd1a1), var(--accent1,#ff6b6b));
+    filter: blur(60px);
+    opacity: 0.55;
+    animation: spinSlow 8s linear infinite;
+    z-index: -1;
+}
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+
+.athlete-photo {
+    position: relative;
+    width: 100%; height: 100%;
+    border-radius: 22px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.05);
+    transform-style: preserve-3d;
+    animation: photoEntry 1.2s cubic-bezier(.2,.9,.3,1.2) both;
+    box-shadow:
+        0 30px 60px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.15);
+}
+@keyframes photoEntry {
+    0%   { transform: translateY(50px) scale(0.5) rotateY(-180deg); opacity: 0; filter: blur(20px); }
+    60%  { transform: translateY(0) scale(1.05) rotateY(20deg); opacity: 1; filter: blur(0); }
+    100% { transform: translateY(0) scale(1) rotateY(0); opacity: 1; }
+}
+.athlete-photo img,
+.athlete-photo svg.default-avatar {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    animation: photoIdle 6s ease-in-out infinite alternate;
+}
+@keyframes photoIdle {
+    0%   { transform: scale(1) translateY(0); }
+    100% { transform: scale(1.05) translateY(-6px); }
+}
+
+/* Chasing neon border (4 sides animated separately) */
+.athlete-photo-border {
+    position: absolute;
+    inset: -4px;
+    border-radius: 26px;
+    pointer-events: none;
+    z-index: 3;
+}
+.athlete-photo-border::before,
+.athlete-photo-border::after {
+    content:'';
+    position:absolute;
+    border-radius: 26px;
+    inset: 0;
+}
+.athlete-photo-border::before {
+    background: conic-gradient(from var(--angle,0deg),
+        transparent 0%,
+        var(--accent1,#ff6b6b) 20%,
+        var(--accent2,#48dbfb) 40%,
+        transparent 60%,
+        transparent 100%);
+    animation: borderSpin 3s linear infinite;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    padding: 4px;
+    filter: drop-shadow(0 0 12px var(--accent1,#ff6b6b)) drop-shadow(0 0 20px var(--accent2,#48dbfb));
+}
+@keyframes borderSpin { to { transform: rotate(360deg); } }
+
+/* corner brackets - cinematic frame */
+.athlete-photo-corners {
+    position: absolute; inset: -12px;
+    pointer-events: none;
+    z-index: 4;
+}
+.athlete-photo-corners span {
+    position: absolute;
+    width: 28px; height: 28px;
+    border-color: var(--accent1,#ff6b6b);
+    border-style: solid;
+}
+.athlete-photo-corners span:nth-child(1) { top:0; left:0; border-width: 3px 0 0 3px; }
+.athlete-photo-corners span:nth-child(2) { top:0; right:0; border-width: 3px 3px 0 0; }
+.athlete-photo-corners span:nth-child(3) { bottom:0; left:0; border-width: 0 0 3px 3px; }
+.athlete-photo-corners span:nth-child(4) { bottom:0; right:0; border-width: 0 3px 3px 0; }
+.athlete-photo-corners span {
+    animation: cornerPulse 1.6s ease-in-out infinite alternate;
+}
+@keyframes cornerPulse {
+    0%   { opacity: 0.5; transform: scale(0.85); }
+    100% { opacity: 1;   transform: scale(1.1); }
+}
+
+/* Sweeping light beam over the photo */
+.athlete-photo::after {
+    content:'';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+    background-size: 220% 100%;
+    animation: photoShine 3.5s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+@keyframes photoShine {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -100% 0; }
+}
+
+/* === Athlete Info Panel === */
+.athlete-info {
+    position: relative;
+    color: #fff;
+}
+.athlete-team-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--accent1, #fff);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    animation: slideRight .6s .3s ease both;
+    backdrop-filter: blur(8px);
+}
+.athlete-team-tag .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent1, #fff);
+    box-shadow: 0 0 12px var(--accent1, #fff);
+    animation: dotPulse 1s ease-in-out infinite alternate;
+}
+@keyframes dotPulse {
+    from { transform: scale(1); }
+    to   { transform: scale(1.4); }
+}
+@keyframes slideRight {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.athlete-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 7vw, 110px);
+    letter-spacing: 2px;
+    line-height: 0.95;
+    margin-bottom: 4px;
+    background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.65) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 60px rgba(255,255,255,0.25);
+}
+.athlete-name .word {
+    display: inline-block;
+    margin-right: 0.3em;
+}
+.athlete-name .letter {
+    display: inline-block;
+    opacity: 0;
+    animation: letterReveal .5s ease both;
+    filter: blur(10px);
+}
+@keyframes letterReveal {
+    from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+    to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.athlete-msnv {
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 6px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 24px;
+    animation: slideRight .6s .9s ease both;
+}
+
+.athlete-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.stat-card {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: statEnter .6s ease both;
+}
+.stat-card:nth-child(1) { animation-delay: 1.1s; }
+.stat-card:nth-child(2) { animation-delay: 1.2s; }
+.stat-card:nth-child(3) { animation-delay: 1.3s; }
+.stat-card:nth-child(4) { animation-delay: 1.4s; }
+@keyframes statEnter {
+    from { opacity: 0; transform: translateY(15px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.stat-label {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.stat-value {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.athlete-slogan {
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.85);
+    border-left: 3px solid var(--accent1, #fff);
+    padding-left: 16px;
+    margin-top: 8px;
+    overflow: hidden;
+    animation: slideRight .6s 1.6s ease both;
+    position: relative;
+}
+.athlete-slogan::before {
+    content: '"';
+    position: absolute;
+    left: 12px;
+    top: -10px;
+    font-size: 60px;
+    color: var(--accent1, #fff);
+    opacity: 0.3;
+    font-family: 'Bebas Neue', sans-serif;
+    line-height: 1;
+}
+.athlete-slogan-text {
+    display: inline-block;
+    opacity: 0;
+    animation: typingFade .8s 1.8s ease forwards;
+}
+@keyframes typingFade {
+    from { opacity: 0; letter-spacing: 6px; filter: blur(4px); }
+    to   { opacity: 1; letter-spacing: 0; filter: blur(0); }
+}
+
+/* === HUGE JERSEY NUMBER === */
+.jersey-number {
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 16vw, 220px);
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -5px;
+    background: linear-gradient(180deg, var(--accent1,#ff6b6b) 0%, transparent 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 2px var(--accent1, #ff6b6b);
+    z-index: 0;
+    pointer-events: none;
+    animation: jerseyBounce 1s cubic-bezier(.5,1.7,.4,1) both, jerseyFloat 4s ease-in-out infinite alternate 1s;
+    text-shadow: 0 0 40px var(--accent1,#ff6b6b);
+}
+@keyframes jerseyBounce {
+    0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+    70%  { transform: scale(1.15) rotate(8deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes jerseyFloat {
+    0%   { transform: translateY(0) rotate(-2deg); }
+    100% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* === Bottom Progress / Controls === */
+.showcase-controls {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    padding: 14px 24px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%);
+    display: flex; flex-direction: column; gap: 8px;
+}
+.progress-bar {
+    width: 100%; height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 99px; overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent1,#ff6b6b), var(--accent2,#48dbfb));
+    width: 0;
+    transition: width .12s linear;
+    border-radius: 99px;
+    box-shadow: 0 0 10px var(--accent1,#ff6b6b);
+}
+.controls-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+}
+.controls-left, .controls-right {
+    display: flex; align-items: center; gap: 10px;
+}
+.ctrl-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff;
+    font-size: 14px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .15s;
+}
+.ctrl-btn:hover { background: rgba(255,255,255,0.22); transform: scale(1.1); }
+.ctrl-btn.large {
+    width: 52px; height: 52px;
+    background: var(--accent1, #fff);
+    color: #000;
+    font-size: 18px;
+}
+.ctrl-btn.large:hover { background: var(--accent2, #fff); }
+.athlete-counter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Athlete transition wrapper */
+.athlete-slide {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0;
+    transform: scale(1.05);
+    transition: opacity .6s, transform .6s;
+}
+.athlete-slide.active {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Whoosh transition flash */
+.whoosh {
+    position: fixed; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: translateX(-100%);
+    z-index: 200;
+    pointer-events: none;
+}
+.whoosh.active {
+    animation: whooshFlash .6s ease;
+}
+@keyframes whooshFlash {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: rgba(255,255,255,0.03); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* No athlete fallback */
+.no-data {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- TOP BAR -->
+    <div class="topbar" id="topbar" style="display:none;">
+        <div class="topbar-left">
+            <button class="topbar-btn" id="btnHome" title="Trang chính">🏠</button>
+            <button class="topbar-btn" id="btnBack" title="Quay lại">←</button>
+        </div>
+        <div class="topbar-title">GP-SPORT DAY 2026</div>
+        <div class="topbar-right">
+            <button class="topbar-btn" id="btnMute" title="Tắt/Mở nhạc">🔊</button>
+            <button class="topbar-btn" id="btnFullscreen" title="Toàn màn hình">⛶</button>
+        </div>
+    </div>
+
+    <!-- VIEW: LOADING -->
+    <div class="view active" id="view-loading">
+        <div class="loading-logo">GP-SPORT<br>DAY 2026</div>
+        <div class="loading-sub">WAREHOUSE RYOBI</div>
+        <div class="loading-bar"></div>
+    </div>
+
+    <!-- VIEW: HUB -->
+    <div class="view" id="view-hub">
+        <div class="hub-bg-grid"></div>
+        <div class="hub-header">
+            <h1 id="eventTitle">GP-SPORT DAY 2026</h1>
+            <p id="eventSubtitle">Warehouse Ryobi — Spirit • Unity • Victory</p>
+            <span class="event-date" id="eventDate">Tháng 06 / 2026</span>
+        </div>
+        <div class="sports-grid" id="sportsGrid"></div>
+    </div>
+
+    <!-- VIEW: TEAMS -->
+    <div class="view" id="view-teams">
+        <div class="teams-bg" id="teamsBg"></div>
+        <div class="teams-content">
+            <div class="teams-header">
+                <button class="teams-back" id="teamsBackBtn">← Quay lại danh sách môn</button>
+                <div class="teams-title" id="teamsTitle"></div>
+                <div class="teams-subtitle" id="teamsSubtitle"></div>
+            </div>
+            <div class="teams-grid" id="teamsGrid"></div>
+        </div>
+    </div>
+
+    <!-- VIEW: SHOWCASE -->
+    <div class="view" id="view-showcase">
+        <div class="showcase-bg" id="showcaseBg"></div>
+        <div class="showcase-particles" id="showcaseParticles"></div>
+        <div class="showcase-overlay" id="showcaseOverlay"></div>
+        <div class="showcase-controls">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <div class="controls-row">
+                <div class="controls-left">
+                    <button class="ctrl-btn" id="btnPrev" title="Trước">⏮</button>
+                    <button class="ctrl-btn large" id="btnPlayPause" title="Tạm dừng">⏸</button>
+                    <button class="ctrl-btn" id="btnNext" title="Sau">⏭</button>
+                </div>
+                <div class="athlete-counter" id="athleteCounter">1 / 1</div>
+                <div class="controls-right">
+                    <button class="ctrl-btn" id="btnExitShow" title="Thoát">✕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="whoosh" id="whoosh"></div>
+</div>
+
+<!-- background music -->
+<audio id="bgMusic" loop>
+    <source src="theme/sport-bgm.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* =========================================================
+   STATE
+========================================================= */
+const STATE = {
+    data: null,
+    currentSport: null,
+    currentTeam: null,
+    currentAthleteIdx: 0,
+    isPlaying: true,
+    isMuted: false,
+    slideDuration: 7000,         // 7 seconds per athlete
+    timer: null,
+    progressTimer: null,
+    progressStart: 0,
+    elapsed: 0,
+};
+
+/* =========================================================
+   DATA LOADING
+========================================================= */
+async function loadData(){
+    try{
+        const res = await fetch('sportday.json?v=' + Date.now());
+        if(!res.ok) throw new Error('Cannot fetch sportday.json');
+        STATE.data = await res.json();
+    } catch(err){
+        console.error(err);
+        // fallback minimal
+        STATE.data = { event:{title:'GP-Sport Day 2026', subtitle:'', date:''}, sports: [] };
+    }
+}
+
+/* =========================================================
+   VIEW NAV
+========================================================= */
+function showView(name){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('topbar').style.display = name === 'loading' ? 'none' : 'flex';
+    if(name !== 'showcase') stopSlideshow();
+}
+
+/* =========================================================
+   HUB VIEW
+========================================================= */
+function renderHub(){
+    const ev = STATE.data.event || {};
+    document.getElementById('eventTitle').textContent = ev.title || 'GP-Sport Day 2026';
+    document.getElementById('eventSubtitle').textContent = ev.subtitle || '';
+    document.getElementById('eventDate').textContent = ev.date || '';
+
+    const grid = document.getElementById('sportsGrid');
+    grid.innerHTML = '';
+    (STATE.data.sports || []).forEach((sp, i) => {
+        const totalAthletes = (sp.teams||[]).reduce((s,t)=>s+(t.athletes||[]).length, 0);
+        const card = document.createElement('div');
+        card.className = 'sport-card';
+        card.style.animationDelay = (i * 0.06) + 's';
+        card.style.setProperty('--sport-color', sp.color || '#fff');
+        card.style.setProperty('--sport-gradient', `linear-gradient(135deg, ${sp.color||'#1a1d27'} 0%, ${sp.color2||'#0a0c14'} 100%)`);
+        card.innerHTML = `
+            <div class="sport-card-bg bg-${sp.theme||'football'}"></div>
+            <div class="sport-card-glow"></div>
+            <div class="sport-card-shortname">${sp.shortName || sp.name}</div>
+            <div class="sport-card-icon">${sp.icon || '🏆'}</div>
+            <div class="sport-card-content">
+                <div class="sport-card-name">${sp.name}</div>
+                <div class="sport-card-meta">
+                    <span>${(sp.teams||[]).length} đội</span>
+                    <span>${totalAthletes} VĐV</span>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', () => openSport(sp));
+        grid.appendChild(card);
+    });
+}
+
+/* =========================================================
+   TEAMS VIEW
+========================================================= */
+function openSport(sport){
+    STATE.currentSport = sport;
+    const bg = document.getElementById('teamsBg');
+    bg.className = 'teams-bg bg-' + (sport.theme || 'football');
+
+    document.getElementById('teamsTitle').textContent = sport.name;
+    document.getElementById('teamsSubtitle').textContent = sport.shortName || '';
+
+    const grid = document.getElementById('teamsGrid');
+    grid.innerHTML = '';
+    const teams = sport.teams || [];
+
+    if(teams.length === 0){
+        grid.innerHTML = '<div class="no-data">Chưa có đội nào cho môn này.</div>';
+    } else {
+        teams.forEach((t, i) => {
+            const card = document.createElement('div');
+            card.className = 'team-card';
+            card.style.animationDelay = (i * 0.08) + 's';
+            card.style.setProperty('--team-color', t.color || sport.color || '#fff');
+            card.innerHTML = `
+                <div class="team-card-num">TEAM ${String(i+1).padStart(2,'0')}</div>
+                <div class="team-card-name">${t.name}</div>
+                <div class="team-card-slogan">"${t.slogan || ''}"</div>
+                <div class="team-card-meta">
+                    <div class="team-card-count">${(t.athletes||[]).length} VĐV</div>
+                    <div class="team-card-play">▶</div>
+                </div>
+            `;
+            card.addEventListener('click', () => openTeam(sport, t));
+            grid.appendChild(card);
+        });
+    }
+
+    showView('teams');
+}
+
+/* =========================================================
+   SHOWCASE VIEW (Athlete slideshow)
+========================================================= */
+function openTeam(sport, team){
+    STATE.currentTeam = team;
+    STATE.currentAthleteIdx = 0;
+    STATE.isPlaying = true;
+    document.getElementById('btnPlayPause').textContent = '⏸';
+
+    const bg = document.getElementById('showcaseBg');
+    bg.className = 'showcase-bg bg-' + (sport.theme || 'football');
+
+    showView('showcase');
+    renderParticles(sport);
+    renderAthlete();
+    startSlideshow();
+    tryPlayMusic();
+}
+
+function renderParticles(sport){
+    const cont = document.getElementById('showcaseParticles');
+    cont.innerHTML = '';
+    const colors = [sport.color || '#fff', sport.color2 || '#fff', '#ffffff'];
+    const count = 40;
+    for(let i = 0; i < count; i++){
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = 2 + Math.random() * 5;
+        p.style.width  = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left   = (Math.random()*100) + '%';
+        p.style.bottom = (Math.random()*30 - 10) + '%';
+        p.style.color  = colors[i % colors.length];
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty('--dx',  (Math.random()*120 - 60) + 'px');
+        p.style.setProperty('--dy', -(80 + Math.random()*60) + 'vh');
+        p.style.animationDuration = (5 + Math.random()*6) + 's';
+        p.style.animationDelay    = (-Math.random()*8) + 's';
+        cont.appendChild(p);
+    }
+}
+
+function buildDefaultAvatar(color){
+    // simple silhouette SVG
+    return `
+        <svg class="default-avatar" viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="${color}" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#000" stop-opacity="0.6"/>
+                </linearGradient>
+                <linearGradient id="silGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+                    <stop offset="100%" stop-color="rgba(255,255,255,0.4)"/>
+                </linearGradient>
+            </defs>
+            <rect width="200" height="260" fill="url(#bgGrad)"/>
+            <circle cx="100" cy="95" r="38" fill="url(#silGrad)"/>
+            <path d="M100,140 C60,140 35,170 30,220 C30,235 40,250 60,250 L140,250 C160,250 170,235 170,220 C165,170 140,140 100,140 Z" fill="url(#silGrad)"/>
+            <text x="100" y="245" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="11" letter-spacing="2" fill="rgba(255,255,255,0.6)">NO PHOTO</text>
+        </svg>
+    `;
+}
+
+function splitName(name){
+    return (name||'').split(/\s+/).filter(Boolean).map((word, wi) => {
+        const letters = word.split('').map((ch, li) => {
+            const idx = wi*20 + li;
+            return `<span class="letter" style="animation-delay:${0.4 + idx*0.04}s">${ch}</span>`;
+        }).join('');
+        return `<span class="word">${letters}</span>`;
+    }).join('');
+}
+
+function renderAthlete(){
+    const sport = STATE.currentSport;
+    const team  = STATE.currentTeam;
+    const list  = team.athletes || [];
+    if(list.length === 0){
+        document.getElementById('showcaseOverlay').innerHTML = '<div class="no-data">Chưa có VĐV.</div>';
+        return;
+    }
+    if(STATE.currentAthleteIdx < 0) STATE.currentAthleteIdx = list.length - 1;
+    if(STATE.currentAthleteIdx >= list.length) STATE.currentAthleteIdx = 0;
+
+    const a = list[STATE.currentAthleteIdx];
+    const accent1 = team.color || sport.color || '#ff6b6b';
+    const accent2 = sport.color2 || sport.color || '#48dbfb';
+    const accent3 = sport.color  || '#1dd1a1';
+
+    const overlay = document.getElementById('showcaseOverlay');
+    overlay.innerHTML = `
+        <div class="athlete-slide active" style="--accent1:${accent1};--accent2:${accent2};--accent3:${accent3};">
+            <div class="athlete-stage">
+                <div class="athlete-photo-wrap">
+                    <div class="athlete-photo-bg-glow"></div>
+                    <div class="athlete-photo">
+                        <img id="athleteImg" alt="${a.name}" />
+                    </div>
+                    <div class="athlete-photo-border"></div>
+                    <div class="athlete-photo-corners"><span></span><span></span><span></span><span></span></div>
+                </div>
+                <div class="athlete-info">
+                    <div class="jersey-number">${a.jerseyNumber ?? '#'}</div>
+                    <div class="athlete-team-tag">
+                        <span class="dot"></span>
+                        <span>${sport.name} · ${team.name}</span>
+                    </div>
+                    <div class="athlete-name">${splitName(a.name)}</div>
+                    <div class="athlete-msnv">MSNV · ${a.msnv}</div>
+                    <div class="athlete-stats">
+                        <div class="stat-card">
+                            <div class="stat-label">Vị trí</div>
+                            <div class="stat-value">${a.position || '—'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Số áo</div>
+                            <div class="stat-value">${a.jerseyNumber ?? '—'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Đơn vị</div>
+                            <div class="stat-value">${a.bu || '—'}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Năm sinh</div>
+                            <div class="stat-value">${a.birthYear || '—'}</div>
+                        </div>
+                    </div>
+                    ${a.slogan ? `<div class="athlete-slogan"><span class="athlete-slogan-text">${a.slogan}</span></div>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // try loading image. Tries .jpg → .png → .jpeg → .webp, then fallback to silhouette.
+    const img = document.getElementById('athleteImg');
+    const exts = ['jpg','png','jpeg','webp','JPG','PNG'];
+    let tryIdx = 0;
+    img.onerror = () => {
+        tryIdx++;
+        if(tryIdx < exts.length){
+            img.src = `game/sport/${a.msnv}.${exts[tryIdx]}`;
+        } else {
+            // replace img with silhouette SVG
+            const parent = img.parentNode;
+            img.remove();
+            parent.insertAdjacentHTML('beforeend', buildDefaultAvatar(accent1));
+        }
+    };
+    img.src = `game/sport/${a.msnv}.${exts[0]}`;
+
+    // counter
+    document.getElementById('athleteCounter').textContent =
+        `${STATE.currentAthleteIdx+1} / ${list.length}`;
+
+    // whoosh effect
+    const w = document.getElementById('whoosh');
+    w.classList.remove('active');
+    void w.offsetWidth;
+    w.classList.add('active');
+}
+
+/* =========================================================
+   SLIDESHOW TIMING
+========================================================= */
+function startSlideshow(){
+    stopSlideshow();
+    STATE.progressStart = Date.now();
+    STATE.elapsed = 0;
+    if(!STATE.isPlaying) return;
+    STATE.timer = setTimeout(nextAthlete, STATE.slideDuration);
+    STATE.progressTimer = setInterval(updateProgress, 50);
+}
+function stopSlideshow(){
+    if(STATE.timer){ clearTimeout(STATE.timer); STATE.timer = null; }
+    if(STATE.progressTimer){ clearInterval(STATE.progressTimer); STATE.progressTimer = null; }
+}
+function updateProgress(){
+    const pct = Math.min(100, ((Date.now() - STATE.progressStart + STATE.elapsed) / STATE.slideDuration) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+}
+function nextAthlete(){
+    STATE.currentAthleteIdx++;
+    if(STATE.currentAthleteIdx >= (STATE.currentTeam.athletes||[]).length){
+        STATE.currentAthleteIdx = 0;
+    }
+    renderAthlete();
+    startSlideshow();
+}
+function prevAthlete(){
+    STATE.currentAthleteIdx--;
+    if(STATE.currentAthleteIdx < 0){
+        STATE.currentAthleteIdx = (STATE.currentTeam.athletes||[]).length - 1;
+    }
+    renderAthlete();
+    startSlideshow();
+}
+function togglePlay(){
+    STATE.isPlaying = !STATE.isPlaying;
+    document.getElementById('btnPlayPause').textContent = STATE.isPlaying ? '⏸' : '▶';
+    if(STATE.isPlaying){
+        startSlideshow();
+    } else {
+        STATE.elapsed += (Date.now() - STATE.progressStart);
+        stopSlideshow();
+    }
+}
+
+/* =========================================================
+   MUSIC
+========================================================= */
+function tryPlayMusic(){
+    const m = document.getElementById('bgMusic');
+    if(!m || STATE.isMuted) return;
+    m.volume = 0.4;
+    m.play().catch(()=>{});
+}
+function toggleMute(){
+    STATE.isMuted = !STATE.isMuted;
+    const m = document.getElementById('bgMusic');
+    if(m){
+        if(STATE.isMuted){ m.pause(); } else { m.play().catch(()=>{}); }
+    }
+    document.getElementById('btnMute').textContent = STATE.isMuted ? '🔇' : '🔊';
+}
+
+/* =========================================================
+   TOP BAR HANDLERS
+========================================================= */
+document.getElementById('btnHome').addEventListener('click', () => {
+    showView('hub');
+});
+document.getElementById('btnBack').addEventListener('click', () => {
+    // smart back
+    const active = document.querySelector('.view.active').id;
+    if(active === 'view-showcase')      showView('teams');
+    else if(active === 'view-teams')    showView('hub');
+});
+document.getElementById('btnMute').addEventListener('click', toggleMute);
+document.getElementById('btnFullscreen').addEventListener('click', () => {
+    if(!document.fullscreenElement){
+        document.documentElement.requestFullscreen().catch(()=>{});
+    } else {
+        document.exitFullscreen().catch(()=>{});
+    }
+});
+
+document.getElementById('teamsBackBtn').addEventListener('click', () => showView('hub'));
+
+document.getElementById('btnPrev').addEventListener('click', prevAthlete);
+document.getElementById('btnNext').addEventListener('click', nextAthlete);
+document.getElementById('btnPlayPause').addEventListener('click', togglePlay);
+document.getElementById('btnExitShow').addEventListener('click', () => showView('teams'));
+
+// click on showcase to advance (but not when clicking controls)
+document.getElementById('view-showcase').addEventListener('click', (e) => {
+    if(e.target.closest('.showcase-controls')) return;
+    nextAthlete();
+});
+
+// keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    const active = document.querySelector('.view.active')?.id;
+    if(active === 'view-showcase'){
+        if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextAthlete(); }
+        else if(e.key === 'ArrowLeft')              { prevAthlete(); }
+        else if(e.key.toLowerCase() === 'p')        { togglePlay(); }
+        else if(e.key === 'Escape')                 { showView('teams'); }
+    } else if(active === 'view-teams' && e.key === 'Escape'){
+        showView('hub');
+    }
+});
+
+/* =========================================================
+   BOOT
+========================================================= */
+(async function init(){
+    await loadData();
+    renderHub();
+    setTimeout(() => showView('hub'), 1800);
+})();
+
+/* try music on first user interaction */
+document.addEventListener('click', () => {
+    const m = document.getElementById('bgMusic');
+    if(m && !STATE.isMuted) m.play().catch(()=>{});
+}, {once:true});
+
+</script>
+
+</body>
+</html>
