@@ -163,7 +163,7 @@
           "slogan": "Một mình một chiến tuyến",
           "color": "#0d9488",
           "athletes": [
-            { "msnv": "RYB401", "name": "Trần Quang Trung", "jerseyNumber": "SM-1", "position": "Đơn Nam", "tenThiDau": 1993, "bu": "WHS-1", "slogan": "Cú smash huyền thoại" },
+            { "msnv": "593662", "name": "Trần Quang Trung", "jerseyNumber": "SM-1", "position": "Đơn Nam", "tenThiDau": Quang Trung, "bu": "OP", "slogan": "Cú smash huyền thoại" },
             { "msnv": "RYB402", "name": "Trần Mạnh Cường",   "jerseyNumber": "SM-2", "position": "Đơn Nam", "tenThiDau": 1995, "bu": "WHS-2", "slogan": "Nhanh như chớp" }
           ]
         },
@@ -173,18 +173,18 @@
           "slogan": "Bản lĩnh phái yếu",
           "color": "#db2777",
           "athletes": [
-            { "msnv": "RYB411", "name": "Lê Thanh Hằng", "jerseyNumber": "SW-1", "position": "Đơn Nữ", "tenThiDau": 1996, "bu": "OFFICE", "slogan": "Cô gái vàng" },
+            { "msnv": "511586", "name": "Phạm Thị Thu", "jerseyNumber": "SW-1", "position": "Đơn Nữ", "tenThiDau": Thu Phạm, "bu": "OP", "slogan": "Cô gái vàng" },
             { "msnv": "RYB412", "name": "Phạm Thuý Diễm","jerseyNumber": "SW-2", "position": "Đơn Nữ", "tenThiDau": 1998, "bu": "WHS-3",  "slogan": "Cú đập tinh tế" }
           ]
         },
         {
           "id": "bd_double_mx",
           "name": "Đôi Nam Nữ",
-          "slogan": "Hai trái tim, một nhịp đập",
+          "slogan": "Hai trái tim, một nhịp smash",
           "color": "#a855f7",
           "athletes": [
-            { "msnv": "RYB421", "name": "Vũ Đức Tài",    "jerseyNumber": "MX-1A", "position": "Đôi Nam Nữ (Nam)", "tenThiDau": 1994, "bu": "WHS-4", "slogan": "Đồng đội là tất cả", "pairWith": "RYB422" },
-            { "msnv": "RYB422", "name": "Đặng Khánh Linh","jerseyNumber":"MX-1B", "position": "Đôi Nam Nữ (Nữ)", "tenThiDau": 1995, "bu": "WHS-4", "slogan": "Cùng nhau chiến thắng", "pairWith": "RYB421" }
+            { "msnv": "593662", "name": "Trần Quang Trung",    "jerseyNumber": "MX-1A", "position": "Đôi Nam Nữ (Nam)", "tenThiDau": Quang Trung, "bu": "OP", "slogan": "Đồng đội là tất cả", "pairWith": "511586" },
+            { "msnv": "511586", "name": "Phạm Thị Thu","jerseyNumber":"MX-1B", "position": "Đôi Nam Nữ (Nữ)", "tenThiDau": Thu Phạm, "bu": "OP", "slogan": "Cùng nhau chiến thắng", "pairWith": "593662" }
           ]
         }
       ]
@@ -205,8 +205,8 @@
           "slogan": "Trí tuệ là vũ khí",
           "color": "#1e293b",
           "athletes": [
-            { "msnv": "RYB501", "name": "Nguyễn Trí Minh",  "jerseyNumber": "GM-1", "position": "Kỳ thủ",      "tenThiDau": 1990, "bu": "OFFICE", "slogan": "Tính trước 10 nước" },
-            { "msnv": "RYB502", "name": "Trần Bảo Quốc",    "jerseyNumber": "GM-2", "position": "Kỳ thủ",      "tenThiDau": 1988, "bu": "WHS-1",  "slogan": "Tốt thí cũng có giá trị" },
+            { "msnv": "523768", "name": "Nguyễn Hoài Luận",  "jerseyNumber": "15", "position": "Kỳ thủ",      "tenThiDau": Cris, "bu": "OP", "slogan": "Tính trước 10 nước" },
+            { "msnv": "2388", "name": "Hứa Văn Thế",    "jerseyNumber": "GM-2", "position": "Kỳ thủ",      "tenThiDau": Thế, "bu": "OP",  "slogan": "Tốt thí cũng có giá trị" },
             { "msnv": "RYB503", "name": "Lê Khôi Nguyên",   "jerseyNumber": "GM-3", "position": "Kỳ thủ trẻ",  "tenThiDau": 2000, "bu": "WHS-2",  "slogan": "Hậu sinh khả uý" }
           ]
         }
