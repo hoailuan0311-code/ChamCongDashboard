@@ -90,7 +90,7 @@
           "slogan": "Đập tan mọi giới hạn",
           "color": "#0284c7",
           "athletes": [
-            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": 1997, "bu": "OP", "slogan": "Cú đập sấm sét" },
+            { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": Cris, "bu": "OP", "slogan": "Cú đập sấm sét" },
             { "msnv": "RYB202", "name": "Trần Đăng Khoa",   "jerseyNumber": 5, "position": "Phụ công",  "tenThiDau": 1992, "bu": "WHS-2", "slogan": "Chắn lưới như tường" },
             { "msnv": "RYB203", "name": "Lê Bá Hùng",       "jerseyNumber": 7, "position": "Chuyền hai", "tenThiDau": 1991, "bu": "OFFICE","slogan": "Đôi tay vàng" },
             { "msnv": "RYB204", "name": "Vũ Đình Quân",     "jerseyNumber": 9, "position": "Libero",    "tenThiDau": 1994, "bu": "WHS-3", "slogan": "Lá chắn cuối cùng" }
