@@ -126,7 +126,7 @@
       "teams": [
         {
           "id": "run_male",
-          "name": "Cự ly Nam",
+          "name": "3000m Nam",
           "slogan": "Chạy là hít thở",
           "color": "#ea580c",
           "athletes": [
@@ -137,7 +137,7 @@
         },
         {
           "id": "run_female",
-          "name": "Cự ly Nữ",
+          "name": "2000m Nữ",
           "slogan": "Mạnh mẽ và uyển chuyển",
           "color": "#ec4899",
           "athletes": [
