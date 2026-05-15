@@ -130,7 +130,7 @@
           "slogan": "Chạy là hít thở",
           "color": "#ea580c",
           "athletes": [
-            { "msnv": "RYB301", "name": "Nguyễn Hoàng Phi", "jerseyNumber": 101, "position": "5km Nam",  "tenThiDau": 1995, "bu": "WHS-1", "slogan": "Gió cũng phải nhường" },
+            { "msnv": "552711", "name": "Danh Tài", "jerseyNumber": 18, "position": "3km Nam",  "tenThiDau": "Tài Danh", "bu": "OP", "slogan": "Gió cũng phải nhường" },
             { "msnv": "RYB302", "name": "Trần Văn Lực",     "jerseyNumber": 102, "position": "5km Nam",  "tenThiDau": 1993, "bu": "WHS-2", "slogan": "Chân không mỏi" },
             { "msnv": "RYB303", "name": "Lê Minh Đức",      "jerseyNumber": 103, "position": "10km Nam", "tenThiDau": 1992, "bu": "OFFICE","slogan": "Bền bỉ đến cùng" }
           ]
@@ -143,7 +143,8 @@
           "athletes": [
             { "msnv": "591207", "name": "Lê Thị Ngọc",   "jerseyNumber": "09", "position": "2km Nữ", "tenThiDau": "Lê Ngọc", "bu": "CPT", "slogan": "" },
             { "msnv": "591208", "name": "Lily Nguyễn Thị Trúc Ly",   "jerseyNumber": 15, "position": "2km Nữ", "tenThiDau": "Lily", "bu": "CPT", "slogan": "" },
-            { "msnv": "552711", "name": "Danh Tài", "jerseyNumber": 18, "position": "3km Nam", "tenThiDau": "Tài Danh", "bu": "OP", "slogan": "" }
+            { "msnv": "619492", "name": "Phan Thị Thùy Nhung",   "jerseyNumber": 101, "position": "2km Nữ", "tenThiDau": "Thùy Nhung", "bu": "CPT", "slogan": "" },
+            { "msnv": "518461", "name": "Dương Thị Kim Thân", "jerseyNumber": 102, "position": "2km Nam", "tenThiDau": "Kim Thân", "bu": "CPT", "slogan": "" }
           ]
         }
       ]
