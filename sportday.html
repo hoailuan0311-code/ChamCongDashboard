@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <title>🏆 GP-Sport Day 2026 – Warehouse Ryobi</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@400;600;800;900&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Be+Vietnam+Pro:wght@400;600;800;900&family=Oswald:wght@400;600;700&family=Orbitron:wght@700;800;900&display=swap" rel="stylesheet">
 
 <style>
 /* ===================== RESET ===================== */
@@ -781,18 +781,18 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(80px, 11.5vw, 160px);
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(75px, 11vw, 150px);
     font-weight: 900;
-    letter-spacing: 8px;
+    letter-spacing: 12px;
     line-height: 0.88;
     white-space: nowrap;
     text-align: center;
     pointer-events: none;
     z-index: 0;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.045);
-    -webkit-text-stroke: 1.2px rgba(120, 220, 255, 0.28);
+    color: rgba(0, 245, 255, 0.06);
+    -webkit-text-stroke: 1.2px rgba(0, 245, 255, 0.35);
     text-shadow:
         0 2px 0  rgba(0,0,0,0.45),
         0 4px 0  rgba(0,0,0,0.40),
@@ -800,8 +800,8 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
         0 8px 0  rgba(0,0,0,0.30),
         0 10px 0 rgba(0,0,0,0.25),
         0 12px 0 rgba(0,0,0,0.18),
-        0 0 40px var(--accent2, #48dbfb),
-        0 0 90px var(--accent1, #ff6b6b);
+        0 0 50px  rgba(0, 245, 255, 0.6),
+        0 0 100px rgba(255, 0, 200, 0.4);
     filter: blur(1.2px);
     animation: watermarkPulse 4.5s ease-in-out infinite alternate, watermarkDrift 9s ease-in-out infinite alternate;
     will-change: filter, transform;
@@ -810,11 +810,11 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     0%   { filter: blur(1.6px) brightness(0.8);  text-shadow:
         0 2px 0 rgba(0,0,0,0.45), 0 4px 0 rgba(0,0,0,0.40), 0 6px 0 rgba(0,0,0,0.35),
         0 8px 0 rgba(0,0,0,0.30), 0 10px 0 rgba(0,0,0,0.25), 0 12px 0 rgba(0,0,0,0.18),
-        0 0 30px var(--accent2, #48dbfb), 0 0 60px var(--accent1, #ff6b6b); }
+        0 0 35px rgba(0, 245, 255, 0.55), 0 0 70px rgba(255, 0, 200, 0.3); }
     100% { filter: blur(0.8px) brightness(1.25); text-shadow:
         0 2px 0 rgba(0,0,0,0.45), 0 4px 0 rgba(0,0,0,0.40), 0 6px 0 rgba(0,0,0,0.35),
         0 8px 0 rgba(0,0,0,0.30), 0 10px 0 rgba(0,0,0,0.25), 0 12px 0 rgba(0,0,0,0.18),
-        0 0 55px var(--accent2, #48dbfb), 0 0 110px var(--accent1, #ff6b6b); }
+        0 0 65px rgba(0, 245, 255, 0.75), 0 0 130px rgba(255, 0, 200, 0.5); }
 }
 @keyframes watermarkDrift {
     0%   { transform: translate(-50%, -50%) scale(1) translateX(-6px); }
