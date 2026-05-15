@@ -1379,7 +1379,9 @@ function renderHub(){
 
     const grid = document.getElementById('sportsGrid');
     grid.innerHTML = '';
-    (STATE.data.sports || []).forEach((sp, i) => {
+    (STATE.data.sports || [])
+.filter(sp => !sp.hidden)
+.forEach((sp, i) => {
         const totalAthletes = (sp.teams||[]).reduce((s,t)=>s+(t.athletes||[]).length, 0);
         const card = document.createElement('div');
         card.className = 'sport-card';
