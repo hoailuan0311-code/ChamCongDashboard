@@ -104,12 +104,19 @@
         },
         {
           "id": "vb_eagle",
-          "name": "Đại Bàng",
+          "name": "Warehouse 3F",
           "slogan": "Bay cao, đập mạnh",
           "color": "#dc2626",
           "athletes": [
-            { "msnv": "RYB211", "name": "Phạm Anh Tú",     "jerseyNumber": 2, "position": "Chủ công",  "tenThiDau": 1996, "bu": "WHS-4", "slogan": "Lửa chiến" },
-            { "msnv": "RYB212", "name": "Hoàng Trọng Phú", "jerseyNumber": 6, "position": "Phụ công",  "tenThiDau": 1995, "bu": "WHS-4", "slogan": "Vua không trung" }
+            { "msnv": "500017", "name": "Rajendiran Sivakumar",     "jerseyNumber": 24, "position": "Chủ công",  "tenThiDau": "Siva", "bu": "OP", "slogan": "Captain" },
+            { "msnv": "570311", "name": "Nguyễn Phạm Quốc Sử",     "jerseyNumber": 12, "position": "Phụ công",  "tenThiDau": "Quốc Sử", "bu": "OP", "slogan": "" },
+            { "msnv": "568938", "name": "Nguyễn Thành Thế",     "jerseyNumber": 6, "position": "Chuyền hai",  "tenThiDau": "Thekkuchi", "bu": "OP", "slogan": "" },
+            { "msnv": "590046", "name": "Trần Thanh Thắng",     "jerseyNumber": 5, "position": "Chủ công",  "tenThiDau": "Thắng", "bu": "OP", "slogan": "" },
+            { "msnv": "593662", "name": "Trần Quang Trung",     "jerseyNumber": 27, "position": "Libero",  "tenThiDau": "Trung Lúa", "bu": "OP", "slogan": "" },
+            { "msnv": "411", "name": "Trần Văn Sang",     "jerseyNumber": 7, "position": "Libero",  "tenThiDau": "Văn Sang TTI", "bu": "OP", "slogan": "" },
+            { "msnv": "549663", "name": "Nguyễn Văn Thọ",     "jerseyNumber": 20, "position": "Phụ công",  "tenThiDau": "Văn Thọ", "bu": "OP", "slogan": "" },
+            { "msnv": "4008", "name": "Tsần Đạt Thành",     "jerseyNumber": 10, "position": "Phụ công",  "tenThiDau": "Thành Lucas", "bu": "OP", "slogan": "Coach" },
+            { "msnv": "548578", "name": "Lê Tài", "jerseyNumber": 21, "position": "SSV",  "tenThiDau": "Lê Tài", "bu": "OP", "slogan": "Nhà tài trợ chính cho Warehouse" }
           ]
         }
       ]
