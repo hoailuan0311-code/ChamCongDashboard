@@ -531,9 +531,146 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 @media (max-width: 880px) {
     .athlete-stage {
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr auto;
+        grid-template-rows: auto auto;
         gap: 20px;
-        height: 95vh;
+        height: auto;
+        min-height: 95vh;
+        padding: 80px 16px 100px;
+    }
+}
+
+/* ========== MOBILE / PHONE (≤ 640px) ========== */
+@media (max-width: 640px) {
+    /* Topbar: shrink title, keep buttons */
+    .topbar { height: 56px; padding: 0 12px; }
+    .topbar-title {
+        font-size: 13px;
+        letter-spacing: 1.5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50vw;
+        text-align: center;
+    }
+    .topbar-btn { width: 34px; height: 34px; font-size: 14px; border-radius: 10px; }
+    .topbar-left, .topbar-right { gap: 6px; }
+
+    /* Athlete stage: tighter padding */
+    .athlete-stage {
+        padding: 70px 14px 90px;
+        gap: 14px;
+    }
+
+    /* Photo: smaller and contained */
+    .athlete-photo-wrap {
+        max-width: 240px;
+        max-height: 36vh;
+        margin: 0 auto;
+    }
+    .athlete-photo-bg-glow { inset: -25px; filter: blur(35px); }
+    .athlete-photo-corners span { width: 18px; height: 18px; border-width: 2px !important; }
+    .athlete-photo-corners span:nth-child(1) { border-width: 2px 0 0 2px !important; }
+    .athlete-photo-corners span:nth-child(2) { border-width: 2px 2px 0 0 !important; }
+    .athlete-photo-corners span:nth-child(3) { border-width: 0 0 2px 2px !important; }
+    .athlete-photo-corners span:nth-child(4) { border-width: 0 2px 2px 0 !important; }
+
+    /* Info panel */
+    .athlete-info {
+        text-align: center;
+        padding: 0 4px;
+    }
+
+    /* Watermark: much smaller — fits inside info area */
+    .athlete-team-watermark {
+        font-size: clamp(28px, 9vw, 52px);
+        letter-spacing: 3px;
+        filter: blur(0.8px);
+        text-shadow:
+            0 1px 0 rgba(0,0,0,0.4),
+            0 2px 0 rgba(0,0,0,0.35),
+            0 3px 0 rgba(0,0,0,0.30),
+            0 4px 0 rgba(0,0,0,0.25),
+            0 0 25px rgba(0, 245, 255, 0.5),
+            0 0 50px rgba(255, 0, 200, 0.35);
+    }
+
+    /* Team tag (Bóng Chuyền Nam pill) */
+    .athlete-team-tag {
+        font-size: 10px;
+        letter-spacing: 2px;
+        padding: 6px 12px;
+        margin-bottom: 10px;
+    }
+    .athlete-team-tag .dot { width: 7px; height: 7px; }
+
+    /* Jersey number: smaller and reposition above-center */
+    .jersey-number {
+        position: relative;
+        top: auto; right: auto;
+        font-size: clamp(70px, 22vw, 120px);
+        text-align: center;
+        display: block;
+        margin: -8px 0 -10px;
+        letter-spacing: -2px;
+    }
+
+    /* Athlete name */
+    .athlete-name {
+        font-size: clamp(28px, 8vw, 44px);
+        letter-spacing: 1px;
+        margin-bottom: 2px;
+    }
+
+    /* MSNV */
+    .athlete-msnv {
+        font-size: 12px;
+        letter-spacing: 4px;
+        margin-bottom: 14px;
+    }
+
+    /* Stats: force 2 columns on phone */
+    .athlete-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+    .stat-card { padding: 9px 10px; border-radius: 10px; }
+    .stat-label { font-size: 9px; letter-spacing: 2px; margin-bottom: 3px; }
+    .stat-value { font-size: 16px; }
+
+    /* Slogan */
+    .athlete-slogan {
+        font-size: 13px;
+        padding-left: 12px;
+        text-align: left;
+    }
+
+    /* Controls bar */
+    .showcase-controls { padding: 10px 14px; }
+    .ctrl-btn { width: 34px; height: 34px; font-size: 12px; }
+    .ctrl-btn.large { width: 44px; height: 44px; font-size: 16px; }
+    .athlete-counter { font-size: 12px; letter-spacing: 2px; }
+}
+
+/* ========== EXTRA NARROW (≤ 380px) ========== */
+@media (max-width: 380px) {
+    .topbar-title { display: none; }
+    .athlete-photo-wrap { max-width: 210px; max-height: 32vh; }
+    .athlete-team-watermark { font-size: clamp(24px, 8vw, 42px); letter-spacing: 2px; }
+    .jersey-number { font-size: clamp(60px, 20vw, 100px); }
+    .athlete-stats { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .stat-value { font-size: 14px; }
+}
+
+/* Allow vertical scroll inside showcase on mobile when content > viewport */
+@media (max-width: 880px) {
+    #view-showcase { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .showcase-overlay {
+        position: relative;
+        inset: auto;
+        min-height: 100%;
+        align-items: flex-start;
+        padding-top: 0;
     }
 }
 
@@ -782,7 +919,7 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(40px, 6vw, 85px);
+    font-size: clamp(96px, 13.5vw, 190px);
     font-weight: 900;
     letter-spacing: 12px;
     line-height: 0.88;
