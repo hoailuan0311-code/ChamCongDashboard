@@ -555,32 +555,33 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     .topbar-btn { width: 34px; height: 34px; font-size: 14px; border-radius: 10px; }
     .topbar-left, .topbar-right { gap: 6px; }
 
-    /* Athlete stage: tighter padding */
+    /* Athlete stage: tighter padding + smaller gap between photo and info */
     .athlete-stage {
-        padding: 70px 14px 90px;
-        gap: 14px;
+        padding: 64px 14px 90px;
+        gap: 6px;
     }
 
-    /* Photo: smaller and contained */
+    /* Photo: 80% smaller and contained */
     .athlete-photo-wrap {
-        max-width: 240px;
-        max-height: 36vh;
+        max-width: 200px;
+        max-height: 30vh;
         margin: 0 auto;
     }
-    .athlete-photo-bg-glow { inset: -25px; filter: blur(35px); }
-    .athlete-photo-corners span { width: 18px; height: 18px; border-width: 2px !important; }
+    .athlete-photo-bg-glow { inset: -20px; filter: blur(28px); }
+    .athlete-photo-corners span { width: 16px; height: 16px; border-width: 2px !important; }
     .athlete-photo-corners span:nth-child(1) { border-width: 2px 0 0 2px !important; }
     .athlete-photo-corners span:nth-child(2) { border-width: 2px 2px 0 0 !important; }
     .athlete-photo-corners span:nth-child(3) { border-width: 0 0 2px 2px !important; }
     .athlete-photo-corners span:nth-child(4) { border-width: 0 2px 2px 0 !important; }
 
-    /* Info panel */
+    /* Info panel — pull content closer to photo */
     .athlete-info {
         text-align: center;
         padding: 0 4px;
+        margin-top: -4px;
     }
 
-    /* Watermark: much smaller — fits inside info area */
+    /* Watermark: small */
     .athlete-team-watermark {
         font-size: clamp(28px, 9vw, 52px);
         letter-spacing: 3px;
@@ -598,8 +599,8 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     .athlete-team-tag {
         font-size: 10px;
         letter-spacing: 2px;
-        padding: 6px 12px;
-        margin-bottom: 10px;
+        padding: 5px 12px;
+        margin-bottom: 6px;
     }
     .athlete-team-tag .dot { width: 7px; height: 7px; }
 
@@ -607,35 +608,37 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     .jersey-number {
         position: relative;
         top: auto; right: auto;
-        font-size: clamp(70px, 22vw, 120px);
+        font-size: clamp(56px, 17vw, 92px);
         text-align: center;
         display: block;
-        margin: -8px 0 -10px;
+        margin: -6px 0 -8px;
         letter-spacing: -2px;
     }
 
     /* Athlete name */
     .athlete-name {
-        font-size: clamp(28px, 8vw, 44px);
-        letter-spacing: 1px;
-        margin-bottom: 2px;
+        font-size: clamp(22px, 6.5vw, 36px);
+        letter-spacing: 0.5px;
+        margin-bottom: 0;
+        line-height: 1;
     }
 
-    /* MSNV */
+    /* MSNV — pull up close to name */
     .athlete-msnv {
         font-size: 12px;
         letter-spacing: 4px;
-        margin-bottom: 14px;
+        margin-bottom: 10px;
+        margin-top: 4px;
     }
 
-    /* Stats: force 2 columns on phone */
+    /* Stats: force 2 columns on phone, tight gap */
     .athlete-stats {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        margin-bottom: 14px;
+        margin-bottom: 10px;
     }
-    .stat-card { padding: 9px 10px; border-radius: 10px; }
-    .stat-label { font-size: 9px; letter-spacing: 2px; margin-bottom: 3px; }
+    .stat-card { padding: 8px 10px; border-radius: 10px; }
+    .stat-label { font-size: 9px; letter-spacing: 2px; margin-bottom: 2px; }
     .stat-value { font-size: 16px; }
 
     /* Slogan */
@@ -643,6 +646,7 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
         font-size: 13px;
         padding-left: 12px;
         text-align: left;
+        margin-top: 4px;
     }
 
     /* Controls bar */
@@ -655,11 +659,14 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 /* ========== EXTRA NARROW (≤ 380px) ========== */
 @media (max-width: 380px) {
     .topbar-title { display: none; }
-    .athlete-photo-wrap { max-width: 210px; max-height: 32vh; }
+    .athlete-photo-wrap { max-width: 175px; max-height: 26vh; }
     .athlete-team-watermark { font-size: clamp(24px, 8vw, 42px); letter-spacing: 2px; }
-    .jersey-number { font-size: clamp(60px, 20vw, 100px); }
+    .jersey-number { font-size: clamp(48px, 15vw, 78px); margin: -4px 0 -6px; }
+    .athlete-name { font-size: clamp(20px, 6vw, 30px); }
+    .athlete-msnv { font-size: 11px; letter-spacing: 3px; margin-bottom: 8px; }
     .athlete-stats { grid-template-columns: repeat(2, 1fr); gap: 6px; }
     .stat-value { font-size: 14px; }
+    .stat-card { padding: 7px 9px; }
 }
 
 /* Allow vertical scroll inside showcase on mobile when content > viewport */
@@ -919,9 +926,9 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
     left: 50%;
     transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(96px, 13.5vw, 190px);
+    font-size: clamp(40px, 6vw, 85px);
     font-weight: 900;
-    letter-spacing: 12px;
+    letter-spacing: 6px;
     line-height: 0.88;
     white-space: nowrap;
     text-align: center;
