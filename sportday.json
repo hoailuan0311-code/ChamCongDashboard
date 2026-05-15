@@ -8,6 +8,7 @@
     {
       "id": "football_men",
       "name": "Bóng Đá Nam",
+      "hidden": true,
       "icon": "⚽",
       "shortName": "FOOTBALL M",
       "theme": "football",
@@ -45,6 +46,7 @@
     {
       "id": "football_women",
       "name": "Bóng Đá Nữ",
+      "hidden": true,
       "icon": "⚽",
       "shortName": "FOOTBALL W",
       "theme": "football_w",
@@ -152,7 +154,7 @@
             { "msnv": "591207", "name": "Lê Thị Ngọc",   "jerseyNumber": "09", "position": "2km Nữ", "tenThiDau": "Lê Ngọc", "bu": "CPT", "slogan": "" },
             { "msnv": "591208", "name": "Lily Nguyễn Thị Trúc Ly",   "jerseyNumber": 15, "position": "2km Nữ", "tenThiDau": "Lily", "bu": "CPT", "slogan": "" },
             { "msnv": "619492", "name": "Phan Thị Thùy Nhung",   "jerseyNumber": 101, "position": "2km Nữ", "tenThiDau": "Thùy Nhung", "bu": "CPT", "slogan": "" },
-            { "msnv": "518461", "name": "Dương Thị Kim Thân", "jerseyNumber": 102, "position": "2km Nam", "tenThiDau": "Kim Thân", "bu": "CPT", "slogan": "" }
+            { "msnv": "518461", "name": "Dương Thị Kim Thân", "jerseyNumber": 102, "position": "2km Nữ", "tenThiDau": "Kim Thân", "bu": "CPT", "slogan": "" }
           ]
         }
       ]
@@ -250,6 +252,7 @@
         {
           "id": "lq_shadow",
           "name": "Team Bóng Đêm",
+          "hidden": true,
           "slogan": "Trong bóng tối, chúng ta tỏa sáng",
           "color": "#7c3aed",
           "athletes": [
@@ -291,6 +294,7 @@
         {
           "id": "tw_giant",
           "name": "Đội Khổng Lồ WHS-2",
+          "hidden": true,
           "slogan": "Hợp lực thành công",
           "color": "#15803d",
           "athletes": [
@@ -304,6 +308,7 @@
     {
       "id": "sackrace",
       "name": "Nhảy Bao Bố",
+      "hidden": true,
       "icon": "🦘",
       "shortName": "SACK RACE",
       "theme": "sackrace",
