@@ -95,7 +95,8 @@
           "jersey": {
             "front": "jerseys/warehouse-jit/front.png",
             "back":  "jerseys/warehouse-jit/back.png",
-            "shorts": "jerseys/warehouse-jit/shorts.png"
+            "shorts": "jerseys/warehouse-jit/shorts.png",
+            "shirt": "jerseys/warehouse-jit/shirt-jit.png"
           },
           "athletes": [
             { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": "Cris", "bu": "OP", "slogan": "Captain" },
