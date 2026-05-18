@@ -595,6 +595,13 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
             0 0 50px rgba(255, 0, 200, 0.35);
     }
 
+    /* Big team title (WAREHOUSE JIT) — mobile sizing */
+    .athlete-team-title {
+        font-size: clamp(22px, 7vw, 40px);
+        letter-spacing: 1.5px;
+        margin-bottom: 4px;
+    }
+
     /* Team tag (Bóng Chuyền Nam pill) */
     .athlete-team-tag {
         font-size: 10px;
@@ -1326,6 +1333,7 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 .has-jersey-theme .athlete-team-watermark { display: none; }
 
 /* Make all readable info sit ABOVE the watermark */
+.athlete-team-title,
 .athlete-team-tag,
 .athlete-name,
 .athlete-msnv,
@@ -1333,6 +1341,32 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 .athlete-slogan {
     position: relative;
     z-index: 2;
+}
+
+/* === Big readable TEAM TITLE at top of card (e.g. "WAREHOUSE JIT") === */
+.athlete-team-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 4.4vw, 62px);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: 3px;
+    margin: 0 0 10px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff 0%, var(--accent1, #F4A91D) 55%, var(--accent2, #1F8B9C) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 14px var(--accent1, #F4A91D))
+            drop-shadow(0 3px 0 rgba(0,0,0,0.30));
+    animation: teamTitleEnter 0.6s cubic-bezier(.4,1.4,.5,1) 0.15s both;
+}
+.athlete-team-title .word {
+    display: inline-block;
+    margin-right: 0.28em;
+}
+@keyframes teamTitleEnter {
+    from { opacity: 0; transform: translateY(-22px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .athlete-team-tag {
@@ -2036,6 +2070,7 @@ function renderAthlete(){
                     ${watermarkHTML}
                     ${jerseyHTML}
                     <div class="jersey-number">${a.jerseyNumber ?? '#'}</div>
+                    <div class="athlete-team-title">${splitName(team.name)}</div>
                     <div class="athlete-team-tag">
                         <span class="dot"></span>
                         <span>${sport.name}</span>
