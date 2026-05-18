@@ -90,7 +90,13 @@
           "id": "vb_sky",
           "name": "Warehouse JIT",
           "slogan": "Đập tan mọi giới hạn",
-          "color": "#0284c7",
+          "color": "#F4A91D",
+          "colors": ["#F4A91D", "#1F8B9C", "#FFFFFF"],
+          "jersey": {
+            "front": "jerseys/warehouse-jit/front.png",
+            "back":  "jerseys/warehouse-jit/back.png",
+            "shorts": "jerseys/warehouse-jit/shorts.png"
+          },
           "athletes": [
             { "msnv": "523768", "name": "Nguyễn Hoài Luận", "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": "Cris", "bu": "OP", "slogan": "Captain" },
             { "msnv": "2720", "name": "Danh Trên",   "jerseyNumber": "05", "position": "Chủ công",  "tenThiDau": "Mét Bảy Ba", "bu": "CPT", "slogan": "" },
