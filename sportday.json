@@ -136,8 +136,10 @@
             { "msnv": "4008",   "name": "Tsần Đạt Thành",       "jerseyNumber": 60, "position": "HLV Trưởng", "tenThiDau": "Lucas Thành", "bu": "OP", "slogan": "Coach" },
             { "msnv": "372390", "name": "Nguyễn Minh Trí",      "jerseyNumber": 15, "position": "Chủ công",  "tenThiDau": "Nguyễn Trí", "bu": "OP", "slogan": "" }
           ]
-        },
+	}
       ]
+    },
+
     {
       "id": "running",
       "name": "Việt Dã",
