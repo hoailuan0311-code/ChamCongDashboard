@@ -108,7 +108,8 @@
             { "msnv": "1966", "name": "Bùi Xuân Nam",       "jerseyNumber": 19, "position": "Phụ công", "tenThiDau": "Xuân Nam", "bu": "CPT","slogan": "" },
             { "msnv": "2590", "name": "Võ Thành Công",       "jerseyNumber": 67, "position": "Phụ công", "tenThiDau": "Thành Công", "bu": "CPT","slogan": "" },
             { "msnv": "593548", "name": "Lê Quốc Thái",       "jerseyNumber": 98, "position": "Libero", "tenThiDau": "Quốc Thái", "bu": "CPT","slogan": "" },
-            { "msnv": "571538", "name": "Dương Chí Ngần",       "jerseyNumber": 21, "position": "Phụ công", "tenThiDau": "Chí Ngần", "bu": "CPT","slogan": "" },
+            { "msnv": "571538", "name": "Dương Chí Ngần",       "jerseyNumber": 1, "position": "Phụ công", "tenThiDau": "Chí Ngần", "bu": "CPT","slogan": "" },
+            { "msnv": "571538", "name": "Cao Thái Quân",       "jerseyNumber": 1, "position": "Phụ công", "tenThiDau": "Quân Cao", "bu": "OP","slogan": "" },
             { "msnv": "1278", "name": "Nguyễn Triết Giang",     "jerseyNumber": 66, "position": "Libero",    "tenThiDau": "Triết Giang", "bu": "CPT", "slogan": "" }
           ]
         },
