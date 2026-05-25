@@ -256,9 +256,8 @@
             { "msnv": "523768", "name": "Nguyễn Hoài Luận",   "jerseyNumber": "TOP", "position": "Đường Trên", "tenThiDau": "Cris",        "bu": "OP",  "slogan": "" },
             { "msnv": "557103", "name": "Nguyễn Văn Lộc",     "jerseyNumber": "JG",  "position": "Đi Rừng",    "tenThiDau": "Lộc Gold",    "bu": "OP",  "slogan": "" },
             { "msnv": "380935", "name": "Dương Văn Hùng",     "jerseyNumber": "MID", "position": "Đường Giữa", "tenThiDau": "Hùng Dương",  "bu": "OP",  "slogan": "" },
-            { "msnv": "555720", "name": "Phạm Hồng Sơn",      "jerseyNumber": "ADC", "position": "Xạ Thủ",     "tenThiDau": "Dev Phạm",    "bu": "OP",  "slogan": "" },
             { "msnv": "3026",   "name": "Lê Minh Thiên",      "jerseyNumber": "SUP", "position": "Hổ Trợ",     "tenThiDau": "Minh Thiên",  "bu": "CPT", "slogan": "" },
-            { "msnv": "593548", "name": "Lê Quốc Thái",       "jerseyNumber": "SUB-ADC", "position": "Xạ Thủ", "tenThiDau": "Quốc Thái",   "bu": "CPT", "slogan": "" },
+            { "msnv": "593548", "name": "Lê Quốc Thái",       "jerseyNumber": "ADC", "position": "Xạ Thủ", "tenThiDau": "Quốc Thái",   "bu": "CPT", "slogan": "" },
             { "msnv": "1278",   "name": "Nguyễn Triết Giang", "jerseyNumber": "SUB-TOP", "position": "Đường Trên", "tenThiDau": "Triết Giang", "bu": "OP", "slogan": "" }
           ]
         }
