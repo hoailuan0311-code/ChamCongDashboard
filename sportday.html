@@ -561,14 +561,14 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
         gap: 6px;
     }
 
-    /* Photo: 80% smaller and contained */
+    /* Photo: reduced by another 40% (was 200px / 30vh → now 120px / 18vh) */
     .athlete-photo-wrap {
-        max-width: 200px;
-        max-height: 30vh;
+        max-width: 120px;
+        max-height: 18vh;
         margin: 0 auto;
     }
-    .athlete-photo-bg-glow { inset: -20px; filter: blur(28px); }
-    .athlete-photo-corners span { width: 16px; height: 16px; border-width: 2px !important; }
+    .athlete-photo-bg-glow { inset: -14px; filter: blur(20px); }
+    .athlete-photo-corners span { width: 12px; height: 12px; border-width: 2px !important; }
     .athlete-photo-corners span:nth-child(1) { border-width: 2px 0 0 2px !important; }
     .athlete-photo-corners span:nth-child(2) { border-width: 2px 2px 0 0 !important; }
     .athlete-photo-corners span:nth-child(3) { border-width: 0 0 2px 2px !important; }
@@ -666,7 +666,10 @@ button { font-family: inherit; cursor: pointer; border: none; outline: none; }
 /* ========== EXTRA NARROW (≤ 380px) ========== */
 @media (max-width: 380px) {
     .topbar-title { display: none; }
-    .athlete-photo-wrap { max-width: 175px; max-height: 26vh; }
+    /* Photo: reduced by another 40% (was 175px / 26vh → now 105px / 16vh) */
+    .athlete-photo-wrap { max-width: 105px; max-height: 16vh; }
+    .athlete-photo-bg-glow { inset: -12px; filter: blur(16px); }
+    .athlete-photo-corners span { width: 10px; height: 10px; }
     .athlete-team-watermark { font-size: clamp(24px, 8vw, 42px); letter-spacing: 2px; }
     .jersey-number { font-size: clamp(48px, 15vw, 78px); margin: -4px 0 -6px; }
     .athlete-name { font-size: clamp(20px, 6vw, 30px); }
