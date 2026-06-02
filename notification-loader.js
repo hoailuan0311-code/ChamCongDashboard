@@ -24,8 +24,6 @@ return;
 
 }
 
-/* ===== CSS ===== */
-
 const style=document.createElement("style");
 
 style.innerHTML=`
@@ -123,9 +121,10 @@ cursor:pointer;
 
 document.head.appendChild(style);
 
-/* ===== TICKER ===== */
+/* TICKER */
 
-if(INFORM_DATA.ticker &&
+if(INFORM_DATA.showTicker &&
+INFORM_DATA.ticker &&
 INFORM_DATA.ticker.length){
 
 const ticker=document.createElement("div");
@@ -139,7 +138,9 @@ document.body.appendChild(ticker);
 
 }
 
-/* ===== POPUP ===== */
+/* POPUP */
+
+if(INFORM_DATA.showPopup){
 
 const popup=document.createElement("div");
 
@@ -169,7 +170,7 @@ document.getElementById("closePopup").onclick=()=>{
 popup.remove();
 };
 
-/* ===== SLIDE ===== */
+/* SLIDES */
 
 if(
 INFORM_DATA.slides &&
@@ -212,31 +213,56 @@ setInterval(renderSlide,5000);
 
 }
 
-/* ===== COUNTDOWN ===== */
+/* AUTO NEXT MATCH */
 
 if(
-INFORM_DATA.nextMatch &&
-INFORM_DATA.nextMatch.datetime
+INFORM_DATA.showCountdown &&
+INFORM_DATA.matches &&
+INFORM_DATA.matches.length
 ){
+
+function getNextMatch(){
+
+const now=new Date();
+
+const upcoming=
+INFORM_DATA.matches
+.filter(match=>
+new Date(
+match.datetime.replace(" ","T")
+)>now
+)
+.sort((a,b)=>
+new Date(a.datetime.replace(" ","T"))
+-------------------------------------
+
+new Date(b.datetime.replace(" ","T"))
+);
+
+return upcoming[0];
+
+}
 
 function updateCountdown(){
 
-const target=
-new Date(
-INFORM_DATA.nextMatch.datetime.replace(" ","T")
-);
+const nextMatch=getNextMatch();
 
-const diff=
-target-new Date();
-
-if(diff<=0){
+if(!nextMatch){
 
 document.getElementById("countdown").innerHTML=
-"🔥 SỰ KIỆN ĐANG DIỄN RA";
+"🏆 TẤT CẢ NỘI DUNG THI ĐẤU ĐÃ HOÀN THÀNH";
 
 return;
 
 }
+
+const target=
+new Date(
+nextMatch.datetime.replace(" ","T")
+);
+
+const diff=
+target-new Date();
 
 const d=Math.floor(diff/86400000);
 const h=Math.floor(diff%86400000/3600000);
@@ -244,9 +270,21 @@ const m=Math.floor(diff%3600000/60000);
 const s=Math.floor(diff%60000/1000);
 
 document.getElementById("countdown").innerHTML=
+`
+⏳ Trận tiếp theo
 
-`⏳ ${INFORM_DATA.nextMatch.title || ""} <br>
-${d} ngày ${h} giờ ${m} phút ${s} giây`;
+<br><br>
+
+<b>${nextMatch.title}</b>
+
+<br>
+
+${nextMatch.team}
+
+<br><br>
+
+${d} ngày ${h} giờ ${m} phút ${s} giây
+`;
 
 }
 
@@ -257,6 +295,8 @@ setInterval(updateCountdown,1000);
 }else{
 
 document.getElementById("countdown").style.display="none";
+
+}
 
 }
 
