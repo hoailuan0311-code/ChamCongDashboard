@@ -232,10 +232,10 @@ new Date(
 match.datetime.replace(" ","T")
 )>now
 )
-.sort((a,b)=>
-new Date(a.datetime.replace(" ","T"))
-new Date(b.datetime.replace(" ","T"))
-);
+.sort((a,b)=>{
+    return new Date(a.datetime.replace(" ","T")) -
+           new Date(b.datetime.replace(" ","T"));
+});
 
 return upcoming[0];
 
