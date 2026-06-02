@@ -26,7 +26,7 @@ const css=`
 #slideArea{margin-top:15px;padding:18px;background:#f8fafc;border-radius:18px;animation:fade .5s}
 @keyframes fade{from{opacity:.2}to{opacity:1}}
 #sportTicker{position:fixed;bottom:0;left:0;width:100%;height:42px;background:#111;color:#fff;display:flex;align-items:center;overflow:hidden;z-index:999997}
-#sportTicker span{white-space:nowrap;padding-left:100%;animation:ticker 40s linear infinite}
+#sportTicker span{white-space:nowrap;padding-left:100%;animation:ticker 120s linear infinite}
 @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 @media(max-width:768px){
 #cards{grid-template-columns:1fr}
