@@ -23,6 +23,8 @@ const css=`
 .chess{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
 .ctitle{font-size:22px;font-weight:800}
 .ccount{margin-top:10px;font-size:18px;font-weight:700}
+/* Thêm class css mới để định dạng ngày giờ hiển thị trong card */
+.ctime{margin-top:8px;font-size:16px;opacity:0.9;font-weight:500} 
 #slideArea{margin-top:15px;padding:18px;background:#f8fafc;border-radius:18px;animation:fade .5s}
 @keyframes fade{from{opacity:.2}to{opacity:1}}
 #sportTicker{position:fixed;bottom:0;left:0;width:100%;height:42px;background:#111;color:#fff;display:flex;align-items:center;overflow:hidden;z-index:999997}
@@ -75,6 +77,7 @@ const cd=(dt)=>{
  return `${day} ngày ${hr} giờ ${min} phút ${sec} giây`;
 };
 
+// Hàm render các card bộ môn đã được cập nhật lịch thi đấu và countdown
 function renderCards(){
  const arr=[
  ["🏐 BÓNG CHUYỀN","Bóng chuyền","volley"],
@@ -90,6 +93,7 @@ function renderCards(){
  ${isJIT?'<div>⭐ TEAM WAREHOUSE</div>':''}
  <div class="ctitle">${a[0]}</div>
  <div>${m?m.team:"Không có lịch"}</div>
+ ${m ? `<div class="ctime">📅 Lịch đấu: ${m.datetime}</div>` : ''}
  <div class="ccount">${m?"⏳ "+cd(m.datetime):""}</div>
  </div>`;
  }).join("");
