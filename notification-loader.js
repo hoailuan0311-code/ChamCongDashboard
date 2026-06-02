@@ -1,301 +1,82 @@
-(async function(){
 
-if(typeof ACTIVE_NOTIFICATION==="undefined") return;
-if(!ACTIVE_NOTIFICATION.enabled) return;
+(async function(){
+if(typeof ACTIVE_NOTIFICATION==="undefined" || !ACTIVE_NOTIFICATION.enabled) return;
 
 let INFORM_DATA;
-
 try{
+  const res=await fetch("notifications/"+ACTIVE_NOTIFICATION.file+"?v="+Date.now());
+  INFORM_DATA=await res.json();
+}catch(e){console.error(e);return;}
 
-const res=await fetch(
-"notifications/" +
-ACTIVE_NOTIFICATION.file +
-"?v=" +
-Date.now()
-);
-
-INFORM_DATA=await res.json();
-
-}catch(err){
-
-console.error("Notification Load Error:",err);
-
-return;
-
-}
-
-const style=document.createElement("style");
-
-style.innerHTML=`
-
-#sportTicker{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-height:45px;
-background:linear-gradient(90deg,#dc2626,#f97316);
-color:white;
-z-index:999999;
-overflow:hidden;
-display:flex;
-align-items:center;
-font-weight:700;
-box-shadow:0 -3px 15px rgba(0,0,0,.3);
-}
-
-#sportTicker span{
-white-space:nowrap;
-padding-left:100%;
-animation:sportTickerMove 45s linear infinite;
-}
-
-@keyframes sportTickerMove{
-from{transform:translateX(0);}
-to{transform:translateX(-100%);}
-}
-
-#sportPopup{
-position:fixed;
-inset:0;
-background:rgba(0,0,0,.8);
-display:flex;
-justify-content:center;
-align-items:center;
-z-index:999999;
-}
-
-#sportBox{
-width:800px;
-max-width:90%;
-background:white;
-border-radius:20px;
-padding:25px;
-position:relative;
-text-align:center;
-}
-
-#sportTitle{
-font-size:30px;
-font-weight:800;
-color:#dc2626;
-margin-bottom:15px;
-}
-
-#countdown{
-background:#111827;
-color:#facc15;
-padding:12px;
-border-radius:12px;
-margin-bottom:20px;
-font-size:20px;
-font-weight:700;
-}
-
-.slide-title{
-font-size:28px;
-font-weight:800;
-color:#2563eb;
-margin-bottom:15px;
-}
-
-.slide-content{
-font-size:22px;
-line-height:1.8;
-}
-
-#closePopup{
-position:absolute;
-top:15px;
-right:15px;
-width:40px;
-height:40px;
-border:none;
-border-radius:50%;
-background:#ef4444;
-color:white;
-cursor:pointer;
-}
-
+const css=`
+#sportPopup{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:999999;animation:spFade .35s}
+@keyframes spFade{from{opacity:0}to{opacity:1}}
+#sportBox{width:min(1200px,95vw);max-height:92vh;overflow:auto;background:rgba(255,255,255,.96);border-radius:24px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35);font-family:Arial,sans-serif}
+#sportTitle{background:linear-gradient(135deg,#dc2626,#f97316,#facc15);color:#fff;padding:18px;border-radius:18px;font-size:32px;font-weight:800;text-align:center}
+#closePopup{position:absolute;right:24px;top:24px;border:none;width:42px;height:42px;border-radius:50%;background:#ef4444;color:#fff;cursor:pointer}
+#highlight{margin:15px 0;padding:15px;border-radius:16px;background:#fff7ed;border:2px solid #fb923c}
+#cards{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.card{color:#fff;padding:16px;border-radius:18px;transition:.25s}
+.card:hover{transform:translateY(-4px)}
+.volley{background:linear-gradient(135deg,#2563eb,#60a5fa)}
+.football{background:linear-gradient(135deg,#16a34a,#4ade80)}
+.badminton{background:linear-gradient(135deg,#ea580c,#fb923c)}
+.chess{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.ctitle{font-size:22px;font-weight:800}
+.ccount{margin-top:10px;font-size:18px;font-weight:700}
+#slideArea{margin-top:15px;padding:18px;background:#f8fafc;border-radius:18px;animation:fade .5s}
+@keyframes fade{from{opacity:.2}to{opacity:1}}
+#sportTicker{position:fixed;bottom:0;left:0;width:100%;height:42px;background:#111;color:#fff;display:flex;align-items:center;overflow:hidden;z-index:999998}
+#sportTicker span{white-space:nowrap;padding-left:100%;animation:ticker 40s linear infinite}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media(max-width:768px){#cards{grid-template-columns:1fr}#sportTitle{font-size:24px}}
 `;
+const st=document.createElement("style");st.textContent=css;document.head.appendChild(st);
 
-document.head.appendChild(style);
-
-/* TICKER */
-
-if(INFORM_DATA.showTicker &&
-INFORM_DATA.ticker &&
-INFORM_DATA.ticker.length){
-
-const ticker=document.createElement("div");
-
-ticker.id="sportTicker";
-
-ticker.innerHTML=
-`<span>${INFORM_DATA.ticker.join(" | ")}</span>`;
-
-document.body.appendChild(ticker);
-
+if(INFORM_DATA.showTicker && INFORM_DATA.ticker?.length){
+ const t=document.createElement("div");
+ t.id="sportTicker";
+ t.innerHTML="<span>"+INFORM_DATA.ticker.join(" • ")+"</span>";
+ document.body.appendChild(t);
 }
 
-/* POPUP */
+if(!INFORM_DATA.showPopup) return;
 
-if(INFORM_DATA.showPopup){
-
-const popup=document.createElement("div");
-
-popup.id="sportPopup";
-
-popup.innerHTML=`
-
-<div id="sportBox">
-
+const p=document.createElement("div");
+p.id="sportPopup";
+p.innerHTML=`<div id="sportBox">
 <button id="closePopup">✕</button>
-
-<div id="sportTitle">
-${INFORM_DATA.popupTitle || "Thông báo"}
-</div>
-
-<div id="countdown"></div>
-
+<div id="sportTitle">${INFORM_DATA.popupTitle||"SPORT DAY"}</div>
+<div id="highlight"></div>
+<div id="cards"></div>
 <div id="slideArea"></div>
+</div>`;
+document.body.appendChild(p);
+document.getElementById("closePopup").onclick=()=>p.remove();
 
-</div>
+const next=(kw)=>INFORM_DATA.matches.filter(x=>x.title.includes(kw)&&new Date(x.datetime.replace(" ","T"))>new Date()).sort((a,b)=>new Date(a.datetime.replace(" ","T"))-new Date(b.datetime.replace(" ","T")))[0];
+const cd=(dt)=>{let d=new Date(dt.replace(" ","T"))-new Date(); if(d<0)return "Đang diễn ra"; return `${Math.floor(d/86400000)} ngày ${Math.floor(d%86400000/3600000)} giờ ${Math.floor(d%3600000/60000)} phút`;};
 
-`;
-
-document.body.appendChild(popup);
-
-document.getElementById("closePopup").onclick=()=>{
-popup.remove();
-};
-
-/* SLIDES */
-
-if(
-INFORM_DATA.slides &&
-INFORM_DATA.slides.length
-){
-
-let slideIndex=0;
-
-function renderSlide(){
-
-const slide=
-INFORM_DATA.slides[slideIndex];
-
-document.getElementById("slideArea").innerHTML=
-`
-
-<div class="slide-title">
-${slide.title || ""}
-</div>
-
-<div class="slide-content">
-${slide.content || ""}
-</div>
-
-`;
-
-slideIndex++;
-
-if(slideIndex>=INFORM_DATA.slides.length){
-
-slideIndex=0;
-
+function renderCards(){
+ const arr=[["🏐 BÓNG CHUYỀN","Bóng chuyền","volley"],["⚽ BÓNG ĐÁ","Bóng đá","football"],["🏸 CẦU LÔNG","Cầu lông","badminton"],["♟️ CỜ VUA","Cờ vua","chess"]];
+ document.getElementById("cards").innerHTML=arr.map(a=>{
+ const m=next(a[1]);
+ return `<div class="card ${a[2]}"><div class="ctitle">${a[0]}</div><div>${m?m.team:"Không có lịch"}</div><div class="ccount">${m?"⏳ "+cd(m.datetime):""}</div></div>`;
+ }).join("");
 }
+renderCards();
+setInterval(renderCards,60000);
 
+const jit=INFORM_DATA.matches.find(x=>x.team.includes("Warehouse JIT"));
+if(jit) document.getElementById("highlight").innerHTML=`🔥 <b>TRẬN ĐÁNG CHÚ Ý</b><br>${jit.team}<br>${jit.datetime}`;
+
+if(INFORM_DATA.slides?.length){
+ let i=0;
+ const r=()=>{
+  const s=INFORM_DATA.slides[i];
+  document.getElementById("slideArea").innerHTML=`<h2>${s.title}</h2><div>${s.content}</div>`;
+  i=(i+1)%INFORM_DATA.slides.length;
+ };
+ r(); setInterval(r,5000);
 }
-
-renderSlide();
-
-setInterval(renderSlide,5000);
-
-}
-
-/* AUTO NEXT MATCH */
-
-if(
-INFORM_DATA.showCountdown &&
-INFORM_DATA.matches &&
-INFORM_DATA.matches.length
-){
-
-function getNextMatch(){
-
-const now=new Date();
-
-const upcoming=
-INFORM_DATA.matches
-.filter(match=>
-new Date(
-match.datetime.replace(" ","T")
-)>now
-)
-.sort((a,b)=>{
-    return new Date(a.datetime.replace(" ","T")) -
-           new Date(b.datetime.replace(" ","T"));
-});
-
-return upcoming[0];
-
-}
-
-function updateCountdown(){
-
-const nextMatch=getNextMatch();
-
-if(!nextMatch){
-
-document.getElementById("countdown").innerHTML=
-"🏆 TẤT CẢ NỘI DUNG THI ĐẤU ĐÃ HOÀN THÀNH";
-
-return;
-
-}
-
-const target=
-new Date(
-nextMatch.datetime.replace(" ","T")
-);
-
-const diff=
-target-new Date();
-
-const d=Math.floor(diff/86400000);
-const h=Math.floor(diff%86400000/3600000);
-const m=Math.floor(diff%3600000/60000);
-const s=Math.floor(diff%60000/1000);
-
-document.getElementById("countdown").innerHTML=
-`
-⏳ Trận tiếp theo
-
-<br><br>
-
-<b>${nextMatch.title}</b>
-
-<br>
-
-${nextMatch.team}
-
-<br><br>
-
-${d} ngày ${h} giờ ${m} phút ${s} giây
-`;
-
-}
-
-updateCountdown();
-
-setInterval(updateCountdown,1000);
-
-}else{
-
-document.getElementById("countdown").style.display="none";
-
-}
-
-}
-
 })();
