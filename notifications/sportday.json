@@ -1,63 +1,140 @@
 {
-  "showPopup": true,
-  "showTicker": true,
-  "showCountdown": true,
+"showPopup": true,
+"showTicker": true,
+"showCountdown": true,
 
-  "popupTitle": "🏆 GP SPORT DAY 2026",
+"popupTitle": "🏆 GP SPORT DAY 2026",
 
-  "nextMatch": {
-    "title": "⚽ Bóng đá Nam",
-    "team": "RYOBI 1F vs Ryobi Friend",
-    "datetime": "2026-06-07 09:00:00"
-  },
+"matches": [
 
-  "ticker": [
-    "🏆 GP SPORT DAY 2026",
-    "⚽ 07/06 09:00 - Ryobi Friend vs RYOBI 1F",
-    "🏐 07/06 14:00 - Warehouse 3F vs Bóng Xà Bang",
-    "🏸 07/06 09:00 - Trần Quang Trung vs Ngô Văn Hữu Nghĩa",
-    "🎮 ESPORT Liên Quân: Warehouse JIT"
-  ],
+{
+  "title": "⚽ Bóng đá Nam",
+  "team": "Ryobi Friend vs RYOBI 1F",
+  "datetime": "2026-06-07 09:00:00"
+},
 
-  "slides": [
-    {
-      "title": "⚽ BÓNG ĐÁ NAM - RYOBI 1F",
-      "content": "07/06/2026 - 09:00 - Sân 1<br>Ryobi Friend vs RYOBI 1F<hr>14/06/2026 - 15:30 - Sân 1<br>RYOBI 1F vs Brother FC"
-    },
+{
+  "title": "🏸 Cầu lông Đơn Nam",
+  "team": "Trần Quang Trung vs Ngô Văn Hữu Nghĩa",
+  "datetime": "2026-06-07 09:00:00"
+},
 
-    {
-      "title": "🏐 BÓNG CHUYỀN NAM",
-      "content": "07/06 - 14:00<br>Warehouse 3F vs Bóng Xà Bang<hr>07/06 - 16:00<br>Warehouse JIT vs FC Không Thể Phanh<hr>07/06 - 17:00<br>Warehouse 3F vs AES Voleyball<hr>14/06 - 15:00<br>IE Voleyball Team vs Warehouse JIT<hr>14/06 - 16:00<br>Warehouse 3F vs DC TOOL FC"
-    },
+{
+  "title": "🏐 Bóng chuyền Nam",
+  "team": "Warehouse 3F vs Bóng Xà Bang",
+  "datetime": "2026-06-07 14:00:00"
+},
 
-    {
-      "title": "🏸 CẦU LÔNG",
-      "content": "Đơn Nam<br>07/06 - 09:00 - CL.B<br>Trần Quang Trung vs Ngô Văn Hữu Nghĩa<hr>Đơn Nữ<br>14/06 - 10:30 - CL.A<br>Phạm Thị Thu vs Hồ Vương Kim Xuân<hr>Đôi Nam Nữ<br>21/06 - 10:30 - CL.A<br>Nguyễn Văn Hoàng Diện - Đặng Thị Phương Hòa vs Trần Quang Trung - Phạm Thị Thu"
-    },
+{
+  "title": "🏐 Bóng chuyền Nam",
+  "team": "Warehouse JIT vs FC Không Thể Phanh",
+  "datetime": "2026-06-07 16:00:00"
+},
 
-    {
-      "title": "♟️ CỜ VUA",
-      "content": "21/06 - 08:00 - CV.1<br>Nguyễn Hoài Luận vs Nguyễn Văn Thắng<hr>21/06 - 08:00 - CV.5<br>Hứa Văn Thế vs Trương Ngọc Sang"
-    },
+{
+  "title": "🏐 Bóng chuyền Nam",
+  "team": "Warehouse 3F vs AES Voleyball",
+  "datetime": "2026-06-07 17:00:00"
+},
 
-    {
-      "title": "🏃 VIỆT DÃ",
-      "content": "Nam 3000m: Danh Tài<hr>Nữ 2000m:<br>Lê Thị Ngọc<br>Nguyễn Thị Trúc Ly<br>Phạm Thị Thu<br>Dương Thị Kim Thân"
-    },
+{
+  "title": "🏸 Cầu lông Đơn Nữ",
+  "team": "Phạm Thị Thu vs Hồ Vương Kim Xuân",
+  "datetime": "2026-06-14 10:30:00"
+},
 
-    {
-      "title": "🤝 KÉO CO NAM - WAREHOUSE JIT",
-      "content": "Dương Văn Hùng<br>Nguyễn Văn Lộc<br>Tăng Hồng Anh<br>Nguyễn Thành Thanh<br>Lê Quốc Thái<br>Võ Thành Công<br>Trần Quang Trung<br>Nguyễn Vũ Hải<br>Nguyễn Văn Duẩn"
-    },
+{
+  "title": "🏐 Bóng chuyền Nam",
+  "team": "IE Voleyball Team vs Warehouse JIT",
+  "datetime": "2026-06-14 15:00:00"
+},
 
-    {
-      "title": "🤝 KÉO CO NỮ - WAREHOUSE TITAN",
-      "content": "Phạm Thị Thu<br>Nguyễn Tuyết Nhi<br>Ngô Thị Dung<br>Lê Thị Ngọc<br>Nguyễn Thị Trúc Ly<br>Thái Anh Thư<br>Hoàng Vũ Thảo Vy<br>Huỳnh Thị Kim Yến<br>Nguyễn Trọng Thị Thùy Linh"
-    },
+{
+  "title": "⚽ Bóng đá Nam",
+  "team": "RYOBI 1F vs Brother FC",
+  "datetime": "2026-06-14 15:30:00"
+},
 
-    {
-      "title": "🎮 ESPORT LIÊN QUÂN - WAREHOUSE JIT",
-      "content": "Nguyễn Hoài Luận<br>Dương Văn Hùng<br>Nguyễn Văn Lộc<br>Lê Minh Thiên<br>Lê Quốc Thái<br>Bùi Xuân Nam<br>Nguyễn Văn Vũ<br>Nguyễn Triết Giang"
-    }
-  ]
+{
+  "title": "🏐 Bóng chuyền Nam",
+  "team": "Warehouse 3F vs DC TOOL FC",
+  "datetime": "2026-06-14 16:00:00"
+},
+
+{
+  "title": "♟️ Cờ vua",
+  "team": "Nguyễn Hoài Luận vs Nguyễn Văn Thắng",
+  "datetime": "2026-06-21 08:00:00"
+},
+
+{
+  "title": "♟️ Cờ vua",
+  "team": "Hứa Văn Thế vs Trương Ngọc Sang",
+  "datetime": "2026-06-21 08:00:00"
+},
+
+{
+  "title": "🏸 Cầu lông Đôi Nam Nữ",
+  "team": "Trần Quang Trung - Phạm Thị Thu",
+  "datetime": "2026-06-21 10:30:00"
+}
+
+],
+
+"ticker": [
+"🏆 GP SPORT DAY 2026",
+"⚽ RYOBI 1F",
+"🏐 Warehouse JIT & Warehouse 3F",
+"🏸 Trần Quang Trung - Phạm Thị Thu",
+"♟️ Nguyễn Hoài Luận, Hứa Văn Thế",
+"🏃 Việt dã Warehouse Team",
+"🤝 Kéo Co Nam: Warehouse JIT",
+"🤝 Kéo Co Nữ: Warehouse Titan",
+"🎮 ESPORT Liên Quân: Warehouse JIT",
+"💪 GO GO WAREHOUSE TEAM 💪"
+],
+
+"slides": [
+
+{
+  "title": "⚽ BÓNG ĐÁ NAM - RYOBI 1F",
+  "content": "07/06/2026 - 09:00 - Sân 1<br>Ryobi Friend vs RYOBI 1F<hr>14/06/2026 - 15:30 - Sân 1<br>RYOBI 1F vs Brother FC"
+},
+
+{
+  "title": "🏐 BÓNG CHUYỀN NAM",
+  "content": "07/06 - 14:00<br>Warehouse 3F vs Bóng Xà Bang<hr>07/06 - 16:00<br>Warehouse JIT vs FC Không Thể Phanh<hr>07/06 - 17:00<br>Warehouse 3F vs AES Voleyball<hr>14/06 - 15:00<br>IE Voleyball Team vs Warehouse JIT<hr>14/06 - 16:00<br>Warehouse 3F vs DC TOOL FC"
+},
+
+{
+  "title": "🏸 CẦU LÔNG",
+  "content": "Đơn Nam<br>07/06 - 09:00 - CL.B<br>Trần Quang Trung vs Ngô Văn Hữu Nghĩa<hr>Đơn Nữ<br>14/06 - 10:30 - CL.A<br>Phạm Thị Thu vs Hồ Vương Kim Xuân<hr>Đôi Nam Nữ<br>21/06 - 10:30 - CL.A<br>Nguyễn Văn Hoàng Diện - Đặng Thị Phương Hòa vs Trần Quang Trung - Phạm Thị Thu"
+},
+
+{
+  "title": "♟️ CỜ VUA",
+  "content": "21/06 - 08:00 - CV.1<br>Nguyễn Hoài Luận vs Nguyễn Văn Thắng<hr>21/06 - 08:00 - CV.5<br>Hứa Văn Thế vs Trương Ngọc Sang"
+},
+
+{
+  "title": "🏃 VIỆT DÃ",
+  "content": "Nam 3000m<br>Danh Tài<hr>Nữ 2000m<br>Lê Thị Ngọc<br>Nguyễn Thị Trúc Ly<br>Phạm Thị Thu<br>Dương Thị Kim Thân"
+},
+
+{
+  "title": "🤝 KÉO CO NAM - WAREHOUSE JIT",
+  "content": "Dương Văn Hùng<br>Nguyễn Văn Lộc<br>Tăng Hồng Anh<br>Nguyễn Thành Thanh<br>Lê Quốc Thái<br>Võ Thành Công<br>Trần Quang Trung<br>Nguyễn Vũ Hải<br>Nguyễn Văn Duẩn"
+},
+
+{
+  "title": "🤝 KÉO CO NỮ - WAREHOUSE TITAN",
+  "content": "Phạm Thị Thu<br>Nguyễn Tuyết Nhi<br>Ngô Thị Dung<br>Lê Thị Ngọc<br>Nguyễn Thị Trúc Ly<br>Thái Anh Thư<br>Hoàng Vũ Thảo Vy<br>Huỳnh Thị Kim Yến<br>Nguyễn Trọng Thị Thùy Linh"
+},
+
+{
+  "title": "🎮 ESPORT LIÊN QUÂN - WAREHOUSE JIT",
+  "content": "Nguyễn Hoài Luận<br>Dương Văn Hùng<br>Nguyễn Văn Lộc<br>Lê Minh Thiên<br>Lê Quốc Thái<br>Bùi Xuân Nam<br>Nguyễn Văn Vũ<br>Nguyễn Triết Giang"
+}
+
+]
 }
