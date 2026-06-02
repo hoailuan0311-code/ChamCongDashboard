@@ -1,24 +1,35 @@
 (async function(){
 
-if(typeof ACTIVE_NOTIFICATION === "undefined") return;
+if(typeof ACTIVE_NOTIFICATION==="undefined") return;
 if(!ACTIVE_NOTIFICATION.enabled) return;
 
-const res = await fetch(
+let INFORM_DATA;
+
+try{
+
+const res=await fetch(
 "notifications/" +
 ACTIVE_NOTIFICATION.file +
 "?v=" +
 Date.now()
 );
 
-const INFORM_DATA = await res.json();
+INFORM_DATA=await res.json();
 
-window.INFORM_DATA = INFORM_DATA;
+}catch(err){
+
+console.error("Notification Load Error:",err);
+
+return;
+
+}
 
 /* ===== CSS ===== */
 
-const style = document.createElement("style");
+const style=document.createElement("style");
 
-style.innerHTML = `
+style.innerHTML=`
+
 #sportTicker{
 position:fixed;
 bottom:0;
@@ -26,12 +37,13 @@ left:0;
 width:100%;
 height:45px;
 background:linear-gradient(90deg,#dc2626,#f97316);
-color:#fff;
+color:white;
 z-index:999999;
 overflow:hidden;
 display:flex;
 align-items:center;
 font-weight:700;
+box-shadow:0 -3px 15px rgba(0,0,0,.3);
 }
 
 #sportTicker span{
@@ -58,11 +70,40 @@ z-index:999999;
 #sportBox{
 width:800px;
 max-width:90%;
-background:#fff;
+background:white;
 border-radius:20px;
 padding:25px;
 position:relative;
 text-align:center;
+}
+
+#sportTitle{
+font-size:30px;
+font-weight:800;
+color:#dc2626;
+margin-bottom:15px;
+}
+
+#countdown{
+background:#111827;
+color:#facc15;
+padding:12px;
+border-radius:12px;
+margin-bottom:20px;
+font-size:20px;
+font-weight:700;
+}
+
+.slide-title{
+font-size:28px;
+font-weight:800;
+color:#2563eb;
+margin-bottom:15px;
+}
+
+.slide-content{
+font-size:22px;
+line-height:1.8;
 }
 
 #closePopup{
@@ -77,11 +118,15 @@ background:#ef4444;
 color:white;
 cursor:pointer;
 }
+
 `;
 
 document.head.appendChild(style);
 
 /* ===== TICKER ===== */
+
+if(INFORM_DATA.ticker &&
+INFORM_DATA.ticker.length){
 
 const ticker=document.createElement("div");
 
@@ -91,6 +136,8 @@ ticker.innerHTML=
 `<span>${INFORM_DATA.ticker.join(" | ")}</span>`;
 
 document.body.appendChild(ticker);
+
+}
 
 /* ===== POPUP ===== */
 
@@ -104,13 +151,16 @@ popup.innerHTML=`
 
 <button id="closePopup">✕</button>
 
-<h1>${INFORM_DATA.popupTitle}</h1>
+<div id="sportTitle">
+${INFORM_DATA.popupTitle || "Thông báo"}
+</div>
 
 <div id="countdown"></div>
 
 <div id="slideArea"></div>
 
 </div>
+
 `;
 
 document.body.appendChild(popup);
@@ -118,6 +168,13 @@ document.body.appendChild(popup);
 document.getElementById("closePopup").onclick=()=>{
 popup.remove();
 };
+
+/* ===== SLIDE ===== */
+
+if(
+INFORM_DATA.slides &&
+INFORM_DATA.slides.length
+){
 
 let slideIndex=0;
 
@@ -129,14 +186,22 @@ INFORM_DATA.slides[slideIndex];
 document.getElementById("slideArea").innerHTML=
 `
 
-<h2>${slide.title}</h2>
-<div>${slide.content}</div>
+<div class="slide-title">
+${slide.title || ""}
+</div>
+
+<div class="slide-content">
+${slide.content || ""}
+</div>
+
 `;
 
 slideIndex++;
 
 if(slideIndex>=INFORM_DATA.slides.length){
+
 slideIndex=0;
+
 }
 
 }
@@ -144,6 +209,15 @@ slideIndex=0;
 renderSlide();
 
 setInterval(renderSlide,5000);
+
+}
+
+/* ===== COUNTDOWN ===== */
+
+if(
+INFORM_DATA.nextMatch &&
+INFORM_DATA.nextMatch.datetime
+){
 
 function updateCountdown(){
 
@@ -155,7 +229,14 @@ INFORM_DATA.nextMatch.datetime.replace(" ","T")
 const diff=
 target-new Date();
 
-if(diff<=0) return;
+if(diff<=0){
+
+document.getElementById("countdown").innerHTML=
+"🔥 SỰ KIỆN ĐANG DIỄN RA";
+
+return;
+
+}
 
 const d=Math.floor(diff/86400000);
 const h=Math.floor(diff%86400000/3600000);
@@ -163,11 +244,20 @@ const m=Math.floor(diff%3600000/60000);
 const s=Math.floor(diff%60000/1000);
 
 document.getElementById("countdown").innerHTML=
-`⏳ ${d} ngày ${h} giờ ${m} phút ${s} giây`;
+
+`⏳ ${INFORM_DATA.nextMatch.title || ""} <br>
+${d} ngày ${h} giờ ${m} phút ${s} giây`;
+
 }
 
 updateCountdown();
 
 setInterval(updateCountdown,1000);
+
+}else{
+
+document.getElementById("countdown").style.display="none";
+
+}
 
 })();
