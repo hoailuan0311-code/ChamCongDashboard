@@ -361,6 +361,60 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 .stripe-purple { background: linear-gradient(90deg,#a18cd1,#fbc2eb); }
 .stripe-cyan   { background: linear-gradient(90deg,#00c9ff,#92fe9d); }
 
+
+/* ===================== DETAIL TABLE ROW ANIMATION ===================== */
+#dataTable tbody tr{ opacity:0; transform:translateY(10px); animation:rowReveal .5s cubic-bezier(.16,1,.3,1) forwards; }
+@keyframes rowReveal{ to{ opacity:1; transform:translateY(0);} }
+
+/* ===================== MISSING IN/OUT REPORTS ===================== */
+#mioReports .reveal{ opacity:0; transform:translateY(30px); }
+#mioReports .reveal.in{ animation:mioReveal .85s cubic-bezier(.16,1,.3,1) forwards; }
+@keyframes mioReveal{ 0%{opacity:0;transform:translateY(30px) scale(.96);} 60%{opacity:1;} 100%{opacity:1;transform:translateY(0) scale(1);} }
+
+@keyframes mioStripeFlow{ 0%{background-position:0% 0;} 100%{background-position:200% 0;} }
+#mioReports .stripe{ background-size:200% 100%; animation:mioStripeFlow 3s linear infinite; }
+#mioReports .stripe-orange{ background:linear-gradient(90deg,#fa8231,#f7b731,#fa8231); }
+#mioReports .stripe-red{ background:linear-gradient(90deg,#ff6b6b,#ff4757,#ff6b6b); }
+#mioReports .stripe-cyan{ background:linear-gradient(90deg,#00c9ff,#92fe9d,#00c9ff); }
+#mioReports .kpi-card::before{ background-size:200% 100%; animation:mioStripeFlow 3s linear infinite; }
+
+/* leaderboard */
+#mioReports .lb-row{ display:flex; align-items:center; gap:12px; padding:11px 6px; border-bottom:1px solid var(--box-border); opacity:0; transform:translateX(-30px); }
+#mioReports .lb-row.in{ animation:mioSlideIn .55s cubic-bezier(.16,1,.3,1) forwards; }
+@keyframes mioSlideIn{ to{ opacity:1; transform:translateX(0);} }
+#mioReports .lb-row:last-child{ border-bottom:none; }
+#mioReports .lb-rank{ width:32px; height:32px; border-radius:9px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; background:var(--text-muted); }
+#mioReports .lb-row.in .lb-rank{ animation:mioPop .55s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes mioPop{ 0%{transform:scale(0) rotate(-40deg);} 100%{transform:scale(1) rotate(0);} }
+#mioReports .lb-rank.gold{ background:linear-gradient(135deg,#f7b731,#fa8231); box-shadow:0 3px 12px rgba(247,183,49,.5); }
+#mioReports .lb-rank.silver{ background:linear-gradient(135deg,#bdc3c7,#95a5a6); }
+#mioReports .lb-rank.bronze{ background:linear-gradient(135deg,#cd7f32,#a86729); }
+#mioReports .lb-name{ flex:1; font-size:13px; font-weight:600; }
+#mioReports .lb-name small{ display:block; color:var(--text-muted); font-weight:400; font-size:11px; }
+#mioReports .lb-bar-wrap{ flex:2; height:10px; background:var(--box-border); border-radius:6px; overflow:hidden; position:relative; }
+#mioReports .lb-bar{ height:100%; border-radius:6px; width:0; transition:width 1.2s cubic-bezier(.16,1,.3,1); background:linear-gradient(90deg,#ff6b6b,#feca57); position:relative; overflow:hidden; }
+#mioReports .lb-bar::after{ content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent); transform:translateX(-120%); animation:mioSweep 1.8s ease-in-out 1.1s infinite; }
+@keyframes mioSweep{ 0%{transform:translateX(-120%);} 55%,100%{transform:translateX(220%);} }
+#mioReports .lb-count{ width:36px; text-align:right; font-weight:800; font-size:15px; color:#ff5252; }
+
+/* repeat table */
+#mioReports #mioRepeatBody tr{ opacity:0; transform:translateY(14px); }
+#mioReports #mioRepeatBody tr.in{ animation:rowReveal .55s cubic-bezier(.16,1,.3,1) forwards; }
+#mioReports #mioRepeatBody tr:hover{ background:rgba(255,107,107,.06); }
+#mioReports .streak-badge{ display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:800; animation:mioGlow 2s ease-in-out infinite; }
+@keyframes mioGlow{ 0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,.45);} 50%{box-shadow:0 0 0 7px rgba(255,107,107,0);} }
+#mioReports .s2{ background:rgba(255,213,0,.18); color:#e6ac00; border:1px solid rgba(255,213,0,.4); }
+#mioReports .s3{ background:rgba(250,130,49,.18); color:#fa8231; border:1px solid rgba(250,130,49,.4); }
+#mioReports .s4{ background:rgba(255,107,107,.2); color:#e53e3e; border:1px solid rgba(255,107,107,.45); }
+#mioReports .s5,#mioReports .s6{ background:rgba(229,62,62,.25); color:#c0392b; border:1px solid rgba(229,62,62,.5); }
+#mioReports .month-dots{ display:flex; gap:5px; }
+#mioReports .mdot{ width:14px; height:14px; border-radius:4px; background:var(--box-border); }
+#mioReports #mioRepeatBody tr.in .mdot.on{ background:linear-gradient(135deg,#ff6b6b,#fa8231); box-shadow:0 1px 6px rgba(255,107,107,.55); animation:mioPop .45s cubic-bezier(.34,1.56,.64,1) both; }
+#mioReports .legend-mini{ display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--text-muted); margin-bottom:10px; }
+#mioReports .legend-mini span{ display:inline-flex; align-items:center; gap:6px; }
+#mioReports .legend-mini .dot{ width:10px; height:10px; border-radius:3px; display:inline-block; background:#fa8231; }
+#mioReports .err-note{ color:#ff5252; font-size:12px; padding:8px 0; }
+
 /* ===================== AUDIO ===================== */
 audio { display: none; }
 </style>
@@ -397,123 +451,77 @@ audio { display: none; }
     <tbody></tbody>
 </table>
 
-<!-- =================== CHART SECTION =================== -->
-<div class="section-header">
-    <h2>📊 Thống kê & Biểu đồ</h2>
-    <div class="section-line"></div>
-</div>
+<!-- =================== BÁO CÁO MISSING IN/OUT =================== -->
+<div id="mioReports">
 
-<!-- KPI CARDS -->
-<div class="kpi-grid" id="kpiGrid">
-    <div class="kpi-card">
-        <div class="kpi-label">Tổng phản hồi</div>
-        <div class="kpi-value" id="kpiTotal">–</div>
-        <div class="kpi-sub">Tất cả yêu cầu</div>
+    <div class="section-header reveal">
+        <h2>🔎 Tổng quan lỗi chấm công (Missing IN/OUT)</h2>
+        <div class="section-line"></div>
     </div>
-    <div class="kpi-card">
-        <div class="kpi-label">Đã confirm</div>
-        <div class="kpi-value" id="kpiDone">–</div>
-        <div class="kpi-sub" id="kpiDonePct">–</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-label">Chưa phản hồi</div>
-        <div class="kpi-value" id="kpiPending">–</div>
-        <div class="kpi-sub" id="kpiPendingPct">–</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-label">Hôm nay</div>
-        <div class="kpi-value" id="kpiToday">–</div>
-        <div class="kpi-sub" id="kpiTodayDate">–</div>
-    </div>
-</div>
+    <div class="kpi-grid reveal" id="mioKpi"></div>
 
-<!-- CHARTS GRID -->
-<div class="charts-grid">
+    <div class="charts-grid" style="margin-top:8px;">
+        <div class="chart-box chart-full reveal">
+            <div class="stripe stripe-cyan"></div>
+            <div class="chart-header">
+                <div class="chart-title"><div class="chart-icon" style="background:rgba(0,201,255,0.12);">📈</div>Lỗi theo từng tháng (Missing IN vs OUT)</div>
+                <span class="chart-badge" id="mioBMonth">–</span>
+            </div>
+            <div class="chart-body"><canvas id="mioChartMonth" height="90"></canvas></div>
+        </div>
 
-    <!-- Chart 1: BU Doughnut -->
-    <div class="chart-box">
-        <div class="stripe stripe-blue"></div>
+        <div class="chart-box chart-full reveal">
+            <div class="stripe stripe-orange"></div>
+            <div class="chart-header">
+                <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>Thống kê lỗi theo Team (chia theo Type)</div>
+                <span class="chart-badge" id="mioBTeam">–</span>
+            </div>
+            <div class="chart-body"><canvas id="mioChartTeam" height="120"></canvas></div>
+        </div>
+    </div>
+
+    <div class="section-header reveal">
+        <h2>🔥 Nhân viên lỗi nhiều nhất – Tháng mới nhất</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="chart-box chart-full reveal">
+        <div class="stripe stripe-red"></div>
         <div class="chart-header">
-            <div class="chart-title">
-                <div class="chart-icon" style="background:rgba(79,172,254,0.12);">🏢</div>
-                Phân bổ theo BU
-            </div>
-            <span class="chart-badge" id="badgeBU">–</span>
+            <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">🥇</div>Top lỗi tháng <span id="mioCurLabel"></span></div>
+            <span class="chart-badge" id="mioBCur">–</span>
         </div>
-        <div class="chart-body">
-            <div class="doughnut-wrap">
-                <canvas id="chartBU" height="220"></canvas>
-                <div class="doughnut-center">
-                    <div class="doughnut-center-value" id="buTotal">–</div>
-                    <div class="doughnut-center-label">Total</div>
-                </div>
-            </div>
-        </div>
+        <div class="chart-body" id="mioCurList"></div>
     </div>
 
-    <!-- Chart 2: Confirm Status Doughnut -->
-    <div class="chart-box">
-        <div class="stripe stripe-green"></div>
+    <div class="section-header reveal">
+        <h2>🏆 Top 20 nhân viên lỗi nhiều nhất (toàn bộ)</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="chart-box chart-full reveal">
+        <div class="stripe stripe-red"></div>
         <div class="chart-header">
-            <div class="chart-title">
-                <div class="chart-icon" style="background:rgba(67,233,123,0.12);">✅</div>
-                Trạng thái Confirm
-            </div>
-            <span class="chart-badge" id="badgeConfirm">–</span>
+            <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">📊</div>Xếp hạng tích luỹ</div>
+            <span class="chart-badge" id="mioBTop">–</span>
         </div>
-        <div class="chart-body">
-            <div class="doughnut-wrap">
-                <canvas id="chartConfirm" height="220"></canvas>
-                <div class="doughnut-center">
-                    <div class="doughnut-center-value" id="confirmRate">–</div>
-                    <div class="doughnut-center-label">Confirm %</div>
-                </div>
-            </div>
-        </div>
+        <div class="chart-body"><canvas id="mioChartTop20" height="200"></canvas></div>
     </div>
 
-    <!-- Chart 3: Team Bar (full width) -->
-    <div class="chart-box chart-full">
+    <div class="section-header reveal">
+        <h2>🔁 Nhân viên lỗi lặp lại liên tục (2–6 tháng)</h2>
+        <div class="section-line"></div>
+    </div>
+    <div class="chart-box chart-full reveal">
         <div class="stripe stripe-orange"></div>
         <div class="chart-header">
-            <div class="chart-title">
-                <div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>
-                Phân bổ theo Team
-            </div>
-            <span class="chart-badge" id="badgeTeam">–</span>
+            <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">⚠️</div>Repeat offenders – chuỗi tháng liên tiếp</div>
+            <span class="chart-badge" id="mioBRepeat">–</span>
         </div>
         <div class="chart-body">
-            <canvas id="chartTeam" height="90"></canvas>
-        </div>
-    </div>
-
-    <!-- Chart 4: Top người phản hồi (full width) -->
-    <div class="chart-box chart-full">
-        <div class="stripe stripe-purple"></div>
-        <div class="chart-header">
-            <div class="chart-title">
-                <div class="chart-icon" style="background:rgba(161,140,209,0.12);">🏆</div>
-                Top 10 người phản hồi nhiều nhất
-            </div>
-            <span class="chart-badge" id="badgeTop">–</span>
-        </div>
-        <div class="chart-body">
-            <canvas id="chartTop" height="90"></canvas>
-        </div>
-    </div>
-
-    <!-- Chart 5: Theo ngày (full width, line area) -->
-    <div class="chart-box chart-full">
-        <div class="stripe stripe-cyan"></div>
-        <div class="chart-header">
-            <div class="chart-title">
-                <div class="chart-icon" style="background:rgba(0,201,255,0.12);">📅</div>
-                Xu hướng phản hồi theo ngày
-            </div>
-            <span class="chart-badge" id="badgeNgay">–</span>
-        </div>
-        <div class="chart-body">
-            <canvas id="chartNgay" height="80"></canvas>
+            <div class="legend-mini" id="mioLegend"></div>
+            <table id="mioRepeatTable">
+                <thead><tr><th>#</th><th>Họ tên</th><th>MSNV</th><th>Chuỗi liên tục</th><th>Các tháng dính lỗi</th><th>Tổng lỗi</th></tr></thead>
+                <tbody id="mioRepeatBody"></tbody>
+            </table>
         </div>
     </div>
 
@@ -569,12 +577,12 @@ function renderTable(data){
     let tbody = document.querySelector("#dataTable tbody");
     tbody.innerHTML = "";
     if(!data || data.length === 0) return;
-    data.forEach(r=>{
+    data.forEach((r,i)=>{
         const cv = (r.ConfirmAdmin || "").trim();
         const badgeClass = !cv ? "confirm-none" : (cv.toLowerCase() === "done" ? "confirm-done" : "confirm-other");
         const badgeText  = !cv ? "Chưa phản hồi" : cv;
         tbody.insertAdjacentHTML("beforeend", `
-        <tr>
+        <tr style="animation-delay:${(Math.min(i,30)*0.025).toFixed(3)}s">
             <td>${r.MSNV || ""}</td>
             <td>${r.FullName || ""}</td>
             <td>${excelDate(r.NgayDieuChinh)}</td>
@@ -584,23 +592,6 @@ function renderTable(data){
             <td>${r.Team || ""}</td>
         </tr>`);
     });
-}
-
-/* ============ KPI CARDS ============ */
-function renderKPI(data){
-    const total = data.length;
-    const done = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim() !== "").length;
-    const pending = total - done;
-    const todayStr = excelDate(Math.round(Date.now()/86400000 + 25569));
-    const today = data.filter(r => excelDate(r.NgayDieuChinh) === todayStr).length;
-
-    document.getElementById("kpiTotal").textContent = total;
-    document.getElementById("kpiDone").textContent = done;
-    document.getElementById("kpiPending").textContent = pending;
-    document.getElementById("kpiToday").textContent = today;
-    document.getElementById("kpiDonePct").textContent = total ? Math.round(done/total*100) + "% tổng số" : "–";
-    document.getElementById("kpiPendingPct").textContent = total ? Math.round(pending/total*100) + "% tổng số" : "–";
-    document.getElementById("kpiTodayDate").textContent = new Date().toLocaleDateString("vi-VN");
 }
 
 /* ============ CHART HELPERS ============ */
@@ -668,256 +659,205 @@ const CHART_DEFAULTS = {
     }
 };
 
-/* ============ BU DOUGHNUT ============ */
-function renderBU(data){
-    const c = {};
-    data.forEach(r => c[r.BU||'N/A'] = (c[r.BU||'N/A'] || 0) + 1);
-    const keys = Object.keys(c), vals = Object.values(c);
-    const total = vals.reduce((a,b)=>a+b,0);
-
-    document.getElementById("badgeBU").textContent = keys.length + " BU";
-    document.getElementById("buTotal").textContent = total;
-
-    if(window._chartBU) window._chartBU.destroy();
-    window._chartBU = new Chart(document.getElementById("chartBU"), {
-        type: "doughnut",
-        data: {
-            labels: keys,
-            datasets:[{
-                data: vals,
-                backgroundColor: multiColors(keys.length),
-                borderWidth: 0,
-                hoverOffset: 10,
-            }]
-        },
-        options:{
-            cutout:'68%',
-            animation:{ duration:1000, easing:'easeOutQuart' },
-            plugins:{
-                ...CHART_DEFAULTS.plugins,
-                legend:{ ...CHART_DEFAULTS.plugins.legend, position:'bottom' },
-                datalabels:{
-                    color:'#fff',
-                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
-                    formatter:(v,ctx) => {
-                        const pct = Math.round(v/total*100);
-                        return pct >= 5 ? pct+'%' : '';
-                    }
-                }
-            }
-        },
-        plugins:[ChartDataLabels]
-    });
-}
-
-/* ============ CONFIRM DOUGHNUT ============ */
-function renderConfirm(data){
-    const done   = data.filter(r => r.ConfirmAdmin && r.ConfirmAdmin.trim()!=="").length;
-    const pending = data.length - done;
-    const pct = data.length ? Math.round(done/data.length*100) : 0;
-
-    document.getElementById("badgeConfirm").textContent = pct + "% done";
-    document.getElementById("confirmRate").textContent = pct + "%";
-
-    if(window._chartConfirm) window._chartConfirm.destroy();
-    window._chartConfirm = new Chart(document.getElementById("chartConfirm"),{
-        type:"doughnut",
-        data:{
-            labels:["Đã confirm","Chưa phản hồi"],
-            datasets:[{
-                data:[done, pending],
-                backgroundColor:['#43e97b','#ff6b6b'],
-                borderWidth:0,
-                hoverOffset:10,
-            }]
-        },
-        options:{
-            cutout:'68%',
-            animation:{ duration:1000, easing:'easeOutQuart' },
-            plugins:{
-                ...CHART_DEFAULTS.plugins,
-                legend:{ ...CHART_DEFAULTS.plugins.legend, position:'bottom' },
-                datalabels:{
-                    color:'#fff',
-                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
-                    formatter:(v) => v > 0 ? v : ''
-                }
-            }
-        },
-        plugins:[ChartDataLabels]
-    });
-}
-
-/* ============ TEAM BAR ============ */
-function renderTeam(data){
-    const c = {};
-    data.forEach(r => c[r.Team||'N/A'] = (c[r.Team||'N/A'] || 0) + 1);
-    const keys = Object.keys(c), vals = Object.values(c);
-    document.getElementById("badgeTeam").textContent = keys.length + " Teams";
-
-    if(window._chartTeam) window._chartTeam.destroy();
-    window._chartTeam = new Chart(document.getElementById("chartTeam"),{
-        type:"bar",
-        data:{
-            labels: keys,
-            datasets:[{
-                label:'Số phản hồi',
-                data: vals,
-                backgroundColor: function(ctx){
-                    const chart = ctx.chart;
-                    if(!chart.chartArea) return PALETTE.orange[0];
-                    const g = chart.ctx.createLinearGradient(0, chart.chartArea.top, 0, chart.chartArea.bottom);
-                    g.addColorStop(0, PALETTE.orange[0]);
-                    g.addColorStop(1, PALETTE.orange[1]+'88');
-                    return g;
-                },
-                borderRadius: 8,
-                borderSkipped: false,
-            }]
-        },
-        options:{
-            ...CHART_DEFAULTS,
-            plugins:{
-                ...CHART_DEFAULTS.plugins,
-                legend:{display:false},
-                datalabels:{
-                    anchor:'end', align:'end',
-                    color: labelColor,
-                    font:{weight:'bold', size:12, family:'Be Vietnam Pro'},
-                    formatter: v => v
-                }
-            },
-            scales:{
-                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}} },
-                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
-            },
-            animation:{ duration:1000, easing:'easeOutQuart' }
-        },
-        plugins:[ChartDataLabels]
-    });
-}
-
-/* ============ TOP 10 ============ */
-function renderTop(data){
-    const c = {};
-    data.forEach(r => c[r.FullName||'N/A'] = (c[r.FullName||'N/A']||0)+1);
-    const sorted = Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,10);
-    document.getElementById("badgeTop").textContent = "Top " + sorted.length;
-
-    if(window._chartTop) window._chartTop.destroy();
-    window._chartTop = new Chart(document.getElementById("chartTop"),{
-        type:"bar",
-        data:{
-            labels: sorted.map(x=>x[0]),
-            datasets:[{
-                label:'Số lần phản hồi',
-                data: sorted.map(x=>x[1]),
-                backgroundColor: sorted.map((_,i) => multiColors(sorted.length)[i] + 'cc'),
-                borderColor:     sorted.map((_,i) => multiColors(sorted.length)[i]),
-                borderWidth: 1.5,
-                borderRadius: 8,
-                borderSkipped: false,
-            }]
-        },
-        options:{
-            ...CHART_DEFAULTS,
-            plugins:{
-                ...CHART_DEFAULTS.plugins,
-                legend:{display:false},
-                datalabels:{
-                    anchor:'end', align:'end',
-                    color: labelColor,
-                    font:{weight:'bold', size:12, family:'Be Vietnam Pro'},
-                    formatter: v => v
-                }
-            },
-            scales:{
-                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro', size:11}, maxRotation:20} },
-                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
-            },
-            animation:{ duration:1200, easing:'easeOutQuart' }
-        },
-        plugins:[ChartDataLabels]
-    });
-}
-
-/* ============ THEO NGÀY – LINE AREA ============ */
-function renderNgay(data){
-    const c = {};
-    data.forEach(r => {
-        let d = excelDate(r.NgayDieuChinh);
-        if(d) c[d] = (c[d]||0)+1;
-    });
-    // Sort by date
-    const sorted = Object.entries(c).sort((a,b)=>{
-        const parseDate = s => {
-            const parts = s.split(' ');
-            if(parts.length < 3) return 0;
-            return new Date(`${parts[1]} ${parts[0]} ${parts[2]}`).getTime();
-        };
-        return parseDate(a[0]) - parseDate(b[0]);
-    });
-    document.getElementById("badgeNgay").textContent = sorted.length + " ngày";
-
-    if(window._chartNgay) window._chartNgay.destroy();
-    window._chartNgay = new Chart(document.getElementById("chartNgay"),{
-        type:"line",
-        data:{
-            labels: sorted.map(x=>x[0]),
-            datasets:[{
-                label:'Số phản hồi',
-                data: sorted.map(x=>x[1]),
-                borderColor: '#4facfe',
-                borderWidth: 2.5,
-                pointBackgroundColor: '#4facfe',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                fill: true,
-                backgroundColor: function(ctx){
-                    const chart = ctx.chart;
-                    const {ctx:c2, chartArea} = chart;
-                    if(!chartArea) return 'rgba(79,172,254,0.1)';
-                    const g = c2.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-                    g.addColorStop(0, 'rgba(79,172,254,0.35)');
-                    g.addColorStop(1, 'rgba(79,172,254,0.01)');
-                    return g;
-                },
-                tension: 0.4,
-            }]
-        },
-        options:{
-            ...CHART_DEFAULTS,
-            plugins:{
-                ...CHART_DEFAULTS.plugins,
-                legend:{display:false},
-                datalabels:{
-                    align:'top', anchor:'end',
-                    color: labelColor,
-                    font:{weight:'bold', size:11, family:'Be Vietnam Pro'},
-                    formatter: v => v
-                }
-            },
-            scales:{
-                x:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro', size:11}, maxRotation:30} },
-                y:{ grid:{color:gridColor}, ticks:{color:tickColor, font:{family:'Be Vietnam Pro'}}, beginAtZero:true }
-            },
-            animation:{ duration:1400, easing:'easeOutQuart' }
-        },
-        plugins:[ChartDataLabels]
-    });
-}
-
 /* ============ RENDER ALL ============ */
 function renderAll(data){
     renderTable(data);
-    renderKPI(data);
-    renderBU(data);
-    renderConfirm(data);
-    renderTeam(data);
-    renderTop(data);
-    renderNgay(data);
+}
+
+/* ===================== MISSING IN/OUT REPORTS ===================== */
+let missingData = [];
+const _mioNorm = v => (v||"").trim();
+
+async function loadMissing(){
+    try {
+        const res = await fetch("missingInOut.js?cache=" + Date.now());
+        missingData = await res.json();
+    } catch (e) {
+        console.error("Load missing in/out error:", e);
+        missingData = [];
+    }
+    renderMissingAll();
+}
+loadMissing();
+
+function renderMissingAll(){
+    const data = missingData || [];
+    const MONTHS = [...new Set(data.map(d=>d.Month))].sort();
+    const cur = MONTHS.length ? MONTHS[MONTHS.length-1] : "";
+
+    /* ---- KPI ---- */
+    const total = data.length;
+    const mIn  = data.filter(d=>d.Type==="Missing IN").length;
+    const mOut = total - mIn;
+    const curCount = data.filter(d=>d.Month===cur).length;
+    document.getElementById("mioKpi").innerHTML = `
+      <div class="kpi-card"><div class="kpi-label">Tổng lỗi</div><div class="kpi-value" data-c="${total}">0</div><div class="kpi-sub">${MONTHS.length} tháng</div></div>
+      <div class="kpi-card"><div class="kpi-label">Missing IN</div><div class="kpi-value" data-c="${mIn}">0</div><div class="kpi-sub">${total?Math.round(mIn/total*100):0}% tổng</div></div>
+      <div class="kpi-card"><div class="kpi-label">Missing OUT</div><div class="kpi-value" data-c="${mOut}">0</div><div class="kpi-sub">${total?Math.round(mOut/total*100):0}% tổng</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tháng ${cur||"–"}</div><div class="kpi-value" data-c="${curCount}">0</div><div class="kpi-sub">lỗi trong tháng</div></div>`;
+
+    /* ---- leaderboard tháng mới nhất ---- */
+    const curEmp = {};
+    data.filter(d=>d.Month===cur).forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); curEmp[k]=(curEmp[k]||0)+1; });
+    const curSorted = Object.entries(curEmp).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    document.getElementById("mioCurLabel").textContent = cur || "";
+    document.getElementById("mioBCur").textContent = "Top " + curSorted.length;
+    const maxCur = curSorted.length ? curSorted[0][1] : 1;
+    document.getElementById("mioCurList").innerHTML = curSorted.map(([k,c],i)=>{
+        const [msnv,name] = k.split("|");
+        const rk = i===0?"gold":i===1?"silver":i===2?"bronze":"";
+        return `<div class="lb-row reveal" style="animation-delay:${(i*0.06).toFixed(2)}s">
+          <div class="lb-rank ${rk}">${i+1}</div>
+          <div class="lb-name">${name}<small>MSNV ${msnv}</small></div>
+          <div class="lb-bar-wrap"><div class="lb-bar" data-w="${(c/maxCur*100).toFixed(1)}"></div></div>
+          <div class="lb-count">${c}</div></div>`;
+    }).join("") || '<p class="err-note">Chưa có dữ liệu tháng này.</p>';
+
+    /* ---- repeat offenders ---- */
+    const allEmp = {};
+    data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); allEmp[k]=(allEmp[k]||0)+1; });
+    const empMonths = {};
+    data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); (empMonths[k]=empMonths[k]||new Set()).add(d.Month); });
+    const idx = {}; MONTHS.forEach((m,i)=>idx[m]=i);
+    function streakOf(set){
+        const ns=[...set].map(m=>idx[m]).sort((a,b)=>a-b);
+        let best=1, c=1;
+        for(let i=1;i<ns.length;i++){ if(ns[i]===ns[i-1]+1){c++;best=Math.max(best,c);} else c=1; }
+        return ns.length?best:0;
+    }
+    const rep = Object.entries(empMonths)
+        .map(([k,set])=>({k, months:[...set].sort(), streak:streakOf(set), total:allEmp[k]}))
+        .filter(x=>x.streak>=2)
+        .sort((a,b)=>b.streak-a.streak || b.total-a.total);
+    document.getElementById("mioBRepeat").textContent = rep.length + " người";
+    document.getElementById("mioLegend").innerHTML =
+        MONTHS.map(m=>`<span><span class="dot"></span>${m}</span>`).join("") +
+        ' &nbsp;|&nbsp; ô sáng = tháng dính lỗi';
+    document.getElementById("mioRepeatBody").innerHTML = rep.map((x,i)=>{
+        const [msnv,name] = x.k.split("|");
+        const cls = "s" + Math.min(x.streak,6);
+        const dots = MONTHS.map(m=>`<div class="mdot ${x.months.includes(m)?"on":""}"></div>`).join("");
+        return `<tr class="reveal" style="animation-delay:${(i*0.04).toFixed(2)}s">
+          <td>${i+1}</td><td>${name}</td><td>${msnv}</td>
+          <td><span class="streak-badge ${cls}">🔥 ${x.streak} tháng</span></td>
+          <td><div class="month-dots">${dots}</div></td><td><b>${x.total}</b></td></tr>`;
+    }).join("") || '<tr><td colspan="6" class="err-note">Chưa có nhân viên lặp lại.</td></tr>';
+
+    setupMioObservers();
+    renderMissingCharts();
+}
+
+/* ---- reveal / count-up / leaderboard observers (replay khi cuộn) ---- */
+let _mioIO, _mioKpiIO, _mioLbIO;
+function _mioCountUp(el, target, dur){
+    let s=null;
+    function step(t){ if(!s)s=t; const p=Math.min((t-s)/dur,1);
+        el.textContent = Math.round((1-Math.pow(1-p,3))*target); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+}
+function setupMioObservers(){
+    if(_mioIO) _mioIO.disconnect();
+    if(_mioKpiIO) _mioKpiIO.disconnect();
+    if(_mioLbIO) _mioLbIO.disconnect();
+
+    _mioIO = new IntersectionObserver(es=>es.forEach(e=>{
+        e.target.classList.toggle("in", e.isIntersecting);
+    }), {threshold:.15});
+    document.querySelectorAll("#mioReports .reveal").forEach(el=>_mioIO.observe(el));
+
+    const kpi = document.getElementById("mioKpi");
+    if(kpi){
+        _mioKpiIO = new IntersectionObserver(es=>es.forEach(e=>{
+            kpi.querySelectorAll(".kpi-value").forEach(v=>{
+                if(e.isIntersecting) _mioCountUp(v, +v.dataset.c, 1100);
+                else v.textContent = "0";
+            });
+        }), {threshold:.4});
+        _mioKpiIO.observe(kpi);
+    }
+
+    _mioLbIO = new IntersectionObserver(es=>es.forEach(e=>{
+        const b = e.target.querySelector(".lb-bar"); if(!b) return;
+        b.style.width = e.isIntersecting ? b.dataset.w + "%" : "0";
+    }), {threshold:.3});
+    document.querySelectorAll("#mioReports .lb-row").forEach(el=>_mioLbIO.observe(el));
+}
+
+/* ---- charts (dùng helper theme-aware sẵn có) ---- */
+function renderMissingCharts(){
+    const data = missingData || [];
+    if(typeof Chart === "undefined" || !data.length) return;
+    const MONTHS = [...new Set(data.map(d=>d.Month))].sort();
+    const C_IN = "#4facfe", C_OUT = "#ff6b6b";
+
+    /* theo tháng */
+    const byMonth = MONTHS.map(m=>({
+        in:  data.filter(d=>d.Month===m && d.Type==="Missing IN").length,
+        out: data.filter(d=>d.Month===m && d.Type==="Missing OUT").length
+    }));
+    document.getElementById("mioBMonth").textContent = MONTHS.length + " tháng";
+    if(window._mioChartMonth) window._mioChartMonth.destroy();
+    window._mioChartMonth = new Chart(document.getElementById("mioChartMonth"),{
+        type:"bar",
+        data:{ labels:MONTHS, datasets:[
+            {label:"Missing IN",  data:byMonth.map(x=>x.in),  backgroundColor:C_IN,  borderRadius:6},
+            {label:"Missing OUT", data:byMonth.map(x=>x.out), backgroundColor:C_OUT, borderRadius:6}
+        ]},
+        options:{ ...CHART_DEFAULTS,
+            plugins:{ ...CHART_DEFAULTS.plugins,
+                legend:{ display:true, labels:{ color:labelColor(), font:{family:"Be Vietnam Pro"} } },
+                datalabels:{ color:"#fff", font:{weight:"bold",size:11,family:"Be Vietnam Pro"}, formatter:v=>v||"" } },
+            scales:{ x:{grid:{color:gridColor()},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro"}}},
+                     y:{grid:{color:gridColor()},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro"}},beginAtZero:true} },
+            animation:{ duration:1400, easing:"easeOutBounce", delay:(c)=>c.type==="data"?c.dataIndex*120:0 }
+        }, plugins:[ChartDataLabels]
+    });
+
+    /* theo Team x Type (stacked horizontal) */
+    const teams = [...new Set(data.map(d=>_mioNorm(d.Team)))];
+    const ts = teams.map(t=>({ t,
+        in:  data.filter(d=>_mioNorm(d.Team)===t && d.Type==="Missing IN").length,
+        out: data.filter(d=>_mioNorm(d.Team)===t && d.Type==="Missing OUT").length
+    })).sort((a,b)=>(b.in+b.out)-(a.in+a.out));
+    document.getElementById("mioBTeam").textContent = teams.length + " Team";
+    if(window._mioChartTeam) window._mioChartTeam.destroy();
+    window._mioChartTeam = new Chart(document.getElementById("mioChartTeam"),{
+        type:"bar",
+        data:{ labels:ts.map(x=>x.t), datasets:[
+            {label:"Missing IN",  data:ts.map(x=>x.in),  backgroundColor:C_IN,  borderRadius:5},
+            {label:"Missing OUT", data:ts.map(x=>x.out), backgroundColor:C_OUT, borderRadius:5}
+        ]},
+        options:{ indexAxis:"y", ...CHART_DEFAULTS,
+            plugins:{ ...CHART_DEFAULTS.plugins,
+                legend:{ display:true, labels:{ color:labelColor(), font:{family:"Be Vietnam Pro"} } },
+                datalabels:{ color:"#fff", font:{weight:"bold",size:10,family:"Be Vietnam Pro"}, formatter:v=>v||"" } },
+            scales:{ x:{stacked:true,grid:{color:gridColor()},ticks:{color:tickColor()},beginAtZero:true},
+                     y:{stacked:true,grid:{display:false},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro",size:11}}} },
+            animation:{ duration:1400, easing:"easeOutQuart", delay:(c)=>c.type==="data"?c.dataIndex*70:0 }
+        }, plugins:[ChartDataLabels]
+    });
+
+    /* Top 20 toàn bộ */
+    const allEmp = {};
+    data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); allEmp[k]=(allEmp[k]||0)+1; });
+    const top20 = Object.entries(allEmp).sort((a,b)=>b[1]-a[1]).slice(0,20);
+    document.getElementById("mioBTop").textContent = "Top " + top20.length;
+    if(window._mioChartTop20) window._mioChartTop20.destroy();
+    window._mioChartTop20 = new Chart(document.getElementById("mioChartTop20"),{
+        type:"bar",
+        data:{ labels:top20.map(x=>x[0].split("|")[1]), datasets:[{
+            label:"Số lỗi", data:top20.map(x=>x[1]),
+            backgroundColor: top20.map((_,i)=> i===0?"#e53e3e" : i<3?"#fa8231" : "#feca57"),
+            borderRadius:5
+        }]},
+        options:{ indexAxis:"y", ...CHART_DEFAULTS,
+            plugins:{ ...CHART_DEFAULTS.plugins, legend:{display:false},
+                datalabels:{ anchor:"end", align:"end", color:tickColor(), font:{weight:"bold",size:11,family:"Be Vietnam Pro"}, formatter:v=>v } },
+            scales:{ x:{grid:{color:gridColor()},ticks:{color:tickColor()},beginAtZero:true},
+                     y:{grid:{display:false},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro",size:11}}} },
+            animation:{ duration:1600, easing:"easeOutQuart", delay:(c)=>c.type==="data"?c.dataIndex*55:0 }
+        }, plugins:[ChartDataLabels]
+    });
 }
 
 /* ============ BUTTONS ============ */
@@ -994,13 +934,7 @@ async function loadTheme() {
         }
         console.log("✔ Theme applied:", activeTheme);
         // Re-render charts sau khi theme đổi màu nền
-        if(fullData && fullData.length >= 0){
-            renderBU(fullData);
-            renderConfirm(fullData);
-            renderTeam(fullData);
-            renderTop(fullData);
-            renderNgay(fullData);
-        }
+        if(typeof missingData !== "undefined" && missingData.length){ renderMissingCharts(); }
     } catch (err) { console.error("Theme load error:", err); }
 }
 loadTheme();
