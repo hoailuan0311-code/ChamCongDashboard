@@ -494,19 +494,19 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 /* ===================== Top 20: 2 cột ===================== */
 #mioReports .top20{ display:grid; grid-template-columns:1fr 1fr; gap:4px 26px; }
 @media(max-width:760px){ #mioReports .top20{ grid-template-columns:1fr; } }
-#mioReports .top20 .t2row{ display:flex; align-items:center; gap:11px; padding:8px 4px; border-bottom:1px solid var(--box-border); }
+#mioReports .top20 .t2row{ display:grid; grid-template-columns:26px 32px minmax(110px,1fr) 140px 26px; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--box-border); }
 #mioReports .top20 .t2rk{ width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#fff; background:#c3c8d4; flex:0 0 auto; }
 #mioReports .top20 .t2rk.g1{ background:linear-gradient(135deg,#f7b731,#fa8231); box-shadow:0 3px 10px rgba(247,183,49,.5); }
 #mioReports .top20 .t2rk.g2{ background:linear-gradient(135deg,#c0c6d0,#9aa1ad); }
 #mioReports .top20 .t2rk.g3{ background:linear-gradient(135deg,#cd7f32,#a86729); }
 #mioReports .top20 .t2av{ width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:12px; flex:0 0 auto; }
-#mioReports .top20 .t2nm{ flex:0 0 112px; font-size:12.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-#mioReports .top20 .t2track{ flex:1; height:13px; border-radius:7px; background:var(--box-border); overflow:hidden; }
+#mioReports .top20 .t2nm{ min-width:0; font-size:12.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#mioReports .top20 .t2track{ width:100%; height:13px; border-radius:7px; background:var(--box-border); overflow:hidden; }
 #mioReports .top20 .t2bar{ height:100%; width:0; border-radius:7px; transition:width 1.1s cubic-bezier(.16,1,.3,1); background:linear-gradient(90deg,#ffc24b,#fa8231); box-shadow:0 0 10px rgba(250,130,49,.5) inset; position:relative; overflow:hidden; }
 #mioReports .top20 .t2bar.hot{ background:linear-gradient(90deg,#ff8a96,#ff4757); box-shadow:0 0 10px rgba(255,71,87,.5) inset; }
 #mioReports .mio-grow.go .top20 .t2bar{ width:var(--w); }
 #mioReports .top20 .t2bar .t2sh{ position:absolute; top:0; left:-40%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); animation:tcsh 2.6s ease-in-out infinite; }
-#mioReports .top20 .t2cc{ flex:0 0 26px; text-align:right; font-weight:800; color:#fa8231; font-size:14px; }
+#mioReports .top20 .t2cc{ text-align:right; font-weight:800; color:#fa8231; font-size:14px; }
 
 
 /* ===================== AUDIO ===================== */
