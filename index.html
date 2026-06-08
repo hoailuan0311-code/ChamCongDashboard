@@ -415,6 +415,100 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 #mioReports .legend-mini .dot{ width:10px; height:10px; border-radius:3px; display:inline-block; background:#fa8231; }
 #mioReports .err-note{ color:#ff5252; font-size:12px; padding:8px 0; }
 
+/* ===================== KPI Style 3 ===================== */
+#mioReports .mkpi{ border:1px solid var(--box-border); border-radius:18px; padding:16px 18px 14px; box-shadow:var(--box-shadow); transition:transform .25s, box-shadow .25s; overflow:hidden; position:relative; }
+#mioReports .mkpi:hover{ transform:translateY(-4px); box-shadow:0 14px 30px rgba(40,40,80,.16); }
+#mioReports .mkpi.c1{ --a:#6366f1; --a2:#8b8ff5; --tint:rgba(99,102,241,.10); }
+#mioReports .mkpi.c2{ --a:#3b9eff; --a2:#7cc4ff; --tint:rgba(59,158,255,.11); }
+#mioReports .mkpi.c3{ --a:#ff5a6e; --a2:#ff9aa6; --tint:rgba(255,90,110,.11); }
+#mioReports .mkpi.c4{ --a:#f5a524; --a2:#ffce7a; --tint:rgba(245,165,36,.12); }
+#mioReports .mkpi{ background:linear-gradient(135deg,var(--tint),rgba(255,255,255,0) 70%), var(--kpi-bg); }
+#mioReports .mk-top{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+#mioReports .mk-ic{ width:30px; height:30px; border-radius:9px; background:var(--a); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:0 4px 10px var(--tint); }
+#mioReports .mk-lb{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); }
+#mioReports .mk-val{ font-size:34px; font-weight:800; line-height:1; color:var(--a); }
+#mioReports .mk-sub{ font-size:11px; color:var(--text-muted); margin-top:4px; }
+#mioReports .mk-mini{ display:flex; gap:4px; align-items:flex-end; height:26px; margin-top:10px; }
+#mioReports .mk-mb{ flex:1; background:var(--a); opacity:.85; border-radius:3px 3px 0 0; height:0; transition:height .9s cubic-bezier(.16,1,.3,1); }
+#mioReports .mk-mb:last-child{ opacity:1; box-shadow:0 0 8px var(--a); }
+#mioReports .mio-grow.go .mk-mb{ height:var(--h); }
+
+/* ===================== Chart 1: monthly neon bars ===================== */
+#mioReports .mleg{ display:flex; gap:18px; justify-content:center; flex-wrap:wrap; font-size:12px; color:var(--text-muted); margin-bottom:14px; }
+#mioReports .mleg b{ display:inline-flex; align-items:center; gap:6px; font-weight:600; color:var(--text); }
+#mioReports .mleg .sw{ width:14px; height:14px; border-radius:4px; display:inline-block; }
+#mioReports .gbars{ display:grid; grid-template-columns:repeat(4,1fr); gap:26px; height:300px; align-items:end; padding:0 6px; }
+#mioReports .gmonth{ display:flex; flex-direction:column; align-items:center; height:100%; justify-content:flex-end; }
+#mioReports .gpair{ display:flex; gap:12px; align-items:end; height:100%; width:100%; justify-content:center; }
+#mioReports .gbar-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%; }
+#mioReports .gbar{ width:46px; border-radius:10px 10px 4px 4px; position:relative; height:0; transition:height 1.2s cubic-bezier(.16,1,.3,1); overflow:hidden; }
+#mioReports .mio-grow.go .gbar{ height:var(--h); }
+#mioReports .gbar.in{ background:linear-gradient(180deg,#7fd0ff,#3a9bdc); box-shadow:0 0 18px rgba(79,172,254,.55); }
+#mioReports .gbar.out{ background:linear-gradient(180deg,#ff9a9a,#ff4757); box-shadow:0 0 18px rgba(255,107,107,.5); }
+#mioReports .gbar .gshine{ position:absolute; top:-40%; left:0; width:100%; height:40%; background:linear-gradient(180deg,rgba(255,255,255,.7),transparent); animation:gshine 2.4s ease-in-out infinite; }
+@keyframes gshine{ 0%{top:-40%} 60%,100%{top:120%} }
+#mioReports .gval{ font-weight:800; font-size:15px; margin-bottom:6px; opacity:0; transform:translateY(8px); transition:.5s .8s; }
+#mioReports .gval.in{ color:#3a9bdc; } #mioReports .gval.out{ color:#ff4757; }
+#mioReports .mio-grow.go .gval{ opacity:1; transform:translateY(0); }
+#mioReports .glabel{ margin-top:10px; font-size:13px; color:var(--text-muted); font-weight:600; }
+@media(max-width:560px){ #mioReports .gbars{ gap:10px; } #mioReports .gbar{ width:30px; } }
+
+/* ===================== Team A: neon split bars ===================== */
+#mioReports .tA .trow{ display:grid; grid-template-columns:140px 1fr 46px; align-items:center; gap:12px; margin-bottom:11px; }
+#mioReports .tA .tnm{ font-size:13px; font-weight:600; text-align:right; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#mioReports .tA .ttrack{ height:26px; border-radius:8px; background:var(--box-border); overflow:hidden; display:flex; }
+#mioReports .tA .tseg{ height:100%; width:0; transition:width 1.1s cubic-bezier(.16,1,.3,1); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; position:relative; overflow:hidden; }
+#mioReports .mio-grow.go .tA .tseg{ width:var(--w); }
+#mioReports .tA .tseg.in{ background:linear-gradient(90deg,#7fd0ff,#3a9bdc); box-shadow:0 0 12px rgba(79,172,254,.5) inset; }
+#mioReports .tA .tseg.out{ background:linear-gradient(90deg,#ff8a96,#ff4757); box-shadow:0 0 12px rgba(255,71,87,.45) inset; }
+#mioReports .tA .tseg .tsh{ position:absolute; top:0; left:-40%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); animation:tAsh 2.6s ease-in-out infinite; }
+@keyframes tAsh{ 0%{left:-40%} 60%,100%{left:130%} }
+#mioReports .tA .ttot{ font-size:13px; font-weight:800; color:var(--text); }
+@media(max-width:560px){ #mioReports .tA .trow{ grid-template-columns:96px 1fr 32px; gap:7px; } #mioReports .tA .tnm{ font-size:11px; } }
+
+/* ===================== Top tháng: thẻ neon ===================== */
+#mioReports .topc{ display:flex; align-items:center; gap:14px; padding:11px 6px; border-bottom:1px solid var(--box-border); }
+#mioReports .topc:last-child{ border:none; }
+#mioReports .topc.reveal{ opacity:0; transform:translateX(-20px); }
+#mioReports .topc.reveal.in{ animation:mioSlideIn .55s cubic-bezier(.16,1,.3,1) forwards; }
+#mioReports .tc-rk{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; color:#fff; background:#c3c8d4; flex:0 0 auto; }
+#mioReports .tc-rk.g1{ background:linear-gradient(135deg,#f7b731,#fa8231); box-shadow:0 3px 12px rgba(247,183,49,.5); }
+#mioReports .tc-rk.g2{ background:linear-gradient(135deg,#c0c6d0,#9aa1ad); }
+#mioReports .tc-rk.g3{ background:linear-gradient(135deg,#cd7f32,#a86729); }
+#mioReports .tc-av{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:14px; flex:0 0 auto; }
+#mioReports .p0{ background:linear-gradient(135deg,#4facfe,#00c9ff); }
+#mioReports .p1{ background:linear-gradient(135deg,#43e97b,#38f9d7); }
+#mioReports .p2{ background:linear-gradient(135deg,#fa8231,#f7b731); }
+#mioReports .p3{ background:linear-gradient(135deg,#a18cd1,#fbc2eb); }
+#mioReports .p4{ background:linear-gradient(135deg,#ff6b6b,#ff4757); }
+#mioReports .tc-info{ flex:0 0 168px; min-width:0; }
+#mioReports .tc-nm{ font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#mioReports .tc-info small{ color:var(--text-muted); font-size:11px; }
+#mioReports .tc-track{ flex:1; height:16px; border-radius:8px; background:var(--box-border); overflow:hidden; }
+#mioReports .tc-bar{ height:100%; width:0; border-radius:8px; transition:width 1.1s cubic-bezier(.16,1,.3,1); background:linear-gradient(90deg,#ff8a96,#ff4757); box-shadow:0 0 12px rgba(255,71,87,.5) inset; position:relative; overflow:hidden; }
+#mioReports .mio-grow.go .tc-bar{ width:var(--w); }
+#mioReports .tc-bar .tc-sh{ position:absolute; top:0; left:-40%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); animation:tcsh 2.4s ease-in-out infinite; }
+@keyframes tcsh{ 0%{left:-40%} 60%,100%{left:130%} }
+#mioReports .tc-cc{ flex:0 0 34px; text-align:right; font-weight:800; color:#ff5252; font-size:15px; }
+
+/* ===================== Top 20: 2 cột ===================== */
+#mioReports .top20{ display:grid; grid-template-columns:1fr 1fr; gap:4px 26px; }
+@media(max-width:760px){ #mioReports .top20{ grid-template-columns:1fr; } }
+#mioReports .top20 .t2row{ display:flex; align-items:center; gap:11px; padding:8px 4px; border-bottom:1px solid var(--box-border); }
+#mioReports .top20 .t2rk{ width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:#fff; background:#c3c8d4; flex:0 0 auto; }
+#mioReports .top20 .t2rk.g1{ background:linear-gradient(135deg,#f7b731,#fa8231); box-shadow:0 3px 10px rgba(247,183,49,.5); }
+#mioReports .top20 .t2rk.g2{ background:linear-gradient(135deg,#c0c6d0,#9aa1ad); }
+#mioReports .top20 .t2rk.g3{ background:linear-gradient(135deg,#cd7f32,#a86729); }
+#mioReports .top20 .t2av{ width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:12px; flex:0 0 auto; }
+#mioReports .top20 .t2nm{ flex:0 0 112px; font-size:12.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#mioReports .top20 .t2track{ flex:1; height:13px; border-radius:7px; background:var(--box-border); overflow:hidden; }
+#mioReports .top20 .t2bar{ height:100%; width:0; border-radius:7px; transition:width 1.1s cubic-bezier(.16,1,.3,1); background:linear-gradient(90deg,#ffc24b,#fa8231); box-shadow:0 0 10px rgba(250,130,49,.5) inset; position:relative; overflow:hidden; }
+#mioReports .top20 .t2bar.hot{ background:linear-gradient(90deg,#ff8a96,#ff4757); box-shadow:0 0 10px rgba(255,71,87,.5) inset; }
+#mioReports .mio-grow.go .top20 .t2bar{ width:var(--w); }
+#mioReports .top20 .t2bar .t2sh{ position:absolute; top:0; left:-40%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); animation:tcsh 2.6s ease-in-out infinite; }
+#mioReports .top20 .t2cc{ flex:0 0 26px; text-align:right; font-weight:800; color:#fa8231; font-size:14px; }
+
+
 /* ===================== AUDIO ===================== */
 audio { display: none; }
 </style>
@@ -458,7 +552,7 @@ audio { display: none; }
         <h2>🔎 Tổng quan lỗi chấm công (Missing IN/OUT)</h2>
         <div class="section-line"></div>
     </div>
-    <div class="kpi-grid reveal" id="mioKpi"></div>
+    <div class="kpi-grid reveal mio-grow" id="mioKpi"></div>
 
     <div class="charts-grid" style="margin-top:8px;">
         <div class="chart-box chart-full reveal">
@@ -467,7 +561,7 @@ audio { display: none; }
                 <div class="chart-title"><div class="chart-icon" style="background:rgba(0,201,255,0.12);">📈</div>Lỗi theo từng tháng (Missing IN vs OUT)</div>
                 <span class="chart-badge" id="mioBMonth">–</span>
             </div>
-            <div class="chart-body"><canvas id="mioChartMonth" height="90"></canvas></div>
+            <div class="chart-body"><div class="mio-grow" id="mioChartMonth"></div></div>
         </div>
 
         <div class="chart-box chart-full reveal">
@@ -476,7 +570,7 @@ audio { display: none; }
                 <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>Thống kê lỗi theo Team (chia theo Type)</div>
                 <span class="chart-badge" id="mioBTeam">–</span>
             </div>
-            <div class="chart-body"><canvas id="mioChartTeam" height="120"></canvas></div>
+            <div class="chart-body"><div class="mio-grow" id="mioChartTeam"></div></div>
         </div>
     </div>
 
@@ -490,7 +584,7 @@ audio { display: none; }
             <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">🥇</div>Top lỗi tháng <span id="mioCurLabel"></span></div>
             <span class="chart-badge" id="mioBCur">–</span>
         </div>
-        <div class="chart-body" id="mioCurList"></div>
+        <div class="chart-body mio-grow" id="mioCurList"></div>
     </div>
 
     <div class="section-header reveal">
@@ -503,7 +597,7 @@ audio { display: none; }
             <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">📊</div>Xếp hạng tích luỹ</div>
             <span class="chart-badge" id="mioBTop">–</span>
         </div>
-        <div class="chart-body"><canvas id="mioChartTop20" height="200"></canvas></div>
+        <div class="chart-body"><div class="mio-grow" id="mioChartTop20"></div></div>
     </div>
 
     <div class="section-header reveal">
@@ -667,6 +761,7 @@ function renderAll(data){
 /* ===================== MISSING IN/OUT REPORTS ===================== */
 let missingData = [];
 const _mioNorm = v => (v||"").trim();
+const _mioIni = n => { const w=(n||"").trim().split(/\s+/).filter(Boolean); if(!w.length) return "?"; const a=w.length>=2?w[w.length-2][0]:w[0][0]; const b=w[w.length-1][0]; return (a+b).toUpperCase(); };
 
 async function loadMissing(){
     try {
@@ -690,11 +785,22 @@ function renderMissingAll(){
     const mIn  = data.filter(d=>d.Type==="Missing IN").length;
     const mOut = total - mIn;
     const curCount = data.filter(d=>d.Month===cur).length;
-    document.getElementById("mioKpi").innerHTML = `
-      <div class="kpi-card"><div class="kpi-label">Tổng lỗi</div><div class="kpi-value" data-c="${total}">0</div><div class="kpi-sub">${MONTHS.length} tháng</div></div>
-      <div class="kpi-card"><div class="kpi-label">Missing IN</div><div class="kpi-value" data-c="${mIn}">0</div><div class="kpi-sub">${total?Math.round(mIn/total*100):0}% tổng</div></div>
-      <div class="kpi-card"><div class="kpi-label">Missing OUT</div><div class="kpi-value" data-c="${mOut}">0</div><div class="kpi-sub">${total?Math.round(mOut/total*100):0}% tổng</div></div>
-      <div class="kpi-card"><div class="kpi-label">Tháng ${cur||"–"}</div><div class="kpi-value" data-c="${curCount}">0</div><div class="kpi-sub">lỗi trong tháng</div></div>`;
+    const totByM = MONTHS.map(m=>data.filter(d=>d.Month===m).length);
+    const inByM  = MONTHS.map(m=>data.filter(d=>d.Month===m && d.Type==="Missing IN").length);
+    const outByM = MONTHS.map(m=>data.filter(d=>d.Month===m && d.Type==="Missing OUT").length);
+    const prevCount = MONTHS.length>=2 ? data.filter(d=>d.Month===MONTHS[MONTHS.length-2]).length : 0;
+    let trendTxt = "lỗi trong tháng";
+    if(prevCount>0){ const ch=Math.round((curCount-prevCount)/prevCount*100); trendTxt=(ch<=0?"▼ ":"▲ ")+Math.abs(ch)+"% so với tháng trước"; }
+    const _mb = arr => { const mx=Math.max(1,...arr); return arr.map(v=>`<div class="mk-mb" style="--h:${(v/mx*100).toFixed(0)}%"></div>`).join(""); };
+    const _kpic = (cn,icon,label,val,sub,series)=>`<div class="mkpi ${cn}">
+        <div class="mk-top"><div class="mk-ic">${icon}</div><div class="mk-lb">${label}</div></div>
+        <div class="mk-val" data-c="${val}">0</div><div class="mk-sub">${sub}</div>
+        <div class="mk-mini">${_mb(series)}</div></div>`;
+    document.getElementById("mioKpi").innerHTML =
+        _kpic("c1","📋","Tổng lỗi",total,`${MONTHS.length} tháng`,totByM) +
+        _kpic("c2","⬇️","Missing IN",mIn,`${total?Math.round(mIn/total*100):0}% tổng`,inByM) +
+        _kpic("c3","⬆️","Missing OUT",mOut,`${total?Math.round(mOut/total*100):0}% tổng`,outByM) +
+        _kpic("c4","🗓️",`Tháng ${cur||"–"}`,curCount,trendTxt,totByM);
 
     /* ---- leaderboard tháng mới nhất ---- */
     const curEmp = {};
@@ -705,12 +811,13 @@ function renderMissingAll(){
     const maxCur = curSorted.length ? curSorted[0][1] : 1;
     document.getElementById("mioCurList").innerHTML = curSorted.map(([k,c],i)=>{
         const [msnv,name] = k.split("|");
-        const rk = i===0?"gold":i===1?"silver":i===2?"bronze":"";
-        return `<div class="lb-row reveal" style="animation-delay:${(i*0.06).toFixed(2)}s">
-          <div class="lb-rank ${rk}">${i+1}</div>
-          <div class="lb-name">${name}<small>MSNV ${msnv}</small></div>
-          <div class="lb-bar-wrap"><div class="lb-bar" data-w="${(c/maxCur*100).toFixed(1)}"></div></div>
-          <div class="lb-count">${c}</div></div>`;
+        const g = i<3 ? "g"+(i+1) : "";
+        return `<div class="topc reveal" style="animation-delay:${(i*0.05).toFixed(2)}s">
+          <div class="tc-rk ${g}">${i+1}</div>
+          <div class="tc-av p${i%5}">${_mioIni(name)}</div>
+          <div class="tc-info"><div class="tc-nm">${name} ${i<3?'<span class="tc-flame">🔥</span>':''}</div><small>MSNV ${msnv}</small></div>
+          <div class="tc-track"><div class="tc-bar" style="--w:${(c/maxCur*100).toFixed(1)}%"><span class="tc-sh"></span></div></div>
+          <div class="tc-cc">${c}</div></div>`;
     }).join("") || '<p class="err-note">Chưa có dữ liệu tháng này.</p>';
 
     /* ---- repeat offenders ---- */
@@ -747,8 +854,8 @@ function renderMissingAll(){
     renderMissingCharts();
 }
 
-/* ---- reveal / count-up / leaderboard observers (replay khi cuộn) ---- */
-let _mioIO, _mioKpiIO, _mioLbIO;
+/* ---- reveal / count-up / grow observers (replay khi cuộn) ---- */
+let _mioIO, _mioKpiIO, _mioGrowIO;
 function _mioCountUp(el, target, dur){
     let s=null;
     function step(t){ if(!s)s=t; const p=Math.min((t-s)/dur,1);
@@ -758,17 +865,17 @@ function _mioCountUp(el, target, dur){
 function setupMioObservers(){
     if(_mioIO) _mioIO.disconnect();
     if(_mioKpiIO) _mioKpiIO.disconnect();
-    if(_mioLbIO) _mioLbIO.disconnect();
+    if(_mioGrowIO) _mioGrowIO.disconnect();
 
     _mioIO = new IntersectionObserver(es=>es.forEach(e=>{
         e.target.classList.toggle("in", e.isIntersecting);
-    }), {threshold:.15});
+    }), {threshold:.12});
     document.querySelectorAll("#mioReports .reveal").forEach(el=>_mioIO.observe(el));
 
     const kpi = document.getElementById("mioKpi");
     if(kpi){
         _mioKpiIO = new IntersectionObserver(es=>es.forEach(e=>{
-            kpi.querySelectorAll(".kpi-value").forEach(v=>{
+            kpi.querySelectorAll(".mk-val").forEach(v=>{
                 if(e.isIntersecting) _mioCountUp(v, +v.dataset.c, 1100);
                 else v.textContent = "0";
             });
@@ -776,88 +883,64 @@ function setupMioObservers(){
         _mioKpiIO.observe(kpi);
     }
 
-    _mioLbIO = new IntersectionObserver(es=>es.forEach(e=>{
-        const b = e.target.querySelector(".lb-bar"); if(!b) return;
-        b.style.width = e.isIntersecting ? b.dataset.w + "%" : "0";
-    }), {threshold:.3});
-    document.querySelectorAll("#mioReports .lb-row").forEach(el=>_mioLbIO.observe(el));
+    _mioGrowIO = new IntersectionObserver(es=>es.forEach(e=>{
+        e.target.classList.toggle("go", e.isIntersecting);
+    }), {threshold:.18});
+    document.querySelectorAll("#mioReports .mio-grow").forEach(el=>_mioGrowIO.observe(el));
 }
 
-/* ---- charts (dùng helper theme-aware sẵn có) ---- */
+/* ---- charts custom HTML (Chart 1 neon / Team A / Top20 2 cột) ---- */
 function renderMissingCharts(){
     const data = missingData || [];
-    if(typeof Chart === "undefined" || !data.length) return;
+    if(!data.length) return;
     const MONTHS = [...new Set(data.map(d=>d.Month))].sort();
-    const C_IN = "#4facfe", C_OUT = "#ff6b6b";
 
-    /* theo tháng */
+    /* Chart 1: lỗi theo tháng (neon glow bars) */
     const byMonth = MONTHS.map(m=>({
         in:  data.filter(d=>d.Month===m && d.Type==="Missing IN").length,
         out: data.filter(d=>d.Month===m && d.Type==="Missing OUT").length
     }));
+    const maxM = Math.max(1, ...byMonth.map(x=>Math.max(x.in,x.out))) * 1.15;
     document.getElementById("mioBMonth").textContent = MONTHS.length + " tháng";
-    if(window._mioChartMonth) window._mioChartMonth.destroy();
-    window._mioChartMonth = new Chart(document.getElementById("mioChartMonth"),{
-        type:"bar",
-        data:{ labels:MONTHS, datasets:[
-            {label:"Missing IN",  data:byMonth.map(x=>x.in),  backgroundColor:C_IN,  borderRadius:6},
-            {label:"Missing OUT", data:byMonth.map(x=>x.out), backgroundColor:C_OUT, borderRadius:6}
-        ]},
-        options:{ ...CHART_DEFAULTS,
-            plugins:{ ...CHART_DEFAULTS.plugins,
-                legend:{ display:true, labels:{ color:labelColor(), font:{family:"Be Vietnam Pro"} } },
-                datalabels:{ color:"#fff", font:{weight:"bold",size:11,family:"Be Vietnam Pro"}, formatter:v=>v||"" } },
-            scales:{ x:{grid:{color:gridColor()},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro"}}},
-                     y:{grid:{color:gridColor()},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro"}},beginAtZero:true} },
-            animation:{ duration:1400, easing:"easeOutBounce", delay:(c)=>c.type==="data"?c.dataIndex*120:0 }
-        }, plugins:[ChartDataLabels]
-    });
+    document.getElementById("mioChartMonth").innerHTML =
+        `<div class="mleg"><b><span class="sw" style="background:#4facfe"></span>Missing IN</b><b><span class="sw" style="background:#ff6b6b"></span>Missing OUT</b></div>` +
+        `<div class="gbars">` + MONTHS.map((m,i)=>`
+          <div class="gmonth"><div class="gpair">
+            <div class="gbar-wrap"><div class="gval in">${byMonth[i].in}</div><div class="gbar in" style="--h:${(byMonth[i].in/maxM*100).toFixed(1)}%"><span class="gshine"></span></div></div>
+            <div class="gbar-wrap"><div class="gval out">${byMonth[i].out}</div><div class="gbar out" style="--h:${(byMonth[i].out/maxM*100).toFixed(1)}%"><span class="gshine"></span></div></div>
+          </div><div class="glabel">${m}</div></div>`).join("") + `</div>`;
 
-    /* theo Team x Type (stacked horizontal) */
+    /* Team A: neon split bars */
     const teams = [...new Set(data.map(d=>_mioNorm(d.Team)))];
     const ts = teams.map(t=>({ t,
         in:  data.filter(d=>_mioNorm(d.Team)===t && d.Type==="Missing IN").length,
         out: data.filter(d=>_mioNorm(d.Team)===t && d.Type==="Missing OUT").length
     })).sort((a,b)=>(b.in+b.out)-(a.in+a.out));
+    const maxT = Math.max(1, ...ts.map(x=>x.in+x.out));
     document.getElementById("mioBTeam").textContent = teams.length + " Team";
-    if(window._mioChartTeam) window._mioChartTeam.destroy();
-    window._mioChartTeam = new Chart(document.getElementById("mioChartTeam"),{
-        type:"bar",
-        data:{ labels:ts.map(x=>x.t), datasets:[
-            {label:"Missing IN",  data:ts.map(x=>x.in),  backgroundColor:C_IN,  borderRadius:5},
-            {label:"Missing OUT", data:ts.map(x=>x.out), backgroundColor:C_OUT, borderRadius:5}
-        ]},
-        options:{ indexAxis:"y", ...CHART_DEFAULTS,
-            plugins:{ ...CHART_DEFAULTS.plugins,
-                legend:{ display:true, labels:{ color:labelColor(), font:{family:"Be Vietnam Pro"} } },
-                datalabels:{ color:"#fff", font:{weight:"bold",size:10,family:"Be Vietnam Pro"}, formatter:v=>v||"" } },
-            scales:{ x:{stacked:true,grid:{color:gridColor()},ticks:{color:tickColor()},beginAtZero:true},
-                     y:{stacked:true,grid:{display:false},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro",size:11}}} },
-            animation:{ duration:1400, easing:"easeOutQuart", delay:(c)=>c.type==="data"?c.dataIndex*70:0 }
-        }, plugins:[ChartDataLabels]
-    });
+    document.getElementById("mioChartTeam").innerHTML =
+        `<div class="mleg"><b><span class="sw" style="background:#4facfe"></span>Missing IN</b><b><span class="sw" style="background:#ff5a6e"></span>Missing OUT</b><b><span class="sw" style="background:var(--text)"></span>Tổng</b></div>` +
+        `<div class="tA">` + ts.map(x=>{ const tot=x.in+x.out;
+            return `<div class="trow"><div class="tnm" title="${x.t}">${x.t}</div>
+              <div class="ttrack">
+                <div class="tseg in" style="--w:${(x.in/maxT*100).toFixed(1)}%">${x.in>=4?x.in:''}<span class="tsh"></span></div>
+                <div class="tseg out" style="--w:${(x.out/maxT*100).toFixed(1)}%">${x.out>=4?x.out:''}<span class="tsh"></span></div>
+              </div><div class="ttot">${tot}</div></div>`; }).join("") + `</div>`;
 
-    /* Top 20 toàn bộ */
+    /* Top 20: mini-leaderboard 2 cột */
     const allEmp = {};
     data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); allEmp[k]=(allEmp[k]||0)+1; });
     const top20 = Object.entries(allEmp).sort((a,b)=>b[1]-a[1]).slice(0,20);
+    const maxTop = top20.length ? top20[0][1] : 1;
     document.getElementById("mioBTop").textContent = "Top " + top20.length;
-    if(window._mioChartTop20) window._mioChartTop20.destroy();
-    window._mioChartTop20 = new Chart(document.getElementById("mioChartTop20"),{
-        type:"bar",
-        data:{ labels:top20.map(x=>x[0].split("|")[1]), datasets:[{
-            label:"Số lỗi", data:top20.map(x=>x[1]),
-            backgroundColor: top20.map((_,i)=> i===0?"#e53e3e" : i<3?"#fa8231" : "#feca57"),
-            borderRadius:5
-        }]},
-        options:{ indexAxis:"y", ...CHART_DEFAULTS,
-            plugins:{ ...CHART_DEFAULTS.plugins, legend:{display:false},
-                datalabels:{ anchor:"end", align:"end", color:tickColor(), font:{weight:"bold",size:11,family:"Be Vietnam Pro"}, formatter:v=>v } },
-            scales:{ x:{grid:{color:gridColor()},ticks:{color:tickColor()},beginAtZero:true},
-                     y:{grid:{display:false},ticks:{color:tickColor(),font:{family:"Be Vietnam Pro",size:11}}} },
-            animation:{ duration:1600, easing:"easeOutQuart", delay:(c)=>c.type==="data"?c.dataIndex*55:0 }
-        }, plugins:[ChartDataLabels]
-    });
+    const t2row = (entry,i)=>{ const [k,c]=entry; const [msnv,name]=k.split("|"); const g=i<3?"g"+(i+1):"";
+        return `<div class="t2row"><div class="t2rk ${g}">${i+1}</div><div class="t2av p${i%5}">${_mioIni(name)}</div>
+          <div class="t2nm" title="${name}">${name}</div>
+          <div class="t2track"><div class="t2bar ${i<3?'hot':''}" style="--w:${(c/maxTop*100).toFixed(1)}%"><span class="t2sh"></span></div></div>
+          <div class="t2cc">${c}</div></div>`; };
+    document.getElementById("mioChartTop20").innerHTML =
+        `<div class="top20"><div>` + top20.slice(0,10).map((e,i)=>t2row(e,i)).join("") +
+        `</div><div>` + top20.slice(10).map((e,i)=>t2row(e,i+10)).join("") + `</div></div>`;
 }
 
 /* ============ BUTTONS ============ */
