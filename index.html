@@ -143,6 +143,81 @@ h2 {
     100% { left: 200%; }
 }
 
+/* ----- FORM BUTTONS (Sport Day style) ----- */
+.btn-miss, .btn-leave {
+    background-size: 200% 200%;
+    animation: sportBtnShine 4s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+.btn-miss  { background-image: linear-gradient(135deg,#ff512f 0%,#f9d423 50%,#ff512f 100%); box-shadow: 0 4px 20px rgba(255,81,47,0.35); }
+.btn-leave { background-image: linear-gradient(135deg,#11998e 0%,#38ef7d 50%,#11998e 100%); box-shadow: 0 4px 20px rgba(17,153,142,0.35); }
+.btn-miss::before, .btn-leave::before {
+    content:'';
+    position:absolute;
+    top:0; left:-100%;
+    width:50%; height:100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+    animation: sportBtnSheen 2.8s ease-in-out infinite;
+}
+
+/* ----- FORM EMBED MODAL ----- */
+.form-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    padding: 18px;
+    animation: formFadeIn .2s ease;
+}
+.form-modal.open { display: flex; }
+@keyframes formFadeIn { from { opacity:0; } to { opacity:1; } }
+.form-modal-card {
+    background: var(--box);
+    border: 1px solid var(--box-border);
+    border-radius: 18px;
+    box-shadow: 0 18px 60px rgba(0,0,0,0.45);
+    width: 100%;
+    max-width: 720px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: formPop .25s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes formPop { from { transform: scale(.94); opacity:0; } to { transform: scale(1); opacity:1; } }
+.form-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+}
+.form-modal-head.miss  { background: linear-gradient(135deg,#ff512f,#f9d423); }
+.form-modal-head.leave { background: linear-gradient(135deg,#11998e,#38ef7d); }
+.form-modal-close {
+    border: none;
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s, transform .15s;
+    flex-shrink: 0;
+}
+.form-modal-close:hover { background: rgba(255,255,255,0.4); transform: rotate(90deg); }
+.form-modal-body { flex: 1; min-height: 0; background: var(--box); }
+.form-modal-body iframe { width: 100%; height: 70vh; border: 0; display: block; }
+
 @media (max-width: 880px) {
     .search-bar input { width: 60%; }
     .btn { padding: 9px 11px; font-size: 12px; }
@@ -525,7 +600,22 @@ audio { display: none; }
     <button id="feedbackBtn" class="btn btn-feedback">📝 Phản hồi Chấm Công</button>
     <button id="passBtn" class="btn btn-pass">🔐 Quên Pass CADENA</button>
     <button id="viewPassBtn" class="btn btn-viewpass">📁 Xem Pass CADENA</button>
+    <button id="missFormBtn" class="btn btn-miss">⏰ Báo MISSING Chấm Công</button>
+    <button id="leaveFormBtn" class="btn btn-leave">🌴 Xin Nghỉ Phép</button>
     <button id="sportDayBtn" class="btn btn-sport">🏆 GP-Sport Day 2026</button>
+</div>
+
+<!-- ===================== FORM EMBED MODAL ===================== -->
+<div id="formModal" class="form-modal" role="dialog" aria-modal="true">
+    <div class="form-modal-card">
+        <div id="formModalHead" class="form-modal-head">
+            <span id="formModalTitle">Form</span>
+            <button id="formModalClose" class="form-modal-close" aria-label="Đóng">&times;</button>
+        </div>
+        <div class="form-modal-body">
+            <iframe id="formModalFrame" src="" title="Microsoft Form" allowfullscreen></iframe>
+        </div>
+    </div>
 </div>
 
 <h2 style="margin-top:28px;">Danh sách chi tiết</h2>
@@ -948,6 +1038,39 @@ document.getElementById("feedbackBtn").addEventListener("click", () => window.op
 document.getElementById("passBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wMUXy1P6P1","_blank"));
 document.getElementById("viewPassBtn").addEventListener("click", () => window.open("passCadena.html","_blank"));
 document.getElementById("sportDayBtn").addEventListener("click", () => window.open("sportday.html","_blank"));
+
+/* ============ FORM EMBED MODAL ============ */
+const FORM_URLS = {
+    miss:  "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UQ1RUMlFCNEE1VEFYV1g5NzgwRlJaSjgxRi4u&embed=true",
+    leave: "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UOVJCWDFVVEgxMU41TDg0SzlOQjgzSFVKTi4u&embed=true"
+};
+const FORM_META = {
+    miss:  { title: "⏰ Báo MISSING Chấm Công", cls: "miss" },
+    leave: { title: "🌴 Xin Nghỉ Phép",        cls: "leave" }
+};
+const formModal  = document.getElementById("formModal");
+const formFrame  = document.getElementById("formModalFrame");
+const formHead   = document.getElementById("formModalHead");
+const formTitle  = document.getElementById("formModalTitle");
+
+function openForm(kind) {
+    const meta = FORM_META[kind];
+    formTitle.textContent = meta.title;
+    formHead.className = "form-modal-head " + meta.cls;
+    formFrame.src = FORM_URLS[kind];
+    formModal.classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+function closeForm() {
+    formModal.classList.remove("open");
+    formFrame.src = "";
+    document.body.style.overflow = "";
+}
+document.getElementById("missFormBtn").addEventListener("click",  () => openForm("miss"));
+document.getElementById("leaveFormBtn").addEventListener("click", () => openForm("leave"));
+document.getElementById("formModalClose").addEventListener("click", closeForm);
+formModal.addEventListener("click", (e) => { if (e.target === formModal) closeForm(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && formModal.classList.contains("open")) closeForm(); });
 
 /* MUSIC */
 document.addEventListener("click",  ()=>{ try{ document.getElementById("bgMusic").play(); }catch(e){} }, {once:true});
