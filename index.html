@@ -1303,16 +1303,16 @@ function setupRespObservers(){
 function _rStatusBadge(s){ const st=_rStatus(s); const cls=st==="app"?"rt-app":st==="pend"?"rt-pend":"rt-other"; const txt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":_rEsc(s||"—"); return `<span class="rt-badge ${cls}">${txt}</span>`; }
 function buildLeaveTable(data){
     const rows=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
-    const head=`<thead><tr><th>#</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại phép</th><th>Từ ngày</th><th>Đến ngày</th><th>Số ngày</th><th>Lý do</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Trạng thái</th><th>Gửi lúc</th></tr></thead>`;
+    const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại phép</th><th>Từ ngày</th><th>Đến ngày</th><th>Số ngày</th><th>Lý do</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
     const body=rows.map((d,i)=>{ const f=_rNum(d.OffFrom),t=_rNum(d.OffTo); const days=(f&&t&&t>=f)?(t-f+1):(f?1:0);
-        return `<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
+        return `<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
     }).join("");
     return head+`<tbody>${body}</tbody>`;
 }
 function buildMissTable(data){
     const rows=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
-    const head=`<thead><tr><th>#</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại lỗi</th><th>Ngày lỗi</th><th>Lý do</th><th>Chi tiết</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Trạng thái</th><th>Gửi lúc</th></tr></thead>`;
-    const body=rows.map((d,i)=>`<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.MDate)}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td class="wrap">${_rEsc(d.Details)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`).join("");
+    const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại lỗi</th><th>Ngày lỗi</th><th>Lý do</th><th>Chi tiết</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
+    const body=rows.map((d,i)=>`<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.MDate)}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td class="wrap">${_rEsc(d.Details)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`).join("");
     return head+`<tbody>${body}</tbody>`;
 }
 const _rdMeta = {
