@@ -1233,7 +1233,7 @@ function rRecent(data, metaFn){
     return sorted.map((d,i)=>{
         const st=_rStatus(d.Status), bcls=st==="app"?"b-app":st==="pend"?"b-pend":"b-other";
         const btxt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":_rEsc(d.Status||"—");
-        return `<div class="rlist-row" style="animation-delay:${(i*0.05).toFixed(2)}s"><div class="rav">${_rIni(d.FullName)}</div><div class="rl-nm">${_rEsc(d.FullName)}<small>MSNV ${_rEsc(d.MSNV)} · ${_rEsc(d.Team)}</small></div><div class="rl-meta">${metaFn(d)}<br><span style="opacity:.65">gửi ${_rDate(d["Thời điểm Submit"])}</span></div><div><span class="rl-badge ${bcls}">${btxt}</span></div></div>`;
+        return `<div class="rlist-row" style="animation-delay:${(i*0.05).toFixed(2)}s"><div class="rav">${_rIni(d.FullName)}</div><div class="rl-nm">${_rEsc(d.FullName)}<small>MSNV ${_rEsc(d.MSNV)} · ${_rEsc(d.Team)}</small></div><div class="rl-meta">${metaFn(d)}<br><span style="opacity:.65">gửi ngày ${_rDate(d["Thời điểm Submit"])}</span></div><div><span class="rl-badge ${bcls}">${btxt}</span></div></div>`;
     }).join("");
 }
 
@@ -1254,7 +1254,7 @@ function renderLeaveReport(data){
     const types={}; data.forEach(d=>{ const k=(d.Type||"").trim()||"—"; types[k]=(types[k]||0)+1; });
     document.getElementById("leaveType").innerHTML = rSolidBars(types);
     document.getElementById("leaveTeam").innerHTML = rTeamBars(data);
-    document.getElementById("leaveRecent").innerHTML = rRecent(data, d=>{ const f=_rDate(d.OffFrom); return "Nghỉ "+f+(_rNum(d.OffTo)>_rNum(d.OffFrom)?" → "+_rDate(d.OffTo):""); });
+    document.getElementById("leaveRecent").innerHTML = rRecent(data, d=>{ const f=_rDate(d.OffFrom); return "Nghỉ từ "+f+(_rNum(d.OffTo)>_rNum(d.OffFrom)?" → "+_rDate(d.OffTo):""); });
     document.getElementById("leaveStatusBadge").textContent = total+" đơn";
     document.getElementById("leaveTypeBadge").textContent = Object.keys(types).length+" loại";
     document.getElementById("leaveRecentBadge").textContent = total+" đơn";
