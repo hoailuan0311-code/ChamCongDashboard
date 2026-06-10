@@ -584,6 +584,87 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 #mioReports .top20 .t2cc{ text-align:right; font-weight:800; color:#fa8231; font-size:14px; }
 
 
+/* ===================== RESPONSE REPORTS (Nghỉ phép + Báo MISSING) ===================== */
+#respReports{ margin-top:6px; }
+#respReports .rrep.leave{ --rA:#11998e; --rA2:#38ef7d; --rTint:rgba(17,153,142,.13); }
+#respReports .rrep.miss { --rA:#ff512f; --rA2:#f9d423; --rTint:rgba(255,81,47,.13); }
+
+#respReports .rv{ opacity:0; transform:translateY(28px); }
+#respReports .rv.in{ animation:rRespIn .8s cubic-bezier(.16,1,.3,1) forwards; }
+@keyframes rRespIn{ 0%{opacity:0;transform:translateY(28px) scale(.97);} 60%{opacity:1;} 100%{opacity:1;transform:translateY(0) scale(1);} }
+
+#respReports .rkpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:22px; }
+@media(max-width:900px){ #respReports .rkpi-grid{ grid-template-columns:repeat(2,1fr);} }
+@media(max-width:500px){ #respReports .rkpi-grid{ grid-template-columns:1fr;} }
+#respReports .rkpi{ position:relative; overflow:hidden; border:1px solid var(--box-border); border-radius:18px; padding:16px 18px; background:linear-gradient(135deg,var(--rTint),rgba(127,127,127,0) 72%), var(--kpi-bg); box-shadow:var(--box-shadow); transition:transform .25s, box-shadow .25s; }
+#respReports .rkpi:hover{ transform:translateY(-4px); box-shadow:0 14px 30px rgba(40,40,80,.18); }
+#respReports .rkpi::before{ content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--ka),var(--ka2),var(--ka)); background-size:200% 100%; animation:mioStripeFlow 3s linear infinite; }
+#respReports .rk-top{ display:flex; align-items:center; gap:9px; margin-bottom:8px; }
+#respReports .rk-ic{ width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; color:#fff; background:linear-gradient(135deg,var(--ka),var(--ka2)); box-shadow:0 4px 12px rgba(0,0,0,.2); }
+#respReports .rk-lb{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); }
+#respReports .rk-val{ font-size:34px; font-weight:800; line-height:1; color:var(--ka); }
+#respReports .rk-sub{ font-size:11px; color:var(--text-muted); margin-top:5px; }
+
+#respReports .rcharts{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:8px; margin-bottom:8px; }
+#respReports .rbox-full{ grid-column:1 / -1; }
+@media(max-width:768px){ #respReports .rcharts{ grid-template-columns:1fr; } }
+#respReports .rbox{ background:var(--box); border:1px solid var(--box-border); border-radius:16px; box-shadow:var(--box-shadow); overflow:hidden; transition:transform .2s, box-shadow .2s; }
+#respReports .rbox:hover{ transform:translateY(-2px); box-shadow:0 10px 36px rgba(0,0,0,.14); }
+#respReports .rbox .rstripe{ height:3px; background:linear-gradient(90deg,var(--rA),var(--rA2),var(--rA)); background-size:200% 100%; animation:mioStripeFlow 3s linear infinite; }
+#respReports .rbox-head{ padding:15px 18px 12px; border-bottom:1px solid var(--box-border); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+#respReports .rbox-title{ font-size:14px; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px; }
+#respReports .rbox-ic{ width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex:0 0 auto; }
+#respReports .rbox-badge{ font-size:11px; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--rTint); color:var(--rA); border:1px solid var(--rTint); white-space:nowrap; }
+#respReports .rbox-body{ padding:18px 20px; }
+
+#respReports .rmini-leg{ display:inline-flex; align-items:center; font-size:11px; color:var(--text-muted); }
+#respReports .rmini-leg i{ width:10px; height:10px; border-radius:3px; display:inline-block; margin:0 5px 0 11px; }
+#respReports .rmini-leg i.d-app{ background:linear-gradient(90deg,#43e97b,#11998e); }
+#respReports .rmini-leg i.d-pend{ background:linear-gradient(90deg,#ffd86b,#f5a524); }
+
+/* donut */
+#respReports .rdonut-wrap{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; justify-content:center; }
+#respReports .rdonut{ position:relative; width:150px; height:150px; flex:0 0 auto; }
+#respReports .rdonut svg{ width:100%; height:100%; transform:rotate(-90deg); }
+#respReports .rdonut circle{ transition:stroke-dasharray 1.2s cubic-bezier(.16,1,.3,1); }
+#respReports .rdonut-c{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+#respReports .rdonut-v{ font-size:30px; font-weight:800; color:var(--text); line-height:1; }
+#respReports .rdonut-l{ font-size:10px; text-transform:uppercase; letter-spacing:.6px; color:var(--text-muted); font-weight:700; margin-top:2px; }
+#respReports .rleg{ display:flex; flex-direction:column; gap:11px; }
+#respReports .rleg-row{ display:flex; align-items:center; gap:10px; font-size:13px; }
+#respReports .rleg-dot{ width:12px; height:12px; border-radius:4px; flex:0 0 auto; }
+#respReports .rleg-nm{ color:var(--text-muted); min-width:78px; }
+#respReports .rleg-v{ font-weight:800; color:var(--text); }
+
+/* horizontal bars */
+#respReports .rbar-row{ margin-bottom:13px; }
+#respReports .rbar-row:last-child{ margin-bottom:0; }
+#respReports .rbar-top{ display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px; }
+#respReports .rbar-nm{ font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#respReports .rbar-v{ font-weight:800; color:var(--rA); flex:0 0 auto; padding-left:8px; }
+#respReports .rbar-track{ height:16px; border-radius:8px; background:var(--box-border); overflow:hidden; display:flex; }
+#respReports .rbar-seg{ height:100%; width:0; transition:width 1.1s cubic-bezier(.16,1,.3,1); position:relative; overflow:hidden; }
+#respReports .rgrow.go .rbar-seg{ width:var(--w); }
+#respReports .rbar-seg.app{ background:linear-gradient(90deg,#43e97b,#11998e); box-shadow:inset 0 0 12px rgba(67,233,123,.45); }
+#respReports .rbar-seg.pend{ background:linear-gradient(90deg,#ffd86b,#f5a524); box-shadow:inset 0 0 12px rgba(245,165,36,.4); }
+#respReports .rbar-seg.solid{ background:linear-gradient(90deg,var(--rA2),var(--rA)); box-shadow:inset 0 0 12px rgba(255,255,255,.18); }
+#respReports .rbar-seg .rsh{ position:absolute; top:0; left:-40%; width:30%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); animation:tAsh 2.6s ease-in-out infinite; }
+
+/* recent list */
+#respReports .rlist-row{ display:grid; grid-template-columns:36px 1fr auto auto; align-items:center; gap:13px; padding:10px 4px; border-bottom:1px solid var(--box-border); opacity:0; transform:translateX(-20px); }
+#respReports .rgrow.go .rlist-row{ animation:mioSlideIn .5s cubic-bezier(.16,1,.3,1) forwards; }
+#respReports .rlist-row:last-child{ border-bottom:none; }
+#respReports .rav{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:12px; flex:0 0 auto; background:linear-gradient(135deg,var(--rA2),var(--rA)); box-shadow:0 3px 10px rgba(0,0,0,.18); }
+#respReports .rl-nm{ font-size:13px; font-weight:600; color:var(--text); min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#respReports .rl-nm small{ display:block; color:var(--text-muted); font-weight:400; font-size:11px; }
+#respReports .rl-meta{ font-size:12px; color:var(--text-muted); text-align:right; line-height:1.4; white-space:nowrap; }
+#respReports .rl-badge{ font-size:11px; font-weight:800; padding:4px 11px; border-radius:20px; white-space:nowrap; }
+#respReports .b-app{ background:rgba(46,204,113,.18); color:#27ae60; border:1px solid rgba(46,204,113,.35); }
+#respReports .b-pend{ background:rgba(255,213,0,.18); color:#e6ac00; border:1px solid rgba(255,213,0,.4); }
+#respReports .b-other{ background:rgba(255,107,107,.18); color:#e53e3e; border:1px solid rgba(255,107,107,.35); }
+#respReports .r-empty{ color:var(--text-muted); font-size:13px; padding:10px 2px; }
+@media(max-width:560px){ #respReports .rl-meta{ display:none; } #respReports .rlist-row{ grid-template-columns:36px 1fr auto; } }
+
 /* ===================== AUDIO ===================== */
 audio { display: none; }
 </style>
@@ -618,7 +699,7 @@ audio { display: none; }
     </div>
 </div>
 
-<h2 style="margin-top:28px;">Danh sách chi tiết</h2>
+<h2 style="margin-top:28px;">Chi tiết phản hồi</h2>
 
 <table id="dataTable">
     <thead>
@@ -634,6 +715,67 @@ audio { display: none; }
     </thead>
     <tbody></tbody>
 </table>
+
+<!-- =================== BÁO CÁO PHẢN HỒI (Nghỉ phép + Báo MISSING) =================== -->
+<div id="respReports">
+
+    <!-- ============ NGHỈ PHÉP ============ -->
+    <div class="rrep leave">
+        <div class="section-header rv"><h2>🌴 Báo cáo Nghỉ phép</h2><div class="section-line"></div></div>
+        <div class="rkpi-grid rgrow rv" id="leaveKpi"></div>
+        <div class="rcharts">
+            <div class="rbox rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">🧭</div>Trạng thái duyệt</div><span class="rbox-badge" id="leaveStatusBadge">–</span></div>
+                <div class="rbox-body rgrow" id="leaveStatus"></div>
+            </div>
+            <div class="rbox rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(67,233,123,.14)">📋</div>Theo loại phép</div><span class="rbox-badge" id="leaveTypeBadge">–</span></div>
+                <div class="rbox-body rgrow" id="leaveType"></div>
+            </div>
+            <div class="rbox rbox-full rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">👥</div>Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
+                <div class="rbox-body rgrow" id="leaveTeam"></div>
+            </div>
+            <div class="rbox rbox-full rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(102,126,234,.14)">🕘</div>Đơn nghỉ phép mới nhất</div><span class="rbox-badge" id="leaveRecentBadge">–</span></div>
+                <div class="rbox-body rgrow" id="leaveRecent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ BÁO MISSING ============ -->
+    <div class="rrep miss">
+        <div class="section-header rv"><h2>⏰ Báo cáo Báo MISSING vân tay</h2><div class="section-line"></div></div>
+        <div class="rkpi-grid rgrow rv" id="missKpi"></div>
+        <div class="rcharts">
+            <div class="rbox rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">🧭</div>Trạng thái duyệt</div><span class="rbox-badge" id="missStatusBadge">–</span></div>
+                <div class="rbox-body rgrow" id="missStatus"></div>
+            </div>
+            <div class="rbox rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(249,212,35,.18)">🔎</div>Theo loại lỗi</div><span class="rbox-badge" id="missTypeBadge">–</span></div>
+                <div class="rbox-body rgrow" id="missType"></div>
+            </div>
+            <div class="rbox rbox-full rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">👥</div>Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
+                <div class="rbox-body rgrow" id="missTeam"></div>
+            </div>
+            <div class="rbox rbox-full rv">
+                <div class="rstripe"></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,71,87,.14)">🕘</div>Đơn báo MISSING mới nhất</div><span class="rbox-badge" id="missRecentBadge">–</span></div>
+                <div class="rbox-body rgrow" id="missRecent"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 <!-- =================== BÁO CÁO MISSING IN/OUT =================== -->
 <div id="mioReports">
@@ -688,25 +830,6 @@ audio { display: none; }
             <span class="chart-badge" id="mioBTop">–</span>
         </div>
         <div class="chart-body"><div class="mio-grow" id="mioChartTop20"></div></div>
-    </div>
-
-    <div class="section-header reveal">
-        <h2>🔁 Nhân viên lỗi lặp lại liên tục (2–6 tháng)</h2>
-        <div class="section-line"></div>
-    </div>
-    <div class="chart-box chart-full reveal">
-        <div class="stripe stripe-orange"></div>
-        <div class="chart-header">
-            <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">⚠️</div>Repeat offenders – chuỗi tháng liên tiếp</div>
-            <span class="chart-badge" id="mioBRepeat">–</span>
-        </div>
-        <div class="chart-body">
-            <div class="legend-mini" id="mioLegend"></div>
-            <table id="mioRepeatTable">
-                <thead><tr><th>#</th><th>Họ tên</th><th>MSNV</th><th>Chuỗi liên tục</th><th>Các tháng dính lỗi</th><th>Tổng lỗi</th></tr></thead>
-                <tbody id="mioRepeatBody"></tbody>
-            </table>
-        </div>
     </div>
 
 </div>
@@ -910,36 +1033,6 @@ function renderMissingAll(){
           <div class="tc-cc">${c}</div></div>`;
     }).join("") || '<p class="err-note">Chưa có dữ liệu tháng này.</p>';
 
-    /* ---- repeat offenders ---- */
-    const allEmp = {};
-    data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); allEmp[k]=(allEmp[k]||0)+1; });
-    const empMonths = {};
-    data.forEach(d=>{ const k=d.MSNV+"|"+_mioNorm(d.FullName); (empMonths[k]=empMonths[k]||new Set()).add(d.Month); });
-    const idx = {}; MONTHS.forEach((m,i)=>idx[m]=i);
-    function streakOf(set){
-        const ns=[...set].map(m=>idx[m]).sort((a,b)=>a-b);
-        let best=1, c=1;
-        for(let i=1;i<ns.length;i++){ if(ns[i]===ns[i-1]+1){c++;best=Math.max(best,c);} else c=1; }
-        return ns.length?best:0;
-    }
-    const rep = Object.entries(empMonths)
-        .map(([k,set])=>({k, months:[...set].sort(), streak:streakOf(set), total:allEmp[k]}))
-        .filter(x=>x.streak>=2)
-        .sort((a,b)=>b.streak-a.streak || b.total-a.total);
-    document.getElementById("mioBRepeat").textContent = rep.length + " người";
-    document.getElementById("mioLegend").innerHTML =
-        MONTHS.map(m=>`<span><span class="dot"></span>${m}</span>`).join("") +
-        ' &nbsp;|&nbsp; ô sáng = tháng dính lỗi';
-    document.getElementById("mioRepeatBody").innerHTML = rep.map((x,i)=>{
-        const [msnv,name] = x.k.split("|");
-        const cls = "s" + Math.min(x.streak,6);
-        const dots = MONTHS.map(m=>`<div class="mdot ${x.months.includes(m)?"on":""}"></div>`).join("");
-        return `<tr class="reveal" style="animation-delay:${(i*0.04).toFixed(2)}s">
-          <td>${i+1}</td><td>${name}</td><td>${msnv}</td>
-          <td><span class="streak-badge ${cls}">🔥 ${x.streak} tháng</span></td>
-          <td><div class="month-dots">${dots}</div></td><td><b>${x.total}</b></td></tr>`;
-    }).join("") || '<tr><td colspan="6" class="err-note">Chưa có nhân viên lặp lại.</td></tr>';
-
     setupMioObservers();
     renderMissingCharts();
 }
@@ -1031,6 +1124,128 @@ function renderMissingCharts(){
     document.getElementById("mioChartTop20").innerHTML =
         `<div class="top20"><div>` + top20.slice(0,10).map((e,i)=>t2row(e,i)).join("") +
         `</div><div>` + top20.slice(10).map((e,i)=>t2row(e,i+10)).join("") + `</div></div>`;
+}
+
+/* ===================== RESPONSE REPORTS (Nghỉ phép + Báo MISSING) ===================== */
+let leaveData = [], missData = [];
+const _rNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+function _rDate(v){ const n=_rNum(v); if(!n) return "—"; const d=new Date(Math.round((n-25569)*86400*1000)); return isNaN(d.getTime())?"—":d.toLocaleDateString("vi-VN",{day:"2-digit",month:"2-digit"}); }
+function _rIni(name){ const w=(name||"").trim().split(/\s+/).filter(Boolean); if(!w.length) return "?"; const a=w.length>=2?w[w.length-2][0]:w[0][0]; const b=w[w.length-1][0]; return (a+b).toUpperCase(); }
+const _rEsc = s => (""+(s==null?"":s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const _rStatus = s => { const t=(s||"").trim().toLowerCase(); if(t==="approved") return "app"; if(t==="pending") return "pend"; return t?"other":"pend"; };
+const R_CIRC = (2*Math.PI*60);
+
+async function loadResp(){
+    const [lv, ms] = await Promise.all([
+        fetch("dataLeave.js?cache="+Date.now()).then(r=>r.json()).catch(()=>[]),
+        fetch("dataMissing.js?cache="+Date.now()).then(r=>r.json()).catch(()=>[])
+    ]);
+    leaveData = Array.isArray(lv) ? lv : [];
+    missData  = Array.isArray(ms) ? ms : [];
+    renderLeaveReport(leaveData);
+    renderMissReport(missData);
+    setupRespObservers();
+}
+loadResp();
+
+function rKpi(icon,label,val,sub,c1,c2){
+    return `<div class="rkpi" style="--ka:${c1};--ka2:${c2}">
+      <div class="rk-top"><div class="rk-ic">${icon}</div><div class="rk-lb">${label}</div></div>
+      <div class="rk-val" data-c="${val}">0</div><div class="rk-sub">${sub}</div></div>`;
+}
+function respDonut(segs){
+    const total = segs.reduce((s,x)=>s+x.value,0);
+    let acc=0;
+    const circ = segs.filter(s=>s.value>0).map(s=>{
+        const len=(s.value/(total||1))*R_CIRC, off=-acc; acc+=len;
+        return `<circle cx="75" cy="75" r="60" fill="none" stroke="${s.color}" stroke-width="18" stroke-linecap="butt" stroke-dasharray="0 ${R_CIRC.toFixed(2)}" data-dash="${len.toFixed(2)} ${(R_CIRC-len).toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" style="filter:drop-shadow(0 0 5px ${s.color}aa)"></circle>`;
+    }).join("");
+    const leg = segs.map(s=>`<div class="rleg-row"><span class="rleg-dot" style="background:${s.color}"></span><span class="rleg-nm">${s.label}</span><span class="rleg-v">${s.value}</span></div>`).join("");
+    return `<div class="rdonut-wrap"><div class="rdonut"><svg viewBox="0 0 150 150">${circ||'<circle cx="75" cy="75" r="60" fill="none" stroke="var(--box-border)" stroke-width="18"></circle>'}</svg><div class="rdonut-c"><div class="rdonut-v" data-c="${total}">0</div><div class="rdonut-l">đơn</div></div></div><div class="rleg">${leg}</div></div>`;
+}
+function rSolidBars(map){
+    const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+    if(!entries.length) return '<p class="r-empty">Chưa có dữ liệu.</p>';
+    const max=Math.max(1,...entries.map(e=>e[1]));
+    return entries.map(([k,v])=>`<div class="rbar-row"><div class="rbar-top"><span class="rbar-nm">${_rEsc(k)}</span><span class="rbar-v">${v}</span></div><div class="rbar-track"><div class="rbar-seg solid" style="--w:${(v/max*100).toFixed(1)}%"><span class="rsh"></span></div></div></div>`).join("");
+}
+function rTeamBars(data){
+    const t={}; data.forEach(d=>{ const k=(d.Team||"").trim()||"—"; (t[k]=t[k]||{app:0,pend:0,tot:0}); const s=_rStatus(d.Status); if(s==="app")t[k].app++; else t[k].pend++; t[k].tot++; });
+    const rows=Object.entries(t).sort((a,b)=>b[1].tot-a[1].tot);
+    if(!rows.length) return '<p class="r-empty">Chưa có dữ liệu.</p>';
+    const max=Math.max(1,...rows.map(r=>r[1].tot));
+    return rows.map(([k,o])=>`<div class="rbar-row"><div class="rbar-top"><span class="rbar-nm">${_rEsc(k)}</span><span class="rbar-v">${o.tot}</span></div><div class="rbar-track"><div class="rbar-seg app" style="--w:${(o.app/max*100).toFixed(1)}%"><span class="rsh"></span></div><div class="rbar-seg pend" style="--w:${(o.pend/max*100).toFixed(1)}%"><span class="rsh"></span></div></div></div>`).join("");
+}
+function rRecent(data, metaFn){
+    const sorted=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"])).slice(0,8);
+    if(!sorted.length) return '<p class="r-empty">Chưa có đơn nào.</p>';
+    return sorted.map((d,i)=>{
+        const st=_rStatus(d.Status), bcls=st==="app"?"b-app":st==="pend"?"b-pend":"b-other";
+        const btxt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":_rEsc(d.Status||"—");
+        return `<div class="rlist-row" style="animation-delay:${(i*0.05).toFixed(2)}s"><div class="rav">${_rIni(d.FullName)}</div><div class="rl-nm">${_rEsc(d.FullName)}<small>MSNV ${_rEsc(d.MSNV)} · ${_rEsc(d.Team)}</small></div><div class="rl-meta">${metaFn(d)}<br><span style="opacity:.65">gửi ${_rDate(d["Thời điểm Submit"])}</span></div><div><span class="rl-badge ${bcls}">${btxt}</span></div></div>`;
+    }).join("");
+}
+
+function renderLeaveReport(data){
+    const total=data.length;
+    const app=data.filter(d=>_rStatus(d.Status)==="app").length;
+    const pend=data.filter(d=>_rStatus(d.Status)==="pend").length;
+    const other=total-app-pend;
+    let days=0; data.forEach(d=>{ const f=_rNum(d.OffFrom), t=_rNum(d.OffTo); if(f&&t&&t>=f) days+=(t-f+1); else if(f) days+=1; });
+    document.getElementById("leaveKpi").innerHTML =
+        rKpi("🌴","Tổng đơn",total,"đơn nghỉ phép","#11998e","#38ef7d") +
+        rKpi("✅","Đã duyệt",app,total?Math.round(app/total*100)+"% tổng đơn":"—","#2ecc71","#27ae60") +
+        rKpi("⏳","Chờ duyệt",pend,total?Math.round(pend/total*100)+"% tổng đơn":"—","#f5a524","#ffd86b") +
+        rKpi("📆","Tổng ngày nghỉ",days,"ngày (đã gộp khoảng)","#667eea","#a18cd1");
+    const segs=[{label:"Đã duyệt",value:app,color:"#43e97b"},{label:"Chờ duyệt",value:pend,color:"#f5a524"}];
+    if(other>0) segs.push({label:"Khác",value:other,color:"#ff6b6b"});
+    document.getElementById("leaveStatus").innerHTML = respDonut(segs);
+    const types={}; data.forEach(d=>{ const k=(d.Type||"").trim()||"—"; types[k]=(types[k]||0)+1; });
+    document.getElementById("leaveType").innerHTML = rSolidBars(types);
+    document.getElementById("leaveTeam").innerHTML = rTeamBars(data);
+    document.getElementById("leaveRecent").innerHTML = rRecent(data, d=>{ const f=_rDate(d.OffFrom); return "Nghỉ "+f+(_rNum(d.OffTo)>_rNum(d.OffFrom)?" → "+_rDate(d.OffTo):""); });
+    document.getElementById("leaveStatusBadge").textContent = total+" đơn";
+    document.getElementById("leaveTypeBadge").textContent = Object.keys(types).length+" loại";
+    document.getElementById("leaveRecentBadge").textContent = Math.min(8,total)+" / "+total;
+}
+
+function renderMissReport(data){
+    const total=data.length;
+    const app=data.filter(d=>_rStatus(d.Status)==="app").length;
+    const pend=data.filter(d=>_rStatus(d.Status)==="pend").length;
+    const other=total-app-pend;
+    const mIn=data.filter(d=>/in/i.test(d.Type||"")&&!/out/i.test(d.Type||"")).length;
+    const mOut=total-mIn;
+    document.getElementById("missKpi").innerHTML =
+        rKpi("⏰","Tổng đơn",total,"đơn báo MISSING","#ff512f","#f9d423") +
+        rKpi("✅","Đã duyệt",app,total?Math.round(app/total*100)+"% tổng đơn":"—","#2ecc71","#27ae60") +
+        rKpi("⏳","Chờ duyệt",pend,total?Math.round(pend/total*100)+"% tổng đơn":"—","#f5a524","#ffd86b") +
+        rKpi("👆","MISS OUT",mOut,mIn+" đơn MISS IN","#ff4757","#ff8a96");
+    const segs=[{label:"Đã duyệt",value:app,color:"#43e97b"},{label:"Chờ duyệt",value:pend,color:"#f5a524"}];
+    if(other>0) segs.push({label:"Khác",value:other,color:"#ff6b6b"});
+    document.getElementById("missStatus").innerHTML = respDonut(segs);
+    const types={}; data.forEach(d=>{ const k=(d.Type||"").trim()||"—"; types[k]=(types[k]||0)+1; });
+    document.getElementById("missType").innerHTML = rSolidBars(types);
+    document.getElementById("missTeam").innerHTML = rTeamBars(data);
+    document.getElementById("missRecent").innerHTML = rRecent(data, d=>_rEsc((d.Type||"").trim())+" · "+_rDate(d.MDate));
+    document.getElementById("missStatusBadge").textContent = total+" đơn";
+    document.getElementById("missTypeBadge").textContent = Object.keys(types).length+" loại";
+    document.getElementById("missRecentBadge").textContent = Math.min(8,total)+" / "+total;
+}
+
+let _rIO, _rGrowIO;
+function _rCountUp(el,target,dur){ let s=null; function step(t){ if(!s)s=t; const p=Math.min((t-s)/dur,1); el.textContent=Math.round((1-Math.pow(1-p,3))*target); if(p<1)requestAnimationFrame(step);} requestAnimationFrame(step); }
+function setupRespObservers(){
+    if(_rIO)_rIO.disconnect(); if(_rGrowIO)_rGrowIO.disconnect();
+    _rIO=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle("in", e.isIntersecting)), {threshold:.1});
+    document.querySelectorAll("#respReports .rv").forEach(el=>_rIO.observe(el));
+    _rGrowIO=new IntersectionObserver(es=>es.forEach(e=>{
+        const on=e.isIntersecting;
+        e.target.classList.toggle("go", on);
+        e.target.querySelectorAll("circle[data-dash]").forEach(c=>{ c.style.strokeDasharray = on ? c.dataset.dash : ("0 "+R_CIRC.toFixed(2)); });
+        e.target.querySelectorAll("[data-c]").forEach(v=>{ if(on)_rCountUp(v,+v.dataset.c,1100); else v.textContent="0"; });
+    }), {threshold:.2});
+    document.querySelectorAll("#respReports .rgrow").forEach(el=>_rGrowIO.observe(el));
 }
 
 /* ============ BUTTONS ============ */
