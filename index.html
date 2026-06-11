@@ -736,7 +736,7 @@ audio { display: none; }
     </div>
 </div>
 
-<h2 style="margin-top:28px;">Chi tiết phản hồi</h2>
+<h2 style="margin-top:28px;">Chi tiết phản hồi Chấm Công</h2>
 
 <table id="dataTable">
     <thead>
@@ -763,7 +763,7 @@ audio { display: none; }
         <div class="rcharts">
             <div class="rbox rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">🧭</div>Trạng thái duyệt</div><span class="rbox-badge" id="leaveStatusBadge">–</span></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">🧭</div>Trạng thái duyệt NGHỈ PHÉP</div><span class="rbox-badge" id="leaveStatusBadge">–</span></div>
                 <div class="rbox-body rgrow" id="leaveStatus"></div>
             </div>
             <div class="rbox rv">
@@ -773,12 +773,12 @@ audio { display: none; }
             </div>
             <div class="rbox rbox-full rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">👥</div>Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(17,153,142,.14)">👥</div>NGHỈ PHÉP Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
                 <div class="rbox-body rgrow" id="leaveTeam"></div>
             </div>
             <div class="rbox rbox-full rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(102,126,234,.14)">🕘</div>Đơn nghỉ phép mới nhất</div><button class="rdetail-btn" data-kind="leave">📋 Xem chi tiết <span class="rdetail-count" id="leaveRecentBadge">–</span></button></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(102,126,234,.14)">🕘</div>Đơn NGHỈ PHÉP mới nhất</div><button class="rdetail-btn" data-kind="leave">📋 Xem chi tiết <span class="rdetail-count" id="leaveRecentBadge">–</span></button></div>
                 <div class="rbox-body rgrow" id="leaveRecent"></div>
             </div>
         </div>
@@ -791,7 +791,7 @@ audio { display: none; }
         <div class="rcharts">
             <div class="rbox rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">🧭</div>Trạng thái duyệt</div><span class="rbox-badge" id="missStatusBadge">–</span></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">🧭</div>Trạng thái duyệt MISSING IN-OUT</div><span class="rbox-badge" id="missStatusBadge">–</span></div>
                 <div class="rbox-body rgrow" id="missStatus"></div>
             </div>
             <div class="rbox rv">
@@ -801,7 +801,7 @@ audio { display: none; }
             </div>
             <div class="rbox rbox-full rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">👥</div>Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(255,81,47,.14)">👥</div>MISSING IN-OUT Theo Team</div><span class="rmini-leg"><i class="d-app"></i>Đã duyệt<i class="d-pend"></i>Chờ duyệt</span></div>
                 <div class="rbox-body rgrow" id="missTeam"></div>
             </div>
             <div class="rbox rbox-full rv">
@@ -849,7 +849,7 @@ audio { display: none; }
         <div class="chart-box chart-full reveal">
             <div class="stripe stripe-orange"></div>
             <div class="chart-header">
-                <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>Thống kê lỗi theo Team (chia theo Type)</div>
+                <div class="chart-title"><div class="chart-icon" style="background:rgba(250,130,49,0.12);">👥</div>Thống kê MISSING IN-OUT theo Team</div>
                 <span class="chart-badge" id="mioBTeam">–</span>
             </div>
             <div class="chart-body"><div class="mio-grow" id="mioChartTeam"></div></div>
@@ -857,13 +857,13 @@ audio { display: none; }
     </div>
 
     <div class="section-header reveal">
-        <h2>🔥 Nhân viên lỗi nhiều nhất – Tháng mới nhất</h2>
+        <h2>🔥 Nhân viên MISSING nhiều nhất – Tháng mới nhất</h2>
         <div class="section-line"></div>
     </div>
     <div class="chart-box chart-full reveal">
         <div class="stripe stripe-red"></div>
         <div class="chart-header">
-            <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">🥇</div>Top lỗi tháng <span id="mioCurLabel"></span></div>
+            <div class="chart-title"><div class="chart-icon" style="background:rgba(255,107,107,0.12);">🥇</div>Top MISSING IN-OUT tháng <span id="mioCurLabel"></span></div>
             <span class="chart-badge" id="mioBCur">–</span>
         </div>
         <div class="chart-body mio-grow" id="mioCurList"></div>
@@ -1247,7 +1247,7 @@ function renderLeaveReport(data){
         rKpi("🌴","Tổng đơn",total,"đơn nghỉ phép","#11998e","#38ef7d") +
         rKpi("✅","Đã duyệt",app,total?Math.round(app/total*100)+"% tổng đơn":"—","#2ecc71","#27ae60") +
         rKpi("⏳","Chờ duyệt",pend,total?Math.round(pend/total*100)+"% tổng đơn":"—","#f5a524","#ffd86b") +
-        rKpi("📆","Tổng ngày nghỉ",days,"ngày (đã gộp khoảng)","#667eea","#a18cd1");
+        rKpi("📆","Tổng ngày nghỉ",days,"ngày","#667eea","#a18cd1");
     const segs=[{label:"Đã duyệt",value:app,color:"#43e97b"},{label:"Chờ duyệt",value:pend,color:"#f5a524"}];
     if(other>0) segs.push({label:"Khác",value:other,color:"#ff6b6b"});
     document.getElementById("leaveStatus").innerHTML = respDonut(segs);
