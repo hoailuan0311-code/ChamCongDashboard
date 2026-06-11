@@ -704,6 +704,60 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 
 /* ===================== AUDIO ===================== */
 audio { display: none; }
+
+#commentFab{
+ position:fixed;
+ bottom:20px;
+ left:20px;
+ z-index:9999;
+
+ width:70px;
+ height:70px;
+
+ border-radius:50%;
+
+ display:flex;
+ align-items:center;
+ justify-content:center;
+
+ font-size:30px;
+
+ color:#fff;
+ cursor:pointer;
+
+ background:linear-gradient(
+ 135deg,
+ #4facfe 0%,
+ #00f2fe 100%
+ );
+
+ box-shadow:
+ 0 8px 25px rgba(79,172,254,.45);
+
+ transition:.25s ease;
+
+ animation:commentPulse 2.5s infinite;
+}
+
+#commentFab:hover{
+ transform:translateY(-3px) scale(1.08);
+}
+
+@keyframes commentPulse{
+ 0%{
+   box-shadow:
+   0 0 0 0 rgba(79,172,254,.45);
+ }
+ 70%{
+   box-shadow:
+   0 0 0 15px rgba(79,172,254,0);
+ }
+ 100%{
+   box-shadow:
+   0 0 0 0 rgba(79,172,254,0);
+ }
+}
+
 </style>
 </head>
 
@@ -1457,6 +1511,233 @@ loadTheme();
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script src="ads.js"></script>
+
+<!-- COMMENT FLOAT -->
+<div id="commentFab">💬</div>
+
+<div id="commentModal">
+
+  <div class="comment-card">
+
+    <div class="comment-header">
+      <span>💬 Thảo luận Dashboard</span>
+      <button id="closeComment">✕</button>
+    </div>
+
+    <div id="loginWrap">
+      <button id="googleLogin">
+        🔵 Đăng nhập bằng Google
+      </button>
+    </div>
+
+    <div id="commentApp" style="display:none">
+
+      <div id="userInfo"></div>
+
+      <textarea
+        id="commentInput"
+        placeholder="Nhập bình luận..."
+      ></textarea>
+
+      <button id="sendComment">
+        Gửi bình luận
+      </button>
+
+      <div id="commentList"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+ getAuth,
+ GoogleAuthProvider,
+ signInWithPopup,
+ onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+import {
+ getFirestore,
+ collection,
+ addDoc,
+ query,
+ orderBy,
+ onSnapshot,
+ serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+ apiKey: "AIzaSyCWBCctVLzgx6HKUI7mQYDGAZvezEiLpto",
+ authDomain: "ryobi-wh-dashboard.firebaseapp.com",
+ projectId: "ryobi-wh-dashboard",
+ storageBucket: "ryobi-wh-dashboard.firebasestorage.app",
+ messagingSenderId: "376016621588",
+ appId: "1:376016621588:web:63b3510904ee246d2ad701"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+let currentUser=null;
+
+const modal =
+ document.getElementById("commentModal");
+
+document.getElementById("commentFab")
+.onclick=()=>{
+ modal.classList.add("open");
+};
+
+document.getElementById("closeComment")
+.onclick=()=>{
+ modal.classList.remove("open");
+};
+
+document.getElementById("googleLogin")
+.onclick=async()=>{
+
+ const provider =
+ new GoogleAuthProvider();
+
+ await signInWithPopup(
+  auth,
+  provider
+ );
+
+};
+
+onAuthStateChanged(auth,user=>{
+
+ currentUser=user;
+
+ if(user){
+
+  document
+  .getElementById("loginWrap")
+  .style.display="none";
+
+  document
+  .getElementById("commentApp")
+  .style.display="block";
+
+  document
+  .getElementById("userInfo")
+  .innerHTML=
+  `
+  <img src="${user.photoURL}"
+  style="
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  vertical-align:middle;
+  margin-right:10px">
+
+  ${user.displayName}
+  `;
+
+ }
+
+});
+
+document
+.getElementById("sendComment")
+.onclick=async()=>{
+
+ if(!currentUser) return;
+
+ const text=
+ document
+ .getElementById("commentInput")
+ .value
+ .trim();
+
+ if(!text) return;
+
+ await addDoc(
+  collection(db,"comments"),
+  {
+   uid:currentUser.uid,
+   name:currentUser.displayName,
+   photo:currentUser.photoURL,
+   text:text,
+   createdAt:serverTimestamp()
+  }
+ );
+
+ document
+ .getElementById("commentInput")
+ .value="";
+};
+
+const q=query(
+ collection(db,"comments"),
+ orderBy("createdAt","desc")
+);
+
+onSnapshot(q,snap=>{
+
+ const box=
+ document.getElementById("commentList");
+
+ box.innerHTML="";
+
+ snap.forEach(d=>{
+
+  const c=d.data();
+
+  box.innerHTML +=
+  `
+  <div class="comment-item">
+
+    <div class="comment-user">
+
+      <img src="${c.photo}">
+
+      <div>
+
+        <b>${c.name}</b>
+
+        <div class="comment-time">
+        ${
+         c.createdAt
+         ?
+         new Date(
+          c.createdAt.seconds*1000
+         ).toLocaleString()
+         :
+         ''
+        }
+        </div>
+
+      </div>
+
+    </div>
+
+    <div style="margin-top:10px">
+      ${c.text}
+    </div>
+
+  </div>
+  `;
+ });
+
+});
+
+</script>
 
 </body>
 </html>
