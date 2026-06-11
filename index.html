@@ -817,6 +817,41 @@ audio { display: none; }
 .comment-time{ font-size:11px; color:var(--text-muted); margin-top:2px; }
 .comment-text{ margin-top:10px; font-size:14px; line-height:1.5; word-break:break-word; }
 
+/* ----- reactions + replies ----- */
+.comment-actions{ display:flex; align-items:center; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.cm-act{
+  display:inline-flex; align-items:center; gap:5px;
+  border:1px solid var(--box-border); background:var(--box);
+  color:var(--text-muted); font-family:inherit; font-size:12.5px; font-weight:600;
+  padding:5px 11px; border-radius:20px; cursor:pointer; transition:.15s; line-height:1;
+}
+.cm-act:hover{ border-color:var(--accent); color:var(--text); transform:translateY(-1px); }
+.cm-act .cm-emo{ font-size:14px; }
+.cm-act .cm-cnt{ font-variant-numeric:tabular-nums; }
+.cm-act.active.like{ background:rgba(79,172,254,.14); border-color:rgba(79,172,254,.5); color:#2b8fe0; }
+.cm-act.active.heart{ background:rgba(255,77,109,.14); border-color:rgba(255,77,109,.5); color:#ff4d6d; }
+
+.cm-reply-box{ display:flex; gap:8px; margin-top:10px; }
+.cm-reply-box input{
+  flex:1; font-family:inherit; font-size:13px; color:var(--text);
+  background:var(--bg); border:1px solid var(--box-border);
+  border-radius:10px; padding:8px 12px; transition:.15s;
+}
+.cm-reply-box input:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(79,172,254,.15); }
+.cm-reply-box button{
+  border:none; color:#fff; font-family:inherit; font-weight:700; font-size:13px;
+  padding:0 16px; border-radius:10px; cursor:pointer;
+  background:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); transition:.15s;
+}
+.cm-reply-box button:hover{ transform:translateY(-1px); }
+
+.comment-replies{ margin-top:12px; padding-left:14px; border-left:2px solid var(--box-border); display:flex; flex-direction:column; gap:10px; }
+.reply-item{ animation:cmItemIn .3s ease both; }
+.reply-item .comment-user img{ width:28px; height:28px; }
+.reply-item .comment-user b{ font-size:13px; }
+.reply-item .comment-text{ margin-top:6px; font-size:13px; }
+
+
 @media(max-width:480px){
   .comment-card{ max-width:100%; max-height:92vh; }
   #commentFab{ width:60px; height:60px; font-size:26px; bottom:16px; left:16px; }
@@ -1621,7 +1656,8 @@ import {
   getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 import {
-  getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
+  getFirestore, collection, doc, addDoc, updateDoc,
+  arrayUnion, arrayRemove, query, orderBy, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1638,7 +1674,14 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 let currentUser = null;
 
-const modal = document.getElementById("commentModal");
+const modal   = document.getElementById("commentModal");
+const listBox = document.getElementById("commentList");
+
+/* ----- state ----- */
+let lastComments = [];     // du lieu moi nhat tu Firestore
+let focusReplyId = null;   // o tra loi dang focus
+const replyOpen = {};      // id -> dang mo o tra loi?
+const replyText = {};      // id -> noi dung dang go
 
 /* ----- mo / dong modal ----- */
 document.getElementById("commentFab").onclick   = () => modal.classList.add("open");
@@ -1647,12 +1690,8 @@ modal.onclick = (e) => { if (e.target === modal) modal.classList.remove("open");
 
 /* ----- dang nhap Google ----- */
 document.getElementById("googleLogin").onclick = async () => {
-  try {
-    await signInWithPopup(auth, new GoogleAuthProvider());
-  } catch (err) {
-    console.error("Login error:", err);
-    alert("Đăng nhập thất bại: " + err.message);
-  }
+  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+  catch (err) { console.error(err); alert("Đăng nhập thất bại: " + err.message); }
 };
 
 /* ----- trang thai dang nhap ----- */
@@ -1671,9 +1710,10 @@ onAuthStateChanged(auth, (user) => {
     loginWrap.style.display  = "flex";
     commentApp.style.display = "none";
   }
+  renderComments();
 });
 
-/* ----- gui binh luan ----- */
+/* ----- gui binh luan goc ----- */
 document.getElementById("sendComment").onclick = async () => {
   if (!currentUser) return;
   const input = document.getElementById("commentInput");
@@ -1682,60 +1722,152 @@ document.getElementById("sendComment").onclick = async () => {
   input.value = "";
   try {
     await addDoc(collection(db, "comments"), {
-      uid: currentUser.uid,
-      name: currentUser.displayName,
-      photo: currentUser.photoURL,
-      text: text,
-      createdAt: serverTimestamp()
+      uid: currentUser.uid, name: currentUser.displayName, photo: currentUser.photoURL,
+      text, likes: [], hearts: [], replies: [], createdAt: serverTimestamp()
     });
-  } catch (err) {
-    console.error("Send error:", err);
-    input.value = text;
-    alert("Gời bình luận thất bại: " + err.message);
-  }
+  } catch (err) { console.error(err); input.value = text; alert("Gửi bình luận thất bại: " + err.message); }
 };
-
-/* gui nhanh bang Ctrl/Cmd + Enter */
 document.getElementById("commentInput").addEventListener("keydown", (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-    document.getElementById("sendComment").click();
-  }
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") document.getElementById("sendComment").click();
 });
 
-/* ----- chong XSS ----- */
-function esc(s) {
-  return String(s ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+/* ----- helpers ----- */
+function esc(s){ return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fmtMs(ms){ return ms ? new Date(ms).toLocaleString("vi-VN") : ""; }
+
+function reactionBtn(c, type){
+  const arr = (type === "likes" ? c.likes : c.hearts) || [];
+  const on  = currentUser && arr.includes(currentUser.uid);
+  const cls = type === "likes" ? "like" : "heart";
+  const emo = type === "likes" ? "👍" : "❤️";
+  return `<button class="cm-act ${cls}${on ? ' active' : ''}" data-act="react" data-id="${c.id}" data-type="${type}">
+    <span class="cm-emo">${emo}</span><span class="cm-cnt">${arr.length || 0}</span></button>`;
 }
 
-/* ----- realtime list: gom chuoi, gan 1 lan ----- */
+/* ----- realtime ----- */
 const q = query(collection(db, "comments"), orderBy("createdAt", "desc"));
 onSnapshot(q, (snap) => {
-  const box = document.getElementById("commentList");
+  lastComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderComments();
+});
+
+function renderComments(){
+  if (!lastComments.length){
+    listBox.innerHTML = `<div style="text-align:center;color:var(--text-muted);padding:20px 0;font-size:13px">Chưa có bình luận nào</div>`;
+    return;
+  }
   let html = "";
-  snap.forEach((d) => {
-    const c = d.data();
-    const time = c.createdAt
-      ? new Date(c.createdAt.seconds * 1000).toLocaleString("vi-VN")
-      : "Đang gời...";
+  for (const c of lastComments){
     const mine = (currentUser && c.uid === currentUser.uid) ? " mine" : "";
+    const time = c.createdAt ? new Date(c.createdAt.seconds * 1000).toLocaleString("vi-VN") : "Đang gửi...";
+    const replies = Array.isArray(c.replies) ? c.replies : [];
+
+    let repliesHtml = "";
+    if (replies.length){
+      repliesHtml = `<div class="comment-replies">` + replies.map(r => `
+        <div class="reply-item">
+          <div class="comment-user">
+            <img src="${r.photo || ''}" referrerpolicy="no-referrer">
+            <div><b>${esc(r.name)}</b><div class="comment-time">${fmtMs(r.ts)}</div></div>
+          </div>
+          <div class="comment-text">${esc(r.text)}</div>
+        </div>`).join("") + `</div>`;
+    }
+
+    let replyBox = "";
+    if (replyOpen[c.id]){
+      replyBox = `<div class="cm-reply-box">
+        <input data-act="reply-input" data-id="${c.id}" placeholder="Trả lời..." value="${esc(replyText[c.id] || '')}">
+        <button data-act="reply-send" data-id="${c.id}">Gửi</button>
+      </div>`;
+    }
+
     html += `
       <div class="comment-item${mine}">
         <div class="comment-user">
           <img src="${c.photo || ''}" referrerpolicy="no-referrer">
-          <div>
-            <b>${esc(c.name)}</b>
-            <div class="comment-time">${time}</div>
-          </div>
+          <div><b>${esc(c.name)}</b><div class="comment-time">${time}</div></div>
         </div>
         <div class="comment-text">${esc(c.text)}</div>
+        <div class="comment-actions">
+          ${reactionBtn(c, "likes")}
+          ${reactionBtn(c, "hearts")}
+          <button class="cm-act" data-act="reply-toggle" data-id="${c.id}"><span class="cm-emo">💬</span>Trả lời</button>
+        </div>
+        ${replyBox}
+        ${repliesHtml}
       </div>`;
-  });
-  box.innerHTML = html ||
-    `<div style="text-align:center;color:var(--text-muted);padding:20px 0;font-size:13px">Chưa có bình luận nào</div>`;
+  }
+  listBox.innerHTML = html;
+
+  if (focusReplyId){
+    const el = listBox.querySelector(`input[data-act="reply-input"][data-id="${focusReplyId}"]`);
+    if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  }
+}
+
+/* ----- event delegation: like / tim / tra loi ----- */
+listBox.addEventListener("click", async (e) => {
+  const btn = e.target.closest("[data-act]");
+  if (!btn) return;
+  const act = btn.dataset.act;
+  const id  = btn.dataset.id;
+
+  if (act === "react"){
+    if (!currentUser){ alert("Vui lòng đăng nhập để bày tỏ cảm xúc."); return; }
+    const type = btn.dataset.type;
+    const c = lastComments.find(x => x.id === id);
+    if (!c) return;
+    const arr = (type === "likes" ? c.likes : c.hearts) || [];
+    const on = arr.includes(currentUser.uid);
+    try {
+      await updateDoc(doc(db, "comments", id), {
+        [type]: on ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
+      });
+    } catch (err){ console.error(err); alert("Lỗi: " + err.message); }
+    return;
+  }
+
+  if (act === "reply-toggle"){
+    if (!currentUser){ alert("Vui lòng đăng nhập để trả lời."); return; }
+    replyOpen[id] = !replyOpen[id];
+    focusReplyId = replyOpen[id] ? id : null;
+    renderComments();
+    return;
+  }
+
+  if (act === "reply-send"){
+    if (!currentUser) return;
+    const text = (replyText[id] || "").trim();
+    if (!text) return;
+    focusReplyId = null;
+    replyOpen[id] = false;
+    replyText[id] = "";
+    try {
+      await updateDoc(doc(db, "comments", id), {
+        replies: arrayUnion({
+          uid: currentUser.uid, name: currentUser.displayName,
+          photo: currentUser.photoURL, text, ts: Date.now()
+        })
+      });
+    } catch (err){ console.error(err); alert("Gửi trả lời thất bại: " + err.message); }
+    renderComments();
+    return;
+  }
+});
+
+/* luu noi dung dang go + gui bang Enter */
+listBox.addEventListener("input", (e) => {
+  const el = e.target.closest('input[data-act="reply-input"]');
+  if (el) replyText[el.dataset.id] = el.value;
+});
+listBox.addEventListener("keydown", (e) => {
+  const el = e.target.closest('input[data-act="reply-input"]');
+  if (!el) return;
+  if (e.key === "Enter"){
+    e.preventDefault();
+    listBox.querySelector(`button[data-act="reply-send"][data-id="${el.dataset.id}"]`)?.click();
+  }
 });
 </script>
 
