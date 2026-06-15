@@ -1,6 +1,6 @@
 const ACTIVE_NOTIFICATION = {
 
-enabled: true,
+enabled: false,
 
 file: "sportday.json"
 
