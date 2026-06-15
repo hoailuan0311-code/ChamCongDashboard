@@ -672,6 +672,10 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 #respReports .rdetail-btn::before{ content:''; position:absolute; top:0; left:-120%; width:55%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); animation:rBtnSheen 3s ease-in-out infinite; }
 @keyframes rBtnSheen{ 0%{left:-120%;} 55%,100%{left:220%;} }
 #respReports .rdetail-count{ background:rgba(255,255,255,.28); padding:1px 8px; border-radius:10px; font-size:11px; font-weight:800; }
+#respReports .rdetail-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+#respReports .rdetail-btn.rd-all{ background:linear-gradient(135deg,#667eea,#764ba2); }
+#respReports .rdetail-btn.rd-pend{ background:linear-gradient(135deg,#f5a524,#ffb84d); }
+#respReports .rdetail-btn.rd-app{ background:linear-gradient(135deg,#2ecc71,#27ae60); }
 
 /* ----- details modal (bảng kiểu Excel) ----- */
 #rDetailModal{ position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); padding:18px; }
@@ -933,7 +937,7 @@ audio { display: none; }
             </div>
             <div class="rbox rbox-full rv">
                 <div class="rstripe"></div>
-                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(102,126,234,.14)">🕘</div>Đơn NGHỈ PHÉP mới nhất</div><button class="rdetail-btn" data-kind="leave">📋 Xem chi tiết <span class="rdetail-count" id="leaveRecentBadge">–</span></button></div>
+                <div class="rbox-head"><div class="rbox-title"><div class="rbox-ic" style="background:rgba(102,126,234,.14)">🕘</div>Đơn NGHỈ PHÉP mới nhất</div><div class="rdetail-actions"><button class="rdetail-btn rd-all" data-kind="leave" data-filter="all">📋 Xem chi tiết <span class="rdetail-count" id="leaveRecentBadge">–</span></button><button class="rdetail-btn rd-pend" data-kind="leave" data-filter="pend">⏳ Xem Pending</button><button class="rdetail-btn rd-app" data-kind="leave" data-filter="app">✅ Xem Approve</button></div></div>
                 <div class="rbox-body rgrow" id="leaveRecent"></div>
             </div>
         </div>
@@ -1382,12 +1386,12 @@ function rTeamBars(data){
     const max=Math.max(1,...rows.map(r=>r[1].tot));
     return rows.map(([k,o])=>`<div class="rbar-row"><div class="rbar-top"><span class="rbar-nm">${_rEsc(k)}</span><span class="rbar-v">${o.tot}</span></div><div class="rbar-track"><div class="rbar-seg app" style="--w:${(o.app/max*100).toFixed(1)}%"><span class="rsh"></span></div><div class="rbar-seg pend" style="--w:${(o.pend/max*100).toFixed(1)}%"><span class="rsh"></span></div></div></div>`).join("");
 }
-function rRecent(data, metaFn){
-    const sorted=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"])).slice(0,30);
+function rRecent(data, metaFn, limit){
+    const sorted=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"])).slice(0, limit||30);
     if(!sorted.length) return '<p class="r-empty">Chưa có đơn nào.</p>';
     return sorted.map((d,i)=>{
         const st=_rStatus(d.Status), bcls=st==="app"?"b-app":st==="pend"?"b-pend":"b-other";
-        const btxt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":_rEsc(d.Status||"—");
+        const btxt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":"Rejected";
         return `<div class="rlist-row" style="animation-delay:${(i*0.05).toFixed(2)}s"><div class="rav">${_rIni(d.FullName)}</div><div class="rl-nm">${_rEsc(d.FullName)}<small>MSNV ${_rEsc(d.MSNV)} · ${_rEsc(d.Team)}</small></div><div class="rl-meta">${metaFn(d)}<br><span style="opacity:.65">gửi ngày ${_rDate(d["Thời điểm Submit"])}</span></div><div><span class="rl-badge ${bcls}">${btxt}</span></div></div>`;
     }).join("");
 }
@@ -1404,12 +1408,12 @@ function renderLeaveReport(data){
         rKpi("⏳","Chờ duyệt",pend,total?Math.round(pend/total*100)+"% tổng đơn":"—","#f5a524","#ffd86b") +
         rKpi("📆","Tổng ngày nghỉ",days,"ngày","#667eea","#a18cd1");
     const segs=[{label:"Đã duyệt",value:app,color:"#43e97b"},{label:"Chờ duyệt",value:pend,color:"#f5a524"}];
-    if(other>0) segs.push({label:"Khác",value:other,color:"#ff6b6b"});
+    if(other>0) segs.push({label:"Rejected",value:other,color:"#ff6b6b"});
     document.getElementById("leaveStatus").innerHTML = respDonut(segs);
     const types={}; data.forEach(d=>{ const k=(d.Type||"").trim()||"—"; types[k]=(types[k]||0)+1; });
     document.getElementById("leaveType").innerHTML = rSolidBars(types);
     document.getElementById("leaveTeam").innerHTML = rTeamBars(data);
-    document.getElementById("leaveRecent").innerHTML = rRecent(data, d=>{ const f=_rDate(d.OffFrom); return "Nghỉ từ "+f+(_rNum(d.OffTo)>_rNum(d.OffFrom)?" → "+_rDate(d.OffTo):""); });
+    document.getElementById("leaveRecent").innerHTML = rRecent(data, d=>{ const f=_rDate(d.OffFrom); return "Nghỉ từ "+f+(_rNum(d.OffTo)>_rNum(d.OffFrom)?" → "+_rDate(d.OffTo):""); }, 20);
     document.getElementById("leaveStatusBadge").textContent = total+" đơn";
     document.getElementById("leaveTypeBadge").textContent = Object.keys(types).length+" loại";
     document.getElementById("leaveRecentBadge").textContent = total+" đơn";
@@ -1428,7 +1432,7 @@ function renderMissReport(data){
         rKpi("⏳","Chờ duyệt",pend,total?Math.round(pend/total*100)+"% tổng đơn":"—","#f5a524","#ffd86b") +
         rKpi("👆","MISS OUT",mOut,mIn+" đơn MISS IN","#ff4757","#ff8a96");
     const segs=[{label:"Đã duyệt",value:app,color:"#43e97b"},{label:"Chờ duyệt",value:pend,color:"#f5a524"}];
-    if(other>0) segs.push({label:"Khác",value:other,color:"#ff6b6b"});
+    if(other>0) segs.push({label:"Rejected",value:other,color:"#ff6b6b"});
     document.getElementById("missStatus").innerHTML = respDonut(segs);
     const types={}; data.forEach(d=>{ const k=(d.Type||"").trim()||"—"; types[k]=(types[k]||0)+1; });
     document.getElementById("missType").innerHTML = rSolidBars(types);
@@ -1455,12 +1459,12 @@ function setupRespObservers(){
 }
 
 /* ---- DETAILS MODAL (bảng đầy đủ kiểu Excel) ---- */
-function _rStatusBadge(s){ const st=_rStatus(s); const cls=st==="app"?"rt-app":st==="pend"?"rt-pend":"rt-other"; const txt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":_rEsc(s||"—"); return `<span class="rt-badge ${cls}">${txt}</span>`; }
+function _rStatusBadge(s){ const st=_rStatus(s); const cls=st==="app"?"rt-app":st==="pend"?"rt-pend":"rt-other"; const txt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":"Rejected"; return `<span class="rt-badge ${cls}">${txt}</span>`; }
 function buildLeaveTable(data){
     const rows=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
-    const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại phép</th><th>Từ ngày</th><th>Đến ngày</th><th>Số ngày</th><th>Lý do</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
+    const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại phép</th><th>Từ ngày</th><th>Đến ngày</th><th>Số ngày</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
     const body=rows.map((d,i)=>{ const f=_rNum(d.OffFrom),t=_rNum(d.OffTo); const days=(f&&t&&t>=f)?(t-f+1):(f?1:0);
-        return `<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
+        return `<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
     }).join("");
     return head+`<tbody>${body}</tbody>`;
 }
@@ -1471,21 +1475,25 @@ function buildMissTable(data){
     return head+`<tbody>${body}</tbody>`;
 }
 const _rdMeta = {
-    leave:{ title:"🌴 Chi tiết Đơn Nghỉ phép", cls:"leave", build:()=>buildLeaveTable(leaveData), data:()=>leaveData },
-    miss: { title:"⏰ Chi tiết Đơn báo MISSING", cls:"miss",  build:()=>buildMissTable(missData),  data:()=>missData }
+    leave:{ title:"🌴 Chi tiết Đơn Nghỉ phép", cls:"leave", build:(arr)=>buildLeaveTable(arr), data:()=>leaveData },
+    miss: { title:"⏰ Chi tiết Đơn báo MISSING", cls:"miss",  build:(arr)=>buildMissTable(arr),  data:()=>missData }
 };
 const rdModal = document.getElementById("rDetailModal");
-function openRDetail(kind){
+function openRDetail(kind, filter){
     const m=_rdMeta[kind]; if(!m) return;
-    const arr=m.data();
-    document.getElementById("rDetailTitle").textContent = m.title + "  (" + arr.length + " đơn)";
+    filter = filter || "all";
+    let arr = m.data();
+    if(filter==="pend")      arr = arr.filter(d=>_rStatus(d.Status)==="pend");
+    else if(filter==="app")  arr = arr.filter(d=>_rStatus(d.Status)==="app");
+    const fLabel = filter==="pend" ? " · Chờ duyệt" : filter==="app" ? " · Đã duyệt" : "";
+    document.getElementById("rDetailTitle").textContent = m.title + fLabel + "  (" + arr.length + " đơn)";
     document.getElementById("rDetailHead").className = "rdetail-head " + m.cls;
-    document.getElementById("rDetailTable").innerHTML = arr.length ? m.build() : '<tbody><tr><td style="padding:24px;color:var(--text-muted)">Chưa có dữ liệu.</td></tr></tbody>';
+    document.getElementById("rDetailTable").innerHTML = arr.length ? m.build(arr) : '<tbody><tr><td style="padding:24px;color:var(--text-muted)">Chưa có dữ liệu.</td></tr></tbody>';
     rdModal.classList.add("open");
     document.body.style.overflow = "hidden";
 }
 function closeRDetail(){ rdModal.classList.remove("open"); document.body.style.overflow = ""; }
-document.querySelectorAll("#respReports .rdetail-btn").forEach(b=>b.addEventListener("click",()=>openRDetail(b.dataset.kind)));
+document.querySelectorAll("#respReports .rdetail-btn").forEach(b=>b.addEventListener("click",()=>openRDetail(b.dataset.kind, b.dataset.filter)));
 document.getElementById("rDetailClose").addEventListener("click", closeRDetail);
 rdModal.addEventListener("click", e=>{ if(e.target===rdModal) closeRDetail(); });
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && rdModal.classList.contains("open")) closeRDetail(); });
