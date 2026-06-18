@@ -1499,19 +1499,29 @@ rdModal.addEventListener("click", e=>{ if(e.target===rdModal) closeRDetail(); })
 document.addEventListener("keydown", e=>{ if(e.key==="Escape" && rdModal.classList.contains("open")) closeRDetail(); });
 
 /* ============ BUTTONS ============ */
-document.getElementById("feedbackBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wSm7WHpgCw","_blank"));
-document.getElementById("passBtn").addEventListener("click", () => window.open("https://forms.office.com/r/wMUXy1P6P1","_blank"));
-document.getElementById("viewPassBtn").addEventListener("click", () => window.open("passCadena.html","_blank"));
+// Helper: chua dang nhap -> mo popup, dang nhap xong tu chay lai; roi thi chay luon
+function act(name, fn){
+  if (window.AUTH && window.AUTH.user) fn();
+  else if (window.AUTH) window.AUTH.requireLogin(name, fn);
+  else alert("Đang tải hệ thống đăng nhập, thử lại sau giây lát.");
+}
+document.getElementById("feedbackBtn").addEventListener("click", () => act("Phản hồi Chấm Công", () => openForm("feedback")));
+document.getElementById("passBtn").addEventListener("click",     () => act("Quên Pass CADENA",   () => openForm("pass")));
+document.getElementById("viewPassBtn").addEventListener("click", () => act("Xem Pass CADENA",    () => window.open("passCadena.html","_blank")));
 document.getElementById("sportDayBtn").addEventListener("click", () => window.open("sportday.html","_blank"));
 
 /* ============ FORM EMBED MODAL ============ */
 const FORM_URLS = {
     miss:  "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UQ1RUMlFCNEE1VEFYV1g5NzgwRlJaSjgxRi4u&embed=true",
-    leave: "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UOVJCWDFVVEgxMU41TDg0SzlOQjgzSFVKTi4u&embed=true"
+    leave: "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UOVJCWDFVVEgxMU41TDg0SzlOQjgzSFVKTi4u&embed=true",
+    pass:     "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UMEtCWk5FNE5QNElEREszTzBLTklVOU03Ti4u&embed=true",
+    feedback: "https://forms.office.com/Pages/ResponsePage.aspx?id=z8aMi6oOZEuY5G1GcsRJMGdDCsoS40lHpFXbHcBKg81UODVWUlVSMFJDVERMWElaOVlHRTFTVVRXVy4u&embed=true"
 };
 const FORM_META = {
-    miss:  { title: "🌴 Xin Nghỉ Phép", cls: "miss" },
-    leave: { title: "⏰ Báo MISSING Chấm Công",        cls: "leave" }
+    miss:     { title: "🌴 Xin Nghỉ Phép",        cls: "miss" },
+    leave:    { title: "⏰ Báo MISSING Chấm Công", cls: "leave" },
+    pass:     { title: "🔐 Quên Pass CADENA",      cls: "pass" },
+    feedback: { title: "📝 Phản hồi Chấm Công",    cls: "feedback" }
 };
 const formModal  = document.getElementById("formModal");
 const formFrame  = document.getElementById("formModalFrame");
@@ -1531,8 +1541,8 @@ function closeForm() {
     formFrame.src = "";
     document.body.style.overflow = "";
 }
-document.getElementById("missFormBtn").addEventListener("click",  () => openForm("miss"));
-document.getElementById("leaveFormBtn").addEventListener("click", () => openForm("leave"));
+document.getElementById("missFormBtn").addEventListener("click",  () => act("Xin Nghỉ Phép",       () => openForm("miss")));
+document.getElementById("leaveFormBtn").addEventListener("click", () => act("Báo MISSING Vân Tay", () => openForm("leave")));
 document.getElementById("formModalClose").addEventListener("click", closeForm);
 formModal.addEventListener("click", (e) => { if (e.target === formModal) closeForm(); });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && formModal.classList.contains("open")) closeForm(); });
@@ -1883,5 +1893,6 @@ listBox.addEventListener("keydown", (e) => {
 
 <script src="ecoSaving.js"></script>
 
+<script type="module" src="auth-gate.js"></script>
 </body>
 </html>
