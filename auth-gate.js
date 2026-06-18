@@ -218,7 +218,7 @@ function buildLogModal() {
   m.id = "agLogModal";
   m.innerHTML = `<div class="card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-      <span style="font-size:15px;font-weight:800;color:#7af0c4">🗂️ Nhật ký truy cập</span>
+      <span style="font-size:15px;font-weight:800;color:#1f9e6f">🗂️ Nhật ký truy cập</span>
       <span style="font-size:11px;color:#566">collection sessions • 100 phiên gần nhất</span>
       <button id="agLogClose" style="margin-left:auto;cursor:pointer;background:#16202b;border:1px solid #3a4a5a;color:#cfe;border-radius:8px;padding:5px 11px">Đóng ✕</button>
     </div>
@@ -253,7 +253,7 @@ function openLogModal() {
       return `<tr>
         <td><b style="color:#cfe">${esc(r.name || "—")}</b><br><span style="color:#7c8b96;font-size:11px">${esc(r.email || "")}</span></td>
         <td>${fmt(r.loginAt) || "—"}</td>
-        <td style="color:${out ? '#7af0c4' : '#889'}">${out || "— đang mở"}</td>
+        <td style="color:${out ? '#1f9e6f' : '#889'}">${out || "— đang mở"}</td>
         <td style="color:#9ab">${fmt(r.lastSeen) || "—"}</td>
         <td style="color:#9ab;font-size:11px">${esc(shortUA(r.userAgent))}</td></tr>`;
     }).join("");
