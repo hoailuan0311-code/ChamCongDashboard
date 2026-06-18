@@ -96,7 +96,7 @@ window.AUTH = {
   #agLogModal.open{display:flex}
   #agLogModal .card{width:min(760px,92vw);max-height:84vh;overflow:auto;background:#0e121b;
     border:1px solid #2a3a4a;border-radius:16px;padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-  #agLogModal table{width:100%;border-collapse:collapse;font-size:12.5px;color:#cfe}
+  #agLogModal table{width:100%;border-collapse:collapse;font-size:12.5px;color:#0a7d8f}
   #agLogModal th{position:sticky;top:0;background:#0e121b;text-align:left;color:#7c8b96;font-weight:600;padding:8px 9px}
   #agLogModal td{padding:8px 9px;border-top:1px solid #1c2733}
   #agToastWrap{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);z-index:100000;display:flex;flex-direction:column;gap:8px;align-items:center}
@@ -220,7 +220,7 @@ function buildLogModal() {
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
       <span style="font-size:15px;font-weight:800;color:#0000FF">🗂️ Nhật ký truy cập</span>
       <span style="font-size:11px;color:#566">collection sessions • 100 phiên gần nhất</span>
-      <button id="agLogClose" style="margin-left:auto;cursor:pointer;background:#16202b;border:1px solid #3a4a5a;color:#cfe;border-radius:8px;padding:5px 11px">Đóng ✕</button>
+      <button id="agLogClose" style="margin-left:auto;cursor:pointer;background:#16202b;border:1px solid #3a4a5a;color:#0a7d8f;border-radius:8px;padding:5px 11px">Đóng ✕</button>
     </div>
     <table><thead><tr><th>Người dùng</th><th>Đăng nhập</th><th>Đăng xuất</th><th>Hoạt động cuối</th><th>Thiết bị</th></tr></thead>
     <tbody id="agLogBody"><tr><td colspan="5" style="text-align:center;color:#667;padding:18px">Đang tải…</td></tr></tbody></table>
@@ -251,7 +251,7 @@ function openLogModal() {
     body.innerHTML = rows.map(r => {
       const out = fmt(r.logoutAt);
       return `<tr>
-        <td><b style="color:#cfe">${esc(r.name || "—")}</b><br><span style="color:#7c8b96;font-size:11px">${esc(r.email || "")}</span></td>
+        <td><b style="color:#0a7d4f">${esc(r.name || "—")}</b><br><span style="color:#7c8b96;font-size:11px">${esc(r.email || "")}</span></td>
         <td>${fmt(r.loginAt) || "—"}</td>
         <td style="color:${out ? '#0000FF' : '#889'}">${out || "— đang mở"}</td>
         <td style="color:#9ab">${fmt(r.lastSeen) || "—"}</td>
