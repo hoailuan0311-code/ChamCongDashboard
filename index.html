@@ -1555,25 +1555,38 @@ document.addEventListener("touchstart", ()=>{ try{ document.getElementById("bgMu
 <!-- ===================== THEME LOADER ===================== -->
 <script>
 async function loadTheme() {
+    const applyFallback = () => {
+        if (document.getElementById("theme-fallback")) return; // tránh áp 2 lần
+        document.body.style.background = "linear-gradient(180deg, #eafaf1 0%, #d8f3e9 45%, #cdeef0 100%)";
+        document.body.style.color = "#1f2d2a";
+        const s = document.createElement("style");
+        s.id = "theme-fallback";
+        s.innerHTML = `
+            table { background: rgba(255,255,255,0.96) !important; }
+            table td, table th { color:#1f2d2a !important; }
+            th { background: rgba(232,250,240,0.96) !important; }
+            .chart-box { background: rgba(255,255,255,0.98) !important; border-color: rgba(0,0,0,0.06) !important; }
+        `;
+        document.head.appendChild(s);
+    };
+
     try {
         const cfgResp = await fetch("theme/themeList.json?v=" + Date.now());
         const cfg = await cfgResp.json();
         let activeTheme = cfg.activeTheme || "default";
-
         const month = new Date().getMonth() + 1;
         const map = { 1:"jan_newyear",2:"feb_valentine",3:"mar_womenday",4:"april30",5:"may_workers",6:"jun_summer",7:"jul_fireworks",8:"aug_sun",9:"sept2",10:"oct_halloween",11:"nov_remember",12:"dec_noel" };
         if (activeTheme === "auto") activeTheme = map[month] || "default";
-        if (activeTheme === "default") return;
+        if (activeTheme === "default") { applyFallback(); return; }
 
         const themeFile = await fetch(`theme/${activeTheme}.json?v=` + Date.now());
-        if (!themeFile.ok) return;
+        if (!themeFile.ok) { applyFallback(); return; }
         const theme = await themeFile.json();
-        if (!theme.override) return;
+        if (!theme.override) { applyFallback(); return; }
 
         if (theme.background) document.body.style.background = theme.background;
         if (theme.textColor) document.body.style.color = theme.textColor;
         if (theme.font) document.body.style.fontFamily = theme.font;
-
         if (theme.uiColors) {
             const s = document.createElement("style");
             s.id = "theme-ui";
@@ -1598,25 +1611,23 @@ async function loadTheme() {
             const eff = document.createElement("script");
             eff.src = "theme/" + theme.effect; eff.defer = true;
             document.body.appendChild(eff);
-
-            // Dừng hiệu ứng sau 10s: fade out rồi remove canvas pháo hoa
-            // (canvas do effect tạo không có id, phân biệt với canvas chart có id)
             setTimeout(() => {
                 document.querySelectorAll('canvas:not([id])').forEach(c => {
                     c.style.transition = 'opacity 1.5s ease';
                     c.style.opacity = '0';
                     setTimeout(() => {
                         c.remove();
-                        // Xoá luôn style/canvas thừa nếu effect inject vào body
                         document.querySelectorAll('canvas:not([id])').forEach(x => x.remove());
                     }, 1500);
                 });
             }, 10000);
         }
         console.log("✔ Theme applied:", activeTheme);
-        // Re-render charts sau khi theme đổi màu nền
         if(typeof missingData !== "undefined" && missingData.length){ renderMissingCharts(); }
-    } catch (err) { console.error("Theme load error:", err); }
+    } catch (err) {
+        console.error("Theme load error:", err);
+        applyFallback();
+    }
 }
 loadTheme();
 </script>
