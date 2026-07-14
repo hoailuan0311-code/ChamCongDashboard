@@ -143,6 +143,175 @@ h2 {
     100% { left: 200%; }
 }
 
+/* ===================== VIP BUTTON (PDF2PIC) – kiểu VIP 10 ===================== */
+.btn-vip{
+    position:relative;
+    color:#4a2f00;
+    background:linear-gradient(135deg,#f9d976 0%,#f3a13f 20%,#ffe9a3 45%,#e8b33a 70%,#ffdf7e 100%);
+    background-size:300% 300%;
+    border:1px solid #ffe9a3;
+    text-shadow:0 1px 0 rgba(255,255,255,.55);
+    box-shadow:0 0 16px rgba(255,196,56,.6), 0 4px 18px rgba(232,164,26,.4);
+    overflow:hidden;
+    animation:vipShine 3.2s linear infinite, vipPulse 2.2s ease-in-out infinite;
+}
+.btn-vip::before{
+    content:'';
+    position:absolute; top:0; left:-120%;
+    width:55%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);
+    animation:sportBtnSheen 2.4s ease-in-out infinite;
+}
+.btn-vip::after{
+    content:'✦';
+    position:absolute; top:1px; right:5px;
+    font-size:11px; color:#fff;
+    text-shadow:0 0 6px #ffdf7e, 0 0 12px #ffb700;
+    animation:vipSpark 1.6s ease-in-out infinite;
+}
+.btn-vip:hover{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 0 26px rgba(255,214,90,.95), 0 0 50px rgba(255,196,56,.45);
+}
+@keyframes vipShine{ 0%{background-position:0% 50%;} 100%{background-position:300% 50%;} }
+@keyframes vipPulse{
+    0%,100%{ box-shadow:0 0 12px rgba(255,196,56,.55), 0 4px 18px rgba(232,164,26,.35); }
+    50%    { box-shadow:0 0 28px rgba(255,220,110,.95), 0 0 52px rgba(255,190,40,.5), 0 4px 18px rgba(232,164,26,.45); }
+}
+@keyframes vipSpark{
+    0%,100%{ opacity:.25; transform:scale(.7) rotate(0deg); }
+    50%    { opacity:1;   transform:scale(1.3) rotate(30deg); }
+}
+
+/* ----- VIP CODE MODAL ----- */
+#vipModal{
+    position:fixed; inset:0; z-index:10001;
+    display:none; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.65);
+    -webkit-backdrop-filter:blur(5px); backdrop-filter:blur(5px);
+    padding:18px;
+}
+#vipModal.open{ display:flex; animation:cmFade .2s ease; }
+.vip-card{
+    position:relative;
+    width:100%; max-width:400px;
+    background:linear-gradient(160deg,#1b1405 0%,#241a06 55%,#171106 100%);
+    border:1px solid rgba(255,214,90,.55);
+    border-radius:22px;
+    padding:30px 26px 26px;
+    text-align:center;
+    color:#ffe9a3;
+    box-shadow:0 0 40px rgba(255,196,56,.35), 0 22px 70px rgba(0,0,0,.6), inset 0 0 30px rgba(255,196,56,.08);
+    overflow:hidden;
+    animation:vipCardPop .35s cubic-bezier(.2,.9,.3,1.25);
+}
+@keyframes vipCardPop{ from{ transform:scale(.85) translateY(20px); opacity:0; } to{ transform:scale(1) translateY(0); opacity:1; } }
+.vip-card::before{
+    content:'';
+    position:absolute; inset:-60%;
+    background:conic-gradient(from 0deg, transparent 0deg, rgba(255,214,90,.16) 40deg, transparent 80deg, transparent 180deg, rgba(255,214,90,.16) 220deg, transparent 260deg);
+    animation:vipRotate 6s linear infinite;
+    pointer-events:none;
+}
+@keyframes vipRotate{ to{ transform:rotate(360deg); } }
+.vip-crown{
+    font-size:52px; line-height:1;
+    display:inline-block;
+    filter:drop-shadow(0 0 14px rgba(255,214,90,.9));
+    animation:vipCrownFloat 2.4s ease-in-out infinite;
+    position:relative; z-index:1;
+}
+@keyframes vipCrownFloat{
+    0%,100%{ transform:translateY(0) rotate(-4deg); }
+    50%    { transform:translateY(-7px) rotate(4deg); }
+}
+.vip-title{
+    position:relative; z-index:1;
+    font-size:21px; font-weight:800; letter-spacing:1px;
+    margin:10px 0 4px;
+    background:linear-gradient(90deg,#ffe9a3,#f3a13f,#fff3c4,#e8b33a,#ffe9a3);
+    background-size:250% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:vipShine 3s linear infinite;
+}
+.vip-sub{ position:relative; z-index:1; font-size:12.5px; color:rgba(255,233,163,.75); margin-bottom:20px; }
+#vipCodeInput{
+    position:relative; z-index:1;
+    width:100%; text-align:center;
+    font-family:"Be Vietnam Pro",sans-serif;
+    font-size:19px; font-weight:800; letter-spacing:6px;
+    text-transform:uppercase;
+    color:#ffe9a3;
+    background:rgba(255,214,90,.07);
+    border:1px solid rgba(255,214,90,.45);
+    border-radius:13px;
+    padding:13px 14px;
+    outline:none;
+    transition:border-color .2s, box-shadow .2s;
+}
+#vipCodeInput::placeholder{ color:rgba(255,233,163,.3); letter-spacing:3px; font-size:14px; font-weight:600; }
+#vipCodeInput:focus{ border-color:#ffd76a; box-shadow:0 0 0 3px rgba(255,214,90,.22), 0 0 18px rgba(255,214,90,.3); }
+#vipConfirmBtn{
+    position:relative; z-index:1;
+    width:100%; margin-top:16px;
+    border:none; cursor:pointer;
+    font-family:"Be Vietnam Pro",sans-serif;
+    font-size:15px; font-weight:800; letter-spacing:1px;
+    color:#4a2f00;
+    background:linear-gradient(135deg,#f9d976,#f3a13f,#ffe9a3,#e8b33a);
+    background-size:300% 300%;
+    padding:13px;
+    border-radius:13px;
+    box-shadow:0 6px 22px rgba(255,196,56,.4);
+    animation:vipShine 3.2s linear infinite;
+    transition:transform .15s, box-shadow .15s;
+    overflow:hidden;
+}
+#vipConfirmBtn:hover{ transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,214,90,.6); }
+#vipConfirmBtn:active{ transform:translateY(0) scale(.97); }
+#vipCloseBtn{
+    position:absolute; top:12px; right:12px; z-index:2;
+    border:none; cursor:pointer;
+    width:30px; height:30px; border-radius:50%;
+    background:rgba(255,233,163,.14);
+    color:#ffe9a3; font-size:16px; line-height:1;
+    transition:background .15s, transform .15s;
+}
+#vipCloseBtn:hover{ background:rgba(255,233,163,.3); transform:rotate(90deg); }
+.vip-err{
+    position:relative; z-index:1;
+    min-height:18px;
+    margin-top:11px;
+    font-size:12.5px; font-weight:700;
+    color:#ff7b7b;
+    text-shadow:0 0 8px rgba(255,80,80,.4);
+    opacity:0; transition:opacity .2s;
+}
+.vip-err.show{ opacity:1; }
+.vip-card.wrong{ animation:vipShake .45s cubic-bezier(.36,.07,.19,.97); }
+@keyframes vipShake{
+    10%,90%{ transform:translateX(-2px); }
+    20%,80%{ transform:translateX(4px); }
+    30%,50%,70%{ transform:translateX(-7px); }
+    40%,60%{ transform:translateX(7px); }
+}
+.vip-card.unlocked .vip-crown{ animation:vipUnlockSpin .7s cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes vipUnlockSpin{
+    0%{ transform:scale(1) rotate(0); }
+    50%{ transform:scale(1.6) rotate(180deg); filter:drop-shadow(0 0 30px #ffd76a); }
+    100%{ transform:scale(1.15) rotate(360deg); filter:drop-shadow(0 0 22px #ffd76a); }
+}
+.vip-success{
+    position:relative; z-index:1;
+    margin-top:11px; min-height:18px;
+    font-size:13px; font-weight:800;
+    color:#7bff9d;
+    text-shadow:0 0 10px rgba(80,255,140,.5);
+    opacity:0; transition:opacity .25s;
+}
+.vip-success.show{ opacity:1; }
+
 /* ----- FORM BUTTONS (Sport Day style) ----- */
 .btn-miss, .btn-leave {
     background-size: 200% 200%;
@@ -880,6 +1049,7 @@ audio { display: none; }
     <button id="sportDayBtn" class="btn btn-sport" style="display:none;">
     🏆 GP-Sport Day 2026
 </button>
+    <button id="pdf2picBtn" class="btn btn-vip">👑 VIP - Clerk JIT</button>
 </div>
 
 <!-- ===================== FORM EMBED MODAL ===================== -->
@@ -892,6 +1062,20 @@ audio { display: none; }
         <div class="form-modal-body">
             <iframe id="formModalFrame" src="" title="Microsoft Form" allowfullscreen></iframe>
         </div>
+    </div>
+</div>
+
+<!-- ===================== VIP CODE MODAL (PDF2PIC) ===================== -->
+<div id="vipModal" role="dialog" aria-modal="true">
+    <div class="vip-card" id="vipCard">
+        <button id="vipCloseBtn" aria-label="Đóng">&times;</button>
+        <div class="vip-crown" id="vipCrown">👑</div>
+        <div class="vip-title">KHU VỰC VIP</div>
+        <div class="vip-sub">Nhập CODE VIP để mở khoá công cụ PDF to PIC</div>
+        <input id="vipCodeInput" placeholder="NHẬP CODE" maxlength="20" autocomplete="off">
+        <button id="vipConfirmBtn">⚡ MỞ KHOÁ</button>
+        <div class="vip-err" id="vipErr">❌ CODE không đúng, thử lại!</div>
+        <div class="vip-success" id="vipSuccess">✅ Mở khoá thành công! Đang vào...</div>
     </div>
 </div>
 
@@ -1509,6 +1693,61 @@ document.getElementById("feedbackBtn").addEventListener("click", () => act("Ph�
 document.getElementById("passBtn").addEventListener("click",     () => act("Quên Pass CADENA",   () => openForm("pass")));
 document.getElementById("viewPassBtn").addEventListener("click", () => act("Xem Pass CADENA",    () => window.open("passCadena.html","_blank")));
 document.getElementById("sportDayBtn").addEventListener("click", () => window.open("sportday.html","_blank"));
+
+/* ============ VIP GATE – PDF2PIC ============ */
+const VIP_CODE = "JITVIP";
+const VIP_TARGET = "pdf2pic.html";
+const vipModal   = document.getElementById("vipModal");
+const vipCard    = document.getElementById("vipCard");
+const vipInput   = document.getElementById("vipCodeInput");
+const vipErr     = document.getElementById("vipErr");
+const vipSuccess = document.getElementById("vipSuccess");
+
+function openVip(){
+    vipModal.classList.add("open");
+    vipErr.classList.remove("show");
+    vipSuccess.classList.remove("show");
+    vipCard.classList.remove("unlocked");
+    vipInput.value = "";
+    document.body.style.overflow = "hidden";
+    setTimeout(()=>vipInput.focus(), 120);
+}
+function closeVip(){
+    vipModal.classList.remove("open");
+    document.body.style.overflow = "";
+}
+function vipCheck(){
+    const code = (vipInput.value || "").trim().toUpperCase();
+    if(code === VIP_CODE){
+        vipErr.classList.remove("show");
+        vipSuccess.classList.add("show");
+        vipCard.classList.add("unlocked");
+        sessionStorage.setItem("vipUnlocked","1");
+        setTimeout(()=>{
+            closeVip();
+            window.open(VIP_TARGET, "_blank");
+        }, 850);
+    } else {
+        vipSuccess.classList.remove("show");
+        vipErr.classList.add("show");
+        vipCard.classList.remove("wrong");
+        void vipCard.offsetWidth; /* restart shake */
+        vipCard.classList.add("wrong");
+        vipInput.select();
+    }
+}
+document.getElementById("pdf2picBtn").addEventListener("click", () => {
+    if(sessionStorage.getItem("vipUnlocked") === "1"){
+        window.open(VIP_TARGET, "_blank");
+    } else {
+        openVip();
+    }
+});
+document.getElementById("vipConfirmBtn").addEventListener("click", vipCheck);
+document.getElementById("vipCloseBtn").addEventListener("click", closeVip);
+vipInput.addEventListener("keydown", e => { if(e.key === "Enter") vipCheck(); });
+vipModal.addEventListener("click", e => { if(e.target === vipModal) closeVip(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && vipModal.classList.contains("open")) closeVip(); });
 
 /* ============ FORM EMBED MODAL ============ */
 const FORM_URLS = {
