@@ -6,6 +6,7 @@
 <title>PDF sang Hình Ảnh - Cris</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
 <script>
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -10232,18 +10233,182 @@ window.__ZX_READY = (function () {
   .top-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
   .top-actions .btn { margin-top: 0; }
   footer { text-align: center; color: #999; font-size: 12px; margin-top: 36px; }
+
+  /* ===================== TAB BAR ===================== */
+  .tabbar {
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 6px;
+    margin-bottom: 22px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 12px 10px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    font-family: inherit;
+  }
+  .tab-btn:not(.active):hover { background: #f1f3f6; }
+  .tab-btn.active { background: #2563eb; color: #fff; }
+
+  /* ===================== TAB PANEL FLIP-SWIRL TRANSITION ===================== */
+  .tab-panels-wrap { perspective: 1500px; }
+  .tab-panel { transform-style: preserve-3d; will-change: transform, opacity, filter; }
+  @keyframes cardFlipOut {
+    0%   { transform: perspective(1500px) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; filter: blur(0px); }
+    100% { transform: perspective(1500px) rotateY(-110deg) rotateZ(-30deg) scale(.7); opacity: 0; filter: blur(5px); }
+  }
+  @keyframes cardFlipIn {
+    0%   { transform: perspective(1500px) rotateY(110deg) rotateZ(30deg) scale(.7); opacity: 0; filter: blur(5px); }
+    100% { transform: perspective(1500px) rotateY(0deg) rotateZ(0deg) scale(1); opacity: 1; filter: blur(0px); }
+  }
+  .tab-panel.flip-out { animation: cardFlipOut .5s cubic-bezier(.4,0,.2,1) forwards; }
+  .tab-panel.flip-in  { animation: cardFlipIn  .5s cubic-bezier(.4,0,.2,1) forwards; }
+
+  /* ===================== FILE / FOLDER SELECTED — HIỂN THỊ RÕ ===================== */
+  .dz-fileinfo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    padding: 6px 4px;
+  }
+  .dz-fileicon { font-size: 34px; flex: 0 0 auto; }
+  .dz-filetext { flex: 1; min-width: 0; }
+  .dz-filename {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dz-filesize { font-size: 12.5px; color: #777; margin-top: 2px; }
+  .dz-changebtn {
+    flex: 0 0 auto;
+    background: #fff;
+    color: #2563eb;
+    border: 1px solid #2563eb;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .dz-changebtn:hover { background: #eff6ff; }
+
+  .folder-badge {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: #ecfdf3;
+    border: 1px solid #86e8b0;
+    color: #166534;
+    padding: 9px 14px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .folder-badge.show { display: flex; }
+  .folder-badge .chk {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #22c55e; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex: 0 0 auto;
+  }
+
+  /* ===================== PIC TO PDF ===================== */
+  .pic-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pic-toolbar .btn { margin-top: 0; }
+  .pic-toolbar .btn:disabled { background: #c7c9cf; border-color: #c7c9cf; color: #fff; }
+  .pic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+  .pic-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    aspect-ratio: 1 / 1;
+  }
+  .pic-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pic-order {
+    position: absolute; top: 6px; left: 6px;
+    background: rgba(0,0,0,.55); color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px; z-index: 2;
+  }
+  .pic-check {
+    position: absolute; top: 6px; right: 6px; z-index: 3;
+    width: 24px; height: 24px; cursor: pointer;
+  }
+  .pic-check input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .pic-check span {
+    position: absolute; inset: 0; border-radius: 7px;
+    border: 2px solid rgba(255,255,255,.9);
+    background: rgba(0,0,0,.28);
+    transition: background .12s, border-color .12s;
+  }
+  .pic-check input:checked + span { background: #e53e3e; border-color: #e53e3e; }
+  .pic-check input:checked + span::after {
+    content: '✓'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-weight: 800;
+  }
+  .pic-empty-hint { font-size: 13px; color: #888; margin-top: 8px; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>PDF sang HÌNH - Nguyễn Thị Tường Vi 516414 - Chưa chuyển 500k cho Cris</h1>
-  <div class="sub">Nguyễn Thị Tường Vi-516414, sinh ngày 20/01/1993, quê quán Phú Yên nay là Đắk Lắk, có email cá nhân là: "thituongvi.93@gmail.com", vui lòng chuyển trả cho Cris 500k qua số tài khoản 8300111529999 - MB Bank. Nếu đến ngày 20/7/2026 vẫn chưa chuyển khoản, hình chị Vi sẽ xuất hiện ở đây.</div>
+  <h1>Rename ASN from PDF</h1>
+  <div class="sub">Công cụ chuyển đổi PDF sang hình ảnh &amp; gộp hình ảnh thành PDF, xử lý hoàn toàn ngay trên trình duyệt của bạn.</div>
+
+  <div class="tabbar" id="tabbar">
+    <button class="tab-btn active" data-tab="rename">1. Rename ASN (PDF)</button>
+    <button class="tab-btn" data-tab="pic2pdf">2. PIC to PDF</button>
+  </div>
+
+  <div class="tab-panels-wrap">
+
+  <div class="tab-panel" id="panelRename">
 
   <div class="dropzone" id="dropzone">
-    <div class="icon">📄</div>
-    <p><strong>Kéo & thả file PDF vào đây</strong></p>
-    <p>hoặc</p>
-    <button class="btn" id="chooseBtn">Chọn file PDF</button>
+    <div id="dzPrompt">
+      <div class="icon">📄</div>
+      <p><strong>Kéo & thả file PDF vào đây</strong></p>
+      <p>hoặc</p>
+      <button class="btn" id="chooseBtn">Chọn file PDF</button>
+    </div>
+    <div class="dz-fileinfo" id="dzFileInfo" style="display:none;">
+      <div class="dz-fileicon">📄</div>
+      <div class="dz-filetext">
+        <div class="dz-filename" id="dzFilename"></div>
+        <div class="dz-filesize" id="dzFilesize"></div>
+      </div>
+      <button class="dz-changebtn" id="changeFileBtn" type="button">Đổi file khác</button>
+    </div>
     <input type="file" id="fileInput" accept="application/pdf">
   </div>
 
@@ -10279,7 +10444,7 @@ window.__ZX_READY = (function () {
   <div class="status" id="modeNote" style="display:none;">Giấy trắng A4 nên chọn chất lượng thường 1.5, Chất lượng cao 2.0 chỉ nên chọn cho giấy than. Chất lượng ảnh càng cao xữ lý càng lâu. Nếu trang nào không đọc được QR, file đó sẽ không đổi tên.</div>
   <div class="status" id="carbonNote" style="display:none;">Chế độ giấy than: tool tự tăng tương phản, làm đậm nét mực và nhị phân hoá vùng QR rồi quét bằng engine ZBar (mạnh hơn nhiều so với chế độ 2), tự tìm QR cả khi nằm lệch trái. <strong>Không cần chỉnh tăng sáng hay tăng chất lượng render</strong> — cứ để 1.5x/2x, phần quét QR luôn tự render riêng ở độ nét cao. Trang nào vẫn không đọc được sẽ giữ tên theo số trang.</div>
   <div class="status" id="promaxNote" style="display:none;">⚡Cris: Chế độ mạnh nhất, kết hợp cả bộ xử lý của chế độ 3. Cân được mọi loại: scan thường, giấy than mờ nhạt, mực lem đậm dính ô, QR lệch vị trí. Chậm hơn chế độ 2/3 một chút. Trang nào vẫn không đọc được sẽ giữ tên theo số trang.</div>
-  <div class="status" id="folderStatus"></div>
+  <div class="folder-badge" id="folderStatus"><span class="chk">✓</span><span id="folderStatusText"></span></div>
 
   <div class="progress-bar" id="progressBar"><div id="progressFill"></div></div>
   <div class="status" id="status"></div>
@@ -10297,6 +10462,36 @@ window.__ZX_READY = (function () {
 
   <div class="grid" id="grid"></div>
 
+  </div>
+
+  <div class="tab-panel" id="panelPic2pdf" style="display:none;">
+
+    <div class="dropzone" id="dropzonePics">
+      <div class="icon">🖼️</div>
+      <p><strong>Chọn nhiều ảnh để gộp thành PDF</strong></p>
+      <p>Trên máy tính sẽ mở trình duyệt file, trên điện thoại sẽ mở thư viện ảnh</p>
+      <button class="btn" id="choosePicsBtn">Chọn ảnh</button>
+      <input type="file" id="picsInput" accept="image/*" multiple>
+    </div>
+
+    <div class="status" id="picsStatus"></div>
+
+    <div class="pic-toolbar" id="picToolbar" style="display:none;">
+      <span id="picCount" style="font-size:14px; color:#444;"></span>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn secondary" id="addMorePicsBtn">+ Thêm ảnh</button>
+        <button class="btn secondary" id="removeSelectedBtn" disabled>Xoá ảnh đã chọn</button>
+        <button class="btn" id="makePdfBtn" disabled>Tạo file PDF</button>
+      </div>
+    </div>
+    <div class="pic-empty-hint" id="picEmptyHint" style="display:none;">Tick vào ảnh muốn xoá, ảnh sẽ được ghép vào PDF theo đúng thứ tự hiện trên lưới (số thứ tự góc trái mỗi ảnh).</div>
+
+    <div class="pic-grid" id="picGrid"></div>
+
+  </div>
+
+  </div>
+
   <footer>Designed by Cris.</footer>
 </div>
 
@@ -10304,6 +10499,11 @@ window.__ZX_READY = (function () {
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
 const dropzone = document.getElementById('dropzone');
+const dzPrompt = document.getElementById('dzPrompt');
+const dzFileInfo = document.getElementById('dzFileInfo');
+const dzFilename = document.getElementById('dzFilename');
+const dzFilesize = document.getElementById('dzFilesize');
+const changeFileBtn = document.getElementById('changeFileBtn');
 const fileInput = document.getElementById('fileInput');
 const chooseBtn = document.getElementById('chooseBtn');
 const controls = document.getElementById('controls');
@@ -10317,6 +10517,7 @@ const resultCount = document.getElementById('resultCount');
 const downloadZipBtn = document.getElementById('downloadZipBtn');
 const pickFolderBtn = document.getElementById('pickFolderBtn');
 const folderStatus = document.getElementById('folderStatus');
+const folderStatusText = document.getElementById('folderStatusText');
 
 let dirHandle = null;
 const supportsFS = 'showDirectoryPicker' in window;
@@ -10326,10 +10527,20 @@ if (!supportsFS) {
   pickFolderBtn.disabled = true;
 }
 
+function setFolderBadge(name){
+  if (name){
+    folderStatusText.textContent = `Sẽ lưu ảnh trực tiếp vào thư mục "${name}" — không cần bấm tải từng file.`;
+    folderStatus.classList.add('show');
+  } else {
+    folderStatus.classList.remove('show');
+    folderStatusText.textContent = '';
+  }
+}
+
 pickFolderBtn.addEventListener('click', async () => {
   try {
     dirHandle = await window.showDirectoryPicker();
-    folderStatus.textContent = `Sẽ lưu ảnh trực tiếp vào thư mục: "${dirHandle.name}" — không cần bấm tải từng file.`;
+    setFolderBadge(dirHandle.name);
   } catch (err) {
     if (err.name !== 'AbortError') console.error(err);
   }
@@ -10368,16 +10579,25 @@ function setFile(file) {
     return;
   }
   currentFile = file;
-  status.textContent = `Đã chọn: ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+  dzPrompt.style.display = 'none';
+  dzFileInfo.style.display = 'flex';
+  dzFilename.textContent = file.name;
+  dzFilesize.textContent = `${(file.size/1024/1024).toFixed(2)} MB`;
+  status.textContent = '';
   controls.style.display = 'flex';
   grid.innerHTML = '';
   topActions.style.display = 'none';
   images = [];
-  folderStatus.textContent = dirHandle ? `Sẽ lưu ảnh trực tiếp vào thư mục: "${dirHandle.name}".` : '';
+  setFolderBadge(dirHandle ? dirHandle.name : null);
 }
 
 chooseBtn.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', e => setFile(e.target.files[0]));
+changeFileBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  fileInput.value = '';
+  fileInput.click();
+});
 
 ['dragenter','dragover'].forEach(evt =>
   dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add('drag'); })
@@ -10390,7 +10610,7 @@ dropzone.addEventListener('drop', e => {
   setFile(file);
 });
 dropzone.addEventListener('click', (e) => {
-  if (e.target === chooseBtn) return;
+  if (e.target === chooseBtn || e.target === changeFileBtn) return;
   fileInput.click();
 });
 
@@ -10811,6 +11031,183 @@ downloadZipBtn.addEventListener('click', async () => {
   a.remove();
   downloadZipBtn.disabled = false;
   downloadZipBtn.textContent = 'Tải tất cả (.zip)';
+});
+
+/* ==================== TAB SWITCHING — hiệu ứng lật thẻ xoáy ==================== */
+const tabbar = document.getElementById('tabbar');
+const panelRename = document.getElementById('panelRename');
+const panelPic2pdf = document.getElementById('panelPic2pdf');
+let currentTab = 'rename';
+let tabAnimating = false;
+
+function switchTab(target) {
+  if (target === currentTab || tabAnimating) return;
+  tabAnimating = true;
+  const outEl = currentTab === 'rename' ? panelRename : panelPic2pdf;
+  const inEl  = target === 'rename' ? panelRename : panelPic2pdf;
+
+  tabbar.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === target));
+
+  outEl.classList.remove('flip-in');
+  outEl.classList.add('flip-out');
+
+  setTimeout(() => {
+    outEl.style.display = 'none';
+    outEl.classList.remove('flip-out');
+    inEl.style.display = 'block';
+    // buộc reflow để animation flip-in chạy lại từ đầu mỗi lần
+    void inEl.offsetWidth;
+    inEl.classList.add('flip-in');
+    setTimeout(() => {
+      inEl.classList.remove('flip-in');
+      tabAnimating = false;
+    }, 500);
+    currentTab = target;
+  }, 480);
+}
+tabbar.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+/* ==================== CHỨC NĂNG 2: PIC to PDF ==================== */
+const dropzonePics = document.getElementById('dropzonePics');
+const picsInput = document.getElementById('picsInput');
+const choosePicsBtn = document.getElementById('choosePicsBtn');
+const picsStatus = document.getElementById('picsStatus');
+const picToolbar = document.getElementById('picToolbar');
+const picCount = document.getElementById('picCount');
+const picGrid = document.getElementById('picGrid');
+const picEmptyHint = document.getElementById('picEmptyHint');
+const addMorePicsBtn = document.getElementById('addMorePicsBtn');
+const removeSelectedBtn = document.getElementById('removeSelectedBtn');
+const makePdfBtn = document.getElementById('makePdfBtn');
+
+let picItems = []; // {id, file, url}
+let picIdSeq = 0;
+
+function addPicFiles(fileList) {
+  const files = Array.from(fileList || []).filter(f => /^image\//.test(f.type));
+  if (!files.length) return;
+  files.forEach(f => {
+    const id = 'pic_' + (picIdSeq++);
+    const url = URL.createObjectURL(f);
+    picItems.push({ id, file: f, url });
+  });
+  renderPicGrid();
+}
+
+function makePicCard(item, idx) {
+  const card = document.createElement('div');
+  card.className = 'pic-card';
+  card.innerHTML = `
+    <div class="pic-order">${idx + 1}</div>
+    <label class="pic-check">
+      <input type="checkbox" data-id="${item.id}">
+      <span></span>
+    </label>
+    <img src="${item.url}" alt="${item.file.name}" loading="lazy">`;
+  return card;
+}
+
+function renderPicGrid() {
+  picGrid.innerHTML = '';
+  picItems.forEach((item, idx) => picGrid.appendChild(makePicCard(item, idx)));
+  const has = picItems.length > 0;
+  picToolbar.style.display = has ? 'flex' : 'none';
+  picEmptyHint.style.display = has ? 'block' : 'none';
+  picCount.textContent = has ? `${picItems.length} ảnh đã chọn` : '';
+  makePdfBtn.disabled = !has;
+  updateRemoveBtnState();
+}
+
+function updateRemoveBtnState() {
+  const anyChecked = picGrid.querySelectorAll('input[type=checkbox]:checked').length > 0;
+  removeSelectedBtn.disabled = !anyChecked;
+}
+picGrid.addEventListener('change', (e) => {
+  if (e.target.matches('input[type=checkbox]')) updateRemoveBtnState();
+});
+removeSelectedBtn.addEventListener('click', () => {
+  const checked = new Set(
+    Array.from(picGrid.querySelectorAll('input[type=checkbox]:checked')).map(cb => cb.dataset.id)
+  );
+  if (!checked.size) return;
+  picItems.forEach(item => { if (checked.has(item.id)) URL.revokeObjectURL(item.url); });
+  picItems = picItems.filter(item => !checked.has(item.id));
+  renderPicGrid();
+  picsStatus.textContent = '';
+});
+
+choosePicsBtn.addEventListener('click', () => picsInput.click());
+addMorePicsBtn.addEventListener('click', () => picsInput.click());
+picsInput.addEventListener('change', (e) => { addPicFiles(e.target.files); picsInput.value = ''; });
+
+['dragenter', 'dragover'].forEach(evt =>
+  dropzonePics.addEventListener(evt, e => { e.preventDefault(); dropzonePics.classList.add('drag'); })
+);
+['dragleave', 'drop'].forEach(evt =>
+  dropzonePics.addEventListener(evt, e => { e.preventDefault(); dropzonePics.classList.remove('drag'); })
+);
+dropzonePics.addEventListener('drop', e => addPicFiles(e.dataTransfer.files));
+dropzonePics.addEventListener('click', (e) => {
+  if (e.target === choosePicsBtn) return;
+  picsInput.click();
+});
+
+function loadImageEl(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Không đọc được file ảnh: ' + file.name));
+    img.src = URL.createObjectURL(file);
+  });
+}
+function imageElToJpegDataURL(img) {
+  const c = document.createElement('canvas');
+  c.width = img.naturalWidth;
+  c.height = img.naturalHeight;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, c.width, c.height); // nền trắng cho ảnh PNG/WEBP có nền trong suốt
+  ctx.drawImage(img, 0, 0);
+  return c.toDataURL('image/jpeg', 0.92);
+}
+
+makePdfBtn.addEventListener('click', async () => {
+  if (!picItems.length) return;
+  makePdfBtn.disabled = true;
+  addMorePicsBtn.disabled = true;
+  removeSelectedBtn.disabled = true;
+  const origText = makePdfBtn.textContent;
+  try {
+    const { jsPDF } = window.jspdf;
+    let doc = null;
+    for (let i = 0; i < picItems.length; i++) {
+      const item = picItems[i];
+      makePdfBtn.textContent = `Đang xử lý ${i + 1}/${picItems.length}…`;
+      picsStatus.textContent = `Đang ghép ảnh ${i + 1}/${picItems.length} vào PDF…`;
+      const img = await loadImageEl(item.file);
+      const w = img.naturalWidth, h = img.naturalHeight;
+      const dataUrl = imageElToJpegDataURL(img);
+      const orientation = w >= h ? 'landscape' : 'portrait';
+      if (!doc) {
+        doc = new jsPDF({ orientation, unit: 'px', format: [w, h], compress: true });
+      } else {
+        doc.addPage([w, h], orientation);
+      }
+      doc.addImage(dataUrl, 'JPEG', 0, 0, w, h);
+    }
+    doc.save('gop-anh-thanh-pdf.pdf');
+    picsStatus.textContent = `Đã tạo xong file PDF gồm ${picItems.length} trang.`;
+  } catch (err) {
+    console.error('[PIC to PDF] Lỗi:', err);
+    picsStatus.textContent = 'Có lỗi khi tạo PDF: ' + (err.message || err) + ' — mở Console (F12) để xem chi tiết.';
+  } finally {
+    makePdfBtn.disabled = picItems.length === 0;
+    addMorePicsBtn.disabled = false;
+    updateRemoveBtnState();
+    makePdfBtn.textContent = origText;
+  }
 });
 </script>
 </body>
