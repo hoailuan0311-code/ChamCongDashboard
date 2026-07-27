@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Warehouse HR · RYOBI Củ Chi</title>
+<title>Warehouse HR · RYOBI Cu Chi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════
    RYOBI WAREHOUSE HR  ·  design tokens
-   Palette lấy từ nhận diện RYOBI (đen + lime) và ngôn ngữ kho:
-   thép mạ, vạch kẻ sàn, áo phản quang, đèn quét mã vạch.
+   Palette drawn from the RYOBI identity (black + lime) and the warehouse
+   vernacular: galvanised steel, floor tape, hi-vis vests, barcode scanners.
 ═══════════════════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -41,36 +41,66 @@ body{font-family:var(--body);background:var(--ink);color:var(--txt);min-height:1
 ::-webkit-scrollbar-thumb:hover{background:#31404F}
 :focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:4px}
 
-/* ═══════════ NỀN ĐỘNG — sàn kho + đèn quét ═══════════ */
+/* ═══════════ ANIMATED BACKDROP — warehouse floor + scanner ═══════════ */
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
-  radial-gradient(1200px 700px at 78% -10%, #101822 0%, transparent 60%),
-  radial-gradient(900px 600px at 8% 110%, #0E1720 0%, transparent 62%),
-  var(--ink)}
-.bg-floor{position:absolute;left:-25%;right:-25%;bottom:-30%;height:110%;
+  linear-gradient(180deg,#05070A 0%,#080C12 46%,#0B1219 74%,#0D1A1E 100%)}
+
+/* Perspective floor — the strongest cue that this is a warehouse */
+.bg-floor{position:absolute;left:-60%;right:-60%;bottom:-6%;height:76%;
   background-image:
-    linear-gradient(rgba(190,214,47,.055) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(190,214,47,.055) 1px,transparent 1px);
-  background-size:64px 64px;
-  transform:perspective(760px) rotateX(69deg);
+    linear-gradient(rgba(190,214,47,.30) 1.5px,transparent 1.5px),
+    linear-gradient(90deg,rgba(190,214,47,.22) 1.5px,transparent 1.5px);
+  background-size:110px 110px;
+  transform:perspective(560px) rotateX(74deg);
   transform-origin:bottom center;
-  mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.35) 45%,transparent 82%);
-  -webkit-mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.35) 45%,transparent 82%);
-  animation:floorRoll 34s linear infinite}
-@keyframes floorRoll{to{background-position:0 640px}}
+  mask-image:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 34%,transparent 78%);
+  -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.55) 34%,transparent 78%);
+  animation:floorRoll 16s linear infinite}
+@keyframes floorRoll{to{background-position:0 110px,0 0}}
+
+/* Horizon light where the floor meets the racking */
+.bg-horizon{position:absolute;left:0;right:0;bottom:22%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(190,214,47,.55) 22%,rgba(62,208,232,.5) 78%,transparent);
+  box-shadow:0 0 60px 12px rgba(190,214,47,.16);animation:horizonBreathe 7s ease-in-out infinite}
+@keyframes horizonBreathe{50%{opacity:.45}}
+
+/* Racking uprights along both edges */
 .bg-rack{position:absolute;inset:0;
-  background-image:repeating-linear-gradient(90deg,transparent 0 148px,rgba(255,255,255,.022) 148px 150px);
-  mask-image:linear-gradient(to bottom,#000,transparent 62%);
-  -webkit-mask-image:linear-gradient(to bottom,#000,transparent 62%)}
-.bg-glow{position:absolute;border-radius:50%;filter:blur(120px);opacity:.5}
-.bg-glow.a{width:620px;height:620px;top:-220px;right:-140px;background:rgba(190,214,47,.13);animation:drift 26s var(--ease) infinite alternate}
-.bg-glow.b{width:520px;height:520px;bottom:-200px;left:-120px;background:rgba(62,208,232,.11);animation:drift 32s var(--ease) infinite alternate-reverse}
-@keyframes drift{to{transform:translate3d(70px,50px,0) scale(1.15)}}
-.bg-scan{position:absolute;left:0;right:0;height:2px;top:-2px;
-  background:linear-gradient(90deg,transparent,rgba(190,214,47,.55),transparent);
-  box-shadow:0 0 22px rgba(190,214,47,.4);animation:scan 11s linear infinite;opacity:.6}
-@keyframes scan{0%{top:-2px}70%,100%{top:104%}}
-.bg-grain{position:absolute;inset:0;opacity:.035;mix-blend-mode:overlay;
+  background-image:repeating-linear-gradient(90deg,
+    transparent 0 118px, rgba(190,214,47,.09) 118px 120px, rgba(255,255,255,.035) 120px 122px);
+  mask-image:linear-gradient(to right,#000 0 16%,transparent 30% 70%,#000 84% 100%);
+  -webkit-mask-image:linear-gradient(to right,#000 0 16%,transparent 30% 70%,#000 84% 100%)}
+
+/* Ambient colour */
+.bg-glow{position:absolute;border-radius:50%;filter:blur(110px)}
+.bg-glow.a{width:660px;height:660px;top:-230px;right:-130px;background:rgba(190,214,47,.30);
+  opacity:.9;animation:drift 22s var(--ease) infinite alternate}
+.bg-glow.b{width:560px;height:560px;bottom:-170px;left:-140px;background:rgba(62,208,232,.26);
+  opacity:.9;animation:drift 28s var(--ease) infinite alternate-reverse}
+.bg-glow.c{width:420px;height:420px;top:38%;left:44%;background:rgba(155,140,255,.14);
+  opacity:.8;animation:drift 34s var(--ease) infinite alternate}
+@keyframes drift{to{transform:translate3d(90px,60px,0) scale(1.2)}}
+
+/* Barcode-scanner sweep */
+.bg-scan{position:absolute;left:0;right:0;height:120px;top:-140px;
+  background:linear-gradient(180deg,transparent,rgba(190,214,47,.10) 62%,rgba(190,214,47,.75) 96%,transparent);
+  animation:scan 7.5s cubic-bezier(.5,0,.5,1) infinite}
+@keyframes scan{0%{top:-140px;opacity:0}8%{opacity:1}72%{opacity:1}88%,100%{top:106%;opacity:0}}
+
+/* Dust motes drifting up through the light */
+.bg-motes{position:absolute;inset:0}
+.bg-motes i{position:absolute;bottom:-14px;width:3px;height:3px;border-radius:50%;
+  background:rgba(190,214,47,.9);box-shadow:0 0 8px 2px rgba(190,214,47,.45);
+  animation:rise linear infinite}
+.bg-motes i:nth-child(even){background:rgba(62,208,232,.85);box-shadow:0 0 8px 2px rgba(62,208,232,.4)}
+@keyframes rise{0%{transform:translateY(0) translateX(0);opacity:0}
+  12%{opacity:.9}70%{opacity:.7}100%{transform:translateY(-102vh) translateX(38px);opacity:0}}
+
+.bg-grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* Keep the reading area calm despite the livelier backdrop */
+.bg-vignette{position:absolute;inset:0;
+  background:radial-gradient(ellipse 66% 58% at 50% 42%,rgba(5,7,10,.86) 0%,rgba(5,7,10,.5) 55%,transparent 100%)}
 
 /* ═══════════ LOGIN ═══════════ */
 #login{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
@@ -173,7 +203,7 @@ body{font-family:var(--body);background:var(--ink);color:var(--txt);min-height:1
 .sec .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
 
 /* Cards */
-.card{background:linear-gradient(168deg,rgba(26,34,45,.72),rgba(19,26,35,.86));border:1px solid var(--line);
+.card{background:linear-gradient(168deg,rgba(24,32,43,.88),rgba(16,22,30,.94));border:1px solid var(--line);
   border-radius:var(--r);position:relative;overflow:hidden;backdrop-filter:blur(6px)}
 .card.pad{padding:18px 20px}
 .stagger>*{animation:riseIn .5s var(--ease) both;animation-delay:calc(var(--i,0)*55ms)}
@@ -211,7 +241,7 @@ select.inp{cursor:pointer;appearance:none;padding-right:30px;
   background-repeat:no-repeat;background-position:right 11px center}
 </style>
 <style>
-/* ═══════════ HERO — "BẢNG ĐIỀU PHỐI CA" ═══════════ */
+/* ═══════════ HERO — THE SHIFT BOARD ═══════════ */
 .board{display:grid;grid-template-columns:1.45fr 1fr;gap:14px;margin-bottom:16px}
 .board-main{padding:24px 26px;display:flex;flex-direction:column;gap:20px}
 .board-main::before{content:'';position:absolute;inset:0;
@@ -231,7 +261,7 @@ select.inp{cursor:pointer;appearance:none;padding-right:30px;
 .delta-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);white-space:nowrap}
 .delta-row .num{font-family:var(--disp);font-size:17px;font-weight:800}
 
-/* Capacity bar = thanh tải của giá kệ */
+/* Capacity bar, read like a loaded pallet rack */
 .cap{display:flex;flex-direction:column;gap:9px}
 .cap-track{height:34px;border-radius:9px;background:var(--ink);border:1px solid var(--line2);
   display:flex;overflow:hidden;position:relative}
@@ -294,14 +324,14 @@ select.inp{cursor:pointer;appearance:none;padding-right:30px;
 .spark.go i{transform:scaleY(1)}
 .spark i:last-child{opacity:.95}
 
-/* ═══════════ CHARTS (thuần SVG/CSS) ═══════════ */
+/* ═══════════ CHARTS (hand-rolled SVG/CSS) ═══════════ */
 .grid2{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px 0}
 .card-head h4{font-family:var(--disp);font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--txt2)}
 .card-head p{font-size:11px;color:var(--txt3);margin-top:3px}
 
-/* Cột đôi vào/ra */
+/* Paired in/out columns */
 .flowchart{padding:18px 20px 14px;position:relative}
 .flow-bars{display:flex;align-items:flex-end;gap:6px;height:170px;padding-bottom:22px;position:relative}
 .flow-mid{position:absolute;left:0;right:0;bottom:22px;height:1px;background:var(--line2)}
@@ -389,6 +419,35 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 .pager button.on{background:var(--lime);border-color:var(--lime);color:#0A0C10;font-weight:700}
 .pager button:disabled{opacity:.3;cursor:not-allowed}
 .pager span{font-family:var(--mono);font-size:11px;color:var(--txt3);margin:0 8px}
+
+/* ═══════════ REPORT ═══════════ */
+input[type=date].inp{color-scheme:dark;font-family:var(--mono);font-size:12px}
+.filters label{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-size:10px;
+  font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--txt3)}
+table.tbl thead th small{display:block;font-family:var(--mono);font-size:9px;font-weight:400;
+  letter-spacing:.02em;color:var(--txt3);text-transform:none;margin-top:3px}
+table.tbl thead th.numcol,table.tbl td.numcol{text-align:center}
+table.tbl tfoot td{padding:13px;border-top:2px solid var(--lime-b);background:#151E1A;
+  font-family:var(--disp);font-weight:800;font-size:13px;color:var(--txt);text-align:center;
+  position:sticky;bottom:0;z-index:2}
+table.tbl tfoot td:first-child{text-align:left;letter-spacing:.1em;text-transform:uppercase;font-size:11px}
+#tbl-report tbody tr{cursor:default}
+#tbl-report tbody tr:hover td:first-child{box-shadow:none}
+.rep-t{color:var(--txt);font-weight:500}
+.rep-split{font-size:10px;font-weight:700;padding:1px 6px;border-radius:99px;margin-left:7px;letter-spacing:.04em}
+.rep-fg{background:var(--grape-s);color:var(--grape);border:1px solid rgba(155,140,255,.3)}
+.rep-rma{background:var(--sig-s);color:var(--sig);border:1px solid rgba(62,208,232,.3)}
+.rep-n{font-family:var(--disp);font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.rep-zero{color:var(--txt3);font-weight:400;font-family:var(--mono);font-size:12px}
+.res-names{display:flex;flex-wrap:wrap;gap:4px;max-width:440px}
+.res-names span{font-size:10.5px;padding:2px 8px;border-radius:99px;background:var(--alert-s);
+  color:#FFA8A8;border:1px solid rgba(255,92,92,.24);white-space:nowrap}
+.qr{display:flex;gap:2px;background:var(--ink);border:1px solid var(--line2);border-radius:99px;padding:2px}
+.qr button{padding:5px 11px;border-radius:99px;border:none;background:none;color:var(--txt3);
+  font-family:var(--disp);font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.qr button:hover{color:var(--txt)}
+.qr button.on{background:var(--lime);color:#0A0C10}
 
 /* ═══════════ DRAWER ═══════════ */
 .scrim{position:fixed;inset:0;background:rgba(4,6,9,.62);backdrop-filter:blur(4px);z-index:200;
@@ -478,7 +537,7 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 .node-st i{font-family:var(--mono);font-size:8.5px;color:var(--txt3);font-style:normal;letter-spacing:.04em}
 .node-bd{font-size:10px;color:var(--txt3);margin-top:8px;line-height:1.55}
 
-/* Sơ đồ cây */
+/* Tree view */
 .tree-scroll{overflow-x:auto;padding:26px 16px 34px}
 .tree,.tree ul,.tree li{position:relative}
 .tree ul{display:flex;justify-content:center;list-style:none;padding:0}
@@ -565,32 +624,36 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 </head>
 <body>
 
-<!-- ═══ NỀN ĐỘNG ═══ -->
+<!-- ═══ ANIMATED BACKDROP ═══ -->
 <div class="bg" aria-hidden="true">
-  <div class="bg-rack"></div>
-  <div class="bg-floor"></div>
   <div class="bg-glow a"></div>
   <div class="bg-glow b"></div>
+  <div class="bg-glow c"></div>
+  <div class="bg-rack"></div>
+  <div class="bg-floor"></div>
+  <div class="bg-horizon"></div>
+  <div class="bg-motes" id="motes"></div>
   <div class="bg-scan"></div>
+  <div class="bg-vignette"></div>
   <div class="bg-grain"></div>
 </div>
 
 <!-- ═══ BOOT ═══ -->
-<div id="boot"><div class="loader"></div><div class="boot-t" id="boot-t">Đang nạp dữ liệu nhân sự</div></div>
+<div id="boot"><div class="loader"></div><div class="boot-t" id="boot-t">Loading employee data</div></div>
 
-<!-- ═══ ĐĂNG NHẬP ═══ -->
+<!-- ═══ SIGN IN ═══ -->
 <div id="login">
   <div class="login-card">
     <div class="brand">
       <div class="brand-mark"><i></i></div>
-      <div class="brand-txt"><h1>Warehouse HR</h1><p>RYOBI · Củ Chi</p></div>
+      <div class="brand-txt"><h1>Warehouse HR</h1><p>RYOBI · Cu Chi</p></div>
     </div>
-    <div class="fld"><label for="inp-user">Tài khoản</label>
-      <input id="inp-user" type="text" placeholder="Nhập tài khoản" autocomplete="username"></div>
-    <div class="fld"><label for="inp-pass">Mật khẩu</label>
-      <input id="inp-pass" type="password" placeholder="Nhập mật khẩu" autocomplete="current-password"></div>
-    <div class="login-err" id="login-err">Tài khoản hoặc mật khẩu không đúng</div>
-    <button class="btn-primary" id="btn-login">Đăng nhập</button>
+    <div class="fld"><label for="inp-user">Username</label>
+      <input id="inp-user" type="text" placeholder="Enter username" autocomplete="username"></div>
+    <div class="fld"><label for="inp-pass">Password</label>
+      <input id="inp-pass" type="password" placeholder="Enter password" autocomplete="current-password"></div>
+    <div class="login-err" id="login-err">Wrong username or password</div>
+    <button class="btn-primary" id="btn-login">Sign in</button>
     <div class="login-foot">TTI Group · Warehouse Operations Vietnam</div>
   </div>
 </div>
@@ -602,36 +665,37 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
     <div class="topbar-in">
       <div class="tb-brand">
         <div class="brand-mark"><i></i></div>
-        <div><div class="tb-title">Warehouse HR</div><div class="tb-sub" id="tb-sub">RYOBI · Củ Chi</div></div>
+        <div><div class="tb-title">Warehouse HR</div><div class="tb-sub" id="tb-sub">RYOBI · Cu Chi</div></div>
       </div>
       <div class="tb-spacer"></div>
       <button class="search-trigger" id="btn-cmd">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <span>Tìm nhân viên, tổ trưởng…</span><kbd>Ctrl K</kbd>
+        <span>Search employee, leader…</span><kbd>Ctrl K</kbd>
       </button>
-      <button class="icon-btn" id="btn-refresh" title="Tải lại dữ liệu">
+      <button class="icon-btn" id="btn-refresh" title="Reload data">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
       </button>
-      <button class="icon-btn" id="btn-export" title="Xuất Excel toàn bộ">
+      <button class="icon-btn" id="btn-export" title="Export everything to Excel">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
       </button>
-      <button class="icon-btn" id="btn-undo" title="Hoàn tác điều chuyển" style="display:none;color:var(--hivis)">
+      <button class="icon-btn" id="btn-undo" title="Undo transfers" style="display:none;color:var(--hivis)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 103-6.7L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
       <div class="who" id="who"><b id="who-i">?</b><span id="who-n"></span></div>
-      <button class="icon-btn" id="btn-logout" title="Đăng xuất">
+      <button class="icon-btn" id="btn-logout" title="Sign out">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
       </button>
     </div>
   </header>
 
   <nav class="rail"><div class="rail-in" id="rail">
-    <button class="tab on" data-tab="overview">Tổng quan</button>
-    <button class="tab" data-tab="people">Nhân sự <span class="cnt" id="cnt-people">0</span></button>
-    <button class="tab" data-tab="org">Sơ đồ tổ chức</button>
-    <button class="tab" data-tab="move">Biến động <span class="cnt" id="cnt-move">0</span></button>
-    <button class="tab" data-tab="vendor">Nhà thầu <span class="cnt" id="cnt-vendor">0</span></button>
-    <button class="tab" data-tab="tenure">Thâm niên</button>
+    <button class="tab on" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="people">People <span class="cnt" id="cnt-people">0</span></button>
+    <button class="tab" data-tab="org">Org Chart</button>
+    <button class="tab" data-tab="move">Movement <span class="cnt" id="cnt-move">0</span></button>
+    <button class="tab" data-tab="vendor">Vendors <span class="cnt" id="cnt-vendor">0</span></button>
+    <button class="tab" data-tab="tenure">Tenure</button>
+    <button class="tab" data-tab="report">Report</button>
   </div></nav>
 
   <div class="wrap">
@@ -640,11 +704,11 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span class="tag t-sig">Power BI</span>
         <div id="pbi-tags" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-        <span style="margin-left:auto;font-size:11px;color:var(--txt3)">Dữ liệu đang được lọc từ slicer bên ngoài</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--txt3)">Data is being filtered by an external slicer</span>
       </div>
     </div>
 
-    <!-- ═════ TỔNG QUAN ═════ -->
+    <!-- ═════ OVERVIEW ═════ -->
     <section class="view on" id="v-overview">
       <div class="board">
         <div class="card board-main">
@@ -667,10 +731,10 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 
         <div class="card board-side">
           <div class="gauge-head">
-            <div><h4>Tỷ lệ nhân sự chính thức</h4><p id="gauge-scope-lbl">So với mục tiêu 60%</p></div>
+            <div><h4>Permanent staff ratio</h4><p id="gauge-scope-lbl">Against the 60% target</p></div>
             <div class="scope-sw" id="gauge-scope">
               <button class="on" data-scope="dl">Shift Keeper</button>
-              <button data-scope="all">Toàn bộ</button>
+              <button data-scope="all">Everyone</button>
             </div>
           </div>
           <div class="gauge-wrap">
@@ -685,79 +749,79 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
             </svg>
             <div class="gauge-center">
               <div class="gauge-val"><span id="gauge-val" data-count="0">0</span><em>%</em></div>
-              <div class="gauge-lbl">chính thức</div>
+              <div class="gauge-lbl">permanent</div>
             </div>
           </div>
           <div class="gauge-foot">
-            <div><div class="k">Khoảng cách tới mục tiêu</div><div class="v" id="gauge-gap">—</div></div>
-            <div style="text-align:right"><div class="k">Mốc mục tiêu</div><div class="v" style="color:var(--hivis)" id="gauge-target-lbl">60%</div></div>
+            <div><div class="k">Gap to target</div><div class="v" id="gauge-gap">—</div></div>
+            <div style="text-align:right"><div class="k">Target</div><div class="v" style="color:var(--hivis)" id="gauge-target-lbl">60%</div></div>
           </div>
         </div>
       </div>
 
       <div class="chips stagger" id="chips"></div>
 
-      <div class="sec"><h3>Dòng chảy nhân sự 12 tháng</h3><span class="hint">vào ↑ / nghỉ ↓</span><div class="rule"></div></div>
+      <div class="sec"><h3>Headcount flow · 12 months</h3><span class="hint">joiners ↑ / leavers ↓</span><div class="rule"></div></div>
       <div class="grid2">
         <div class="card">
-          <div class="card-head"><div><h4>Tuyển vào &amp; nghỉ việc</h4><p id="flow-sub">—</p></div>
+          <div class="card-head"><div><h4>Joiners &amp; leavers</h4><p id="flow-sub">—</p></div>
             <div style="display:flex;gap:14px">
-              <span class="cap-leg"><i style="background:#CFE84A"></i>Vào</span>
-              <span class="cap-leg"><i style="background:#FF7A1A"></i>Nghỉ</span>
+              <span class="cap-leg"><i style="background:#CFE84A"></i>In</span>
+              <span class="cap-leg"><i style="background:#FF7A1A"></i>Out</span>
             </div>
           </div>
           <div class="flowchart"><div class="flow-bars" id="flow-bars"></div><div class="flow-mid"></div></div>
         </div>
         <div class="card">
-          <div class="card-head"><div><h4>Cần chú ý</h4><p>Việc cần xử lý trong 30 ngày tới</p></div></div>
+          <div class="card-head"><div><h4>Needs attention</h4><p>Items to handle in the next 30 days</p></div></div>
           <div class="alerts" id="alerts"></div>
         </div>
       </div>
 
-      <div class="sec"><h3>Tải nhân sự theo Supervisor</h3><span class="hint">bấm để mở danh sách</span><div class="rule"></div></div>
+      <div class="sec"><h3>Headcount load by supervisor</h3><span class="hint">click to open the list</span><div class="rule"></div></div>
       <div class="grid2">
         <div class="card"><div class="rank" id="rank-sup"></div></div>
         <div class="card">
-          <div class="card-head"><div><h4>Phân bổ theo BU &amp; Manager</h4><p>Cơ cấu chính thức / thuê ngoài</p></div></div>
+          <div class="card-head"><div><h4>Split by BU &amp; manager</h4><p>Permanent vs outsourced mix</p></div></div>
           <div class="split" id="split-bu"></div>
         </div>
       </div>
     </section>
 
-    <!-- ═════ NHÂN SỰ ═════ -->
+    <!-- ═════ PEOPLE ═════ -->
     <section class="view" id="v-people">
       <div class="card filters">
-        <input class="inp grow" id="f-q" placeholder="Tìm theo tên, mã NV, chức danh…">
+        <input class="inp grow" id="f-q" placeholder="Search by name, ID or job title…">
         <select class="inp" id="f-bu"></select>
         <select class="inp" id="f-sup"></select>
         <select class="inp" id="f-leader"></select>
         <select class="inp" id="f-type">
-          <option value="">Mọi loại HĐ</option><option value="perm">Chính thức</option><option value="out">Thuê ngoài</option>
+          <option value="">All contracts</option><option value="perm">Permanent</option><option value="out">Outsourced</option>
         </select>
         <select class="inp" id="f-status">
-          <option value="">Mọi trạng thái</option><option value="active">Đang làm việc</option>
-          <option value="upcoming">Sắp nghỉ</option><option value="left">Đã nghỉ</option><option value="new">Mới vào (&lt;60 ngày)</option>
+          <option value="">All statuses</option><option value="active">Active</option>
+          <option value="upcoming">Leaving</option><option value="left">Left</option><option value="new">New joiner (&lt;60 days)</option>
         </select>
         <select class="inp" id="f-tenure">
-          <option value="">Mọi thâm niên</option><option value="0">Dưới 3 tháng</option><option value="1">3–6 tháng</option>
-          <option value="2">6–12 tháng</option><option value="3">1–2 năm</option><option value="4">2–5 năm</option><option value="5">Trên 5 năm</option>
+          <option value="">All tenures</option><option value="0">Under 3 months</option><option value="1">3–6 months</option>
+          <option value="2">6–12 months</option><option value="3">1–2 years</option><option value="4">2–5 years</option><option value="5">Over 5 years</option>
         </select>
-        <button class="btn ghost sm" id="f-clear">Xoá lọc</button>
-        <div class="chipcount"><b id="f-count">0</b> / <span id="f-total">0</span> nhân viên</div>
-        <button class="btn sm" id="f-export">Xuất Excel</button>
+        <button class="btn ghost sm" id="f-clear">Clear</button>
+        <div class="chipcount"><b id="f-count">0</b> / <span id="f-total">0</span> employees</div>
+        <button class="btn sm" id="f-export">Export Excel</button>
       </div>
       <div class="card tbl-wrap">
         <table class="tbl" id="tbl-people">
           <thead><tr>
-            <th data-sk="id">Mã <span class="sort">▲</span></th>
-            <th data-sk="name">Nhân viên <span class="sort">▲</span></th>
+            <th data-sk="id">ID <span class="sort">▲</span></th>
+            <th data-sk="name">Employee <span class="sort">▲</span></th>
             <th data-sk="bu">BU <span class="sort">▲</span></th>
             <th data-sk="sup">Supervisor <span class="sort">▲</span></th>
-            <th data-sk="leader">Tổ trưởng <span class="sort">▲</span></th>
-            <th data-sk="type">Loại HĐ <span class="sort">▲</span></th>
-            <th data-sk="join">Ngày vào <span class="sort">▲</span></th>
-            <th data-sk="tenure">Thâm niên <span class="sort">▲</span></th>
-            <th class="nosort">Trạng thái</th>
+            <th data-sk="leader">Team Leader <span class="sort">▲</span></th>
+            <th data-sk="type">Contract <span class="sort">▲</span></th>
+            <th data-sk="join">Join date <span class="sort">▲</span></th>
+            <th data-sk="tenure">Tenure <span class="sort">▲</span></th>
+            <th class="nosort">Status</th>
           </tr></thead>
           <tbody id="tb-people"></tbody>
         </table>
@@ -765,22 +829,22 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
       <div class="pager" id="pager"></div>
     </section>
 
-    <!-- ═════ SƠ ĐỒ TỔ CHỨC ═════ -->
+    <!-- ═════ ORG CHART ═════ -->
     <section class="view" id="v-org">
       <div class="org-banner">
         <div class="ob-left"><div class="ob-logo"><b>RYOBI</b></div></div>
-        <div class="ob-mid"><h3>Ryobi Warehouse Org-Chart</h3><p id="ob-sub">Vietnam Operations · 4 cấp: Manager → Supervisor → Tổ trưởng → Shift Keeper</p></div>
+        <div class="ob-mid"><h3>Ryobi Warehouse Org-Chart</h3><p id="ob-sub">Vietnam Operations · 4 levels: Manager → Supervisor → Team Leader → Shift Keeper</p></div>
         <div class="ob-right"><span>TTi</span></div>
       </div>
       <div class="org-bar">
-        <input class="inp" id="org-q" placeholder="Tìm người trong sơ đồ…" style="width:250px">
-        <button class="btn lime sm" id="org-m-drill">Duyệt theo cấp</button>
-        <button class="btn sm" id="org-m-tree">Sơ đồ cây</button>
+        <input class="inp" id="org-q" placeholder="Search anyone in the chart…" style="width:250px">
+        <button class="btn lime sm" id="org-m-drill">Drill down</button>
+        <button class="btn sm" id="org-m-tree">Tree view</button>
         <div style="margin-left:auto;display:flex;gap:13px;flex-wrap:wrap">
           <span class="cap-leg"><i style="background:#3ED0E8"></i>CPT</span>
           <span class="cap-leg"><i style="background:#BED62F"></i>OP</span>
-          <span class="cap-leg"><i style="background:#9B8CFF"></i>Tổ trưởng</span>
-          <span class="cap-leg"><i style="background:#FF5C5C"></i>Có ngày nghỉ</span>
+          <span class="cap-leg"><i style="background:#9B8CFF"></i>Team Leader</span>
+          <span class="cap-leg"><i style="background:#FF5C5C"></i>Has leaving date</span>
         </div>
       </div>
       <div class="crumbs" id="crumbs"></div>
@@ -788,58 +852,94 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
       <div id="org-tree" style="display:none"></div>
     </section>
 
-    <!-- ═════ BIẾN ĐỘNG ═════ -->
+    <!-- ═════ MOVEMENT ═════ -->
     <section class="view" id="v-move">
       <div class="chips stagger" id="move-chips"></div>
-      <div class="sec"><h3>Sắp nghỉ việc</h3><span class="hint">theo ngày làm việc cuối cùng</span><div class="rule"></div>
+      <div class="sec"><h3>Upcoming leavers</h3><span class="hint">by last working day</span><div class="rule"></div>
         <div class="scope-sw" id="lwd-range">
-          <button class="on" data-d="30">30 ngày</button><button data-d="60">60 ngày</button><button data-d="90">90 ngày</button>
+          <button class="on" data-d="30">30 days</button><button data-d="60">60 days</button><button data-d="90">90 days</button>
         </div>
       </div>
       <div class="card tbl-wrap">
         <table class="tbl"><thead><tr>
-          <th class="nosort">Mã</th><th class="nosort">Nhân viên</th><th class="nosort">Supervisor</th>
-          <th class="nosort">Tổ trưởng</th><th class="nosort">Loại HĐ</th><th class="nosort">Ngày cuối</th>
-          <th class="nosort">Còn lại</th><th class="nosort">Thâm niên</th></tr></thead>
+          <th class="nosort">ID</th><th class="nosort">Employee</th><th class="nosort">Supervisor</th>
+          <th class="nosort">Team Leader</th><th class="nosort">Contract</th><th class="nosort">Last day</th>
+          <th class="nosort">Days left</th><th class="nosort">Tenure</th></tr></thead>
           <tbody id="tb-lwd"></tbody></table>
       </div>
-      <div class="sec"><h3>Tỷ lệ nghỉ việc &amp; tuyển mới theo Supervisor</h3><div class="rule"></div></div>
+      <div class="sec"><h3>Attrition &amp; hiring by supervisor</h3><div class="rule"></div></div>
       <div class="grid2">
-        <div class="card"><div class="card-head"><div><h4>Nghỉ việc 12 tháng</h4><p>Số người rời đi trên tổng quân số</p></div></div><div class="rank" id="rank-turn"></div></div>
-        <div class="card"><div class="card-head"><div><h4>Tuyển mới 90 ngày</h4><p>Người vào mới theo Supervisor</p></div></div><div class="rank" id="rank-new"></div></div>
+        <div class="card"><div class="card-head"><div><h4>Leavers · 12 months</h4><p>Leavers as a share of headcount</p></div></div><div class="rank" id="rank-turn"></div></div>
+        <div class="card"><div class="card-head"><div><h4>New hires · 90 days</h4><p>New joiners by supervisor</p></div></div><div class="rank" id="rank-new"></div></div>
       </div>
     </section>
 
-    <!-- ═════ NHÀ THẦU ═════ -->
+    <!-- ═════ VENDORS ═════ -->
     <section class="view" id="v-vendor">
       <div class="card pad" style="margin-bottom:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
         <div style="flex:1;min-width:220px">
-          <div style="font-family:var(--disp);font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--txt2)">Chất lượng dữ liệu</div>
+          <div style="font-family:var(--disp);font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--txt2)">Data quality</div>
           <div style="font-size:12px;color:var(--txt3);margin-top:5px" id="vendor-dq">—</div>
         </div>
-        <button class="btn sm" id="vendor-dq-btn">Xem chi tiết trùng tên</button>
+        <button class="btn sm" id="vendor-dq-btn">Show duplicate spellings</button>
       </div>
       <div class="node-grid" id="vendor-grid"></div>
     </section>
 
-    <!-- ═════ THÂM NIÊN ═════ -->
+    <!-- ═════ TENURE ═════ -->
     <section class="view" id="v-tenure">
       <div class="grid2">
-        <div class="card"><div class="card-head"><div><h4>Phân bố thâm niên</h4><p>Toàn bộ nhân sự đang làm việc</p></div></div><div class="rank" id="rank-tenure"></div></div>
-        <div class="card"><div class="card-head"><div><h4>Cơ cấu chức danh</h4><p>Tháp nhân sự theo cấp bậc</p></div></div><div class="rank" id="rank-title"></div></div>
+        <div class="card"><div class="card-head"><div><h4>Tenure distribution</h4><p>All employees currently working</p></div></div><div class="rank" id="rank-tenure"></div></div>
+        <div class="card"><div class="card-head"><div><h4>Job title structure</h4><p>Staff pyramid by job level</p></div></div><div class="rank" id="rank-title"></div></div>
       </div>
-      <div class="sec"><h3>Hết thử việc trong 30 ngày tới</h3><span class="hint">tính từ ngày vào + 60 ngày</span><div class="rule"></div></div>
+      <div class="sec"><h3>Probation ending in the next 30 days</h3><span class="hint">join date plus 60 days</span><div class="rule"></div></div>
       <div class="card tbl-wrap">
-        <table class="tbl"><thead><tr><th class="nosort">Mã</th><th class="nosort">Nhân viên</th>
-          <th class="nosort">Supervisor</th><th class="nosort">Tổ trưởng</th><th class="nosort">Ngày vào</th>
-          <th class="nosort">Hết thử việc</th><th class="nosort">Còn lại</th></tr></thead>
+        <table class="tbl"><thead><tr><th class="nosort">ID</th><th class="nosort">Employee</th>
+          <th class="nosort">Supervisor</th><th class="nosort">Team Leader</th><th class="nosort">Join date</th>
+          <th class="nosort">Probation ends</th><th class="nosort">Days left</th></tr></thead>
           <tbody id="tb-probation"></tbody></table>
       </div>
-      <div class="sec"><h3>Kỷ niệm ngày vào công ty tháng này</h3><div class="rule"></div></div>
+      <div class="sec"><h3>Work anniversaries this month</h3><div class="rule"></div></div>
       <div class="card tbl-wrap">
-        <table class="tbl"><thead><tr><th class="nosort">Mã</th><th class="nosort">Nhân viên</th>
-          <th class="nosort">Supervisor</th><th class="nosort">Ngày vào</th><th class="nosort">Số năm</th></tr></thead>
+        <table class="tbl"><thead><tr><th class="nosort">ID</th><th class="nosort">Employee</th>
+          <th class="nosort">Supervisor</th><th class="nosort">Join date</th><th class="nosort">Years</th></tr></thead>
           <tbody id="tb-anniv"></tbody></table>
+      </div>
+    </section>
+
+    <!-- ═════ REPORT ═════ -->
+    <section class="view" id="v-report">
+      <div class="card filters">
+        <label>From <input type="date" class="inp" id="r-from"></label>
+        <label>To <input type="date" class="inp" id="r-to"></label>
+        <div class="qr" id="r-quick">
+          <button data-q="30">Last 30 days</button>
+          <button data-q="mtd">This month</button>
+          <button data-q="last">Last month</button>
+          <button data-q="ytd">Year to date</button>
+        </div>
+        <div class="chipcount" id="r-note">—</div>
+        <button class="btn sm" id="r-export">Export Excel</button>
+      </div>
+      <div class="card tbl-wrap">
+        <table class="tbl" id="tbl-report">
+          <thead><tr>
+            <th class="nosort">Headcount by title</th>
+            <th class="nosort numcol" id="rh-base">Opening HC</th>
+            <th class="nosort numcol" id="rh-new">New hire on board</th>
+            <th class="nosort numcol">Total HC</th>
+            <th class="nosort numcol" id="rh-res">Resignation submitted</th>
+            <th class="nosort numcol" id="rh-act">Active if excluded</th>
+            <th class="nosort">Details resignation</th>
+          </tr></thead>
+          <tbody id="tb-report"></tbody>
+          <tfoot id="tf-report"></tfoot>
+        </table>
+      </div>
+      <div style="font-size:11.5px;color:var(--txt3);margin-top:12px;line-height:1.6">
+        Opening HC counts everyone already on board at the From date. New hires joined after it, up to the To date.
+        Resignations are everyone with a last working day on or after the From date, including dates beyond the To date.
+        Warehouse Shift Keeper is split into FGs (everyone reporting up through Nguyễn Thị Kim Chi) and RMA (all others).
       </div>
     </section>
 
@@ -860,7 +960,7 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 <!-- ═══ COMMAND PALETTE ═══ -->
 <div class="cmd" id="cmd">
   <div class="cmd-box">
-    <input class="cmd-in" id="cmd-in" placeholder="Tìm nhân viên, supervisor, tổ trưởng…" autocomplete="off">
+    <input class="cmd-in" id="cmd-in" placeholder="Search employee, supervisor, team leader…" autocomplete="off">
     <div class="cmd-list" id="cmd-list"></div>
   </div>
 </div>
@@ -884,15 +984,15 @@ table.tbl tbody tr:hover td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
 <script>
 'use strict';
 /* ═══════════════════════════════════════════════════════════
-   WAREHOUSE HR · RYOBI Củ Chi
-   Bản dựng lại: 6 module quản trị nhân sự trên cùng 1 nguồn dữ liệu.
+   WAREHOUSE HR · RYOBI Cu Chi
+   Seven HR modules built on one data source.
 ═══════════════════════════════════════════════════════════ */
 const CONFIG = {
   DATA_URL:  'dataHRdashboard.js',
-  SITE:      'RYOBI · Củ Chi',
-  PERM_TARGET: 60,        // % mục tiêu nhân sự chính thức
-  PROBATION_DAYS: 60,     // số ngày thử việc
-  ALERT_DAYS: 30,         // cửa sổ cảnh báo
+  SITE:      'RYOBI · Cu Chi',
+  PERM_TARGET: 60,        // % permanent-staff target
+  PROBATION_DAYS: 60,     // probation length in days
+  ALERT_DAYS: 30,         // alert window
   PAGE_SIZE: 60,
   DL_TITLE:  'Warehouse Shift Keeper',
   ROOT:      'Luces Raquel Rubis'
@@ -912,12 +1012,12 @@ const VIRTUAL = [
 ];
 const BU_COLOR = { CPT:'#3ED0E8', OP:'#BED62F', D2:'#9B8CFF' };
 const TENURE_BUCKETS = [
-  { k:'0', label:'Dưới 3 tháng', max:90 },
-  { k:'1', label:'3 – 6 tháng',  max:182 },
-  { k:'2', label:'6 – 12 tháng', max:365 },
-  { k:'3', label:'1 – 2 năm',    max:730 },
-  { k:'4', label:'2 – 5 năm',    max:1826 },
-  { k:'5', label:'Trên 5 năm',   max:Infinity }
+  { k:'0', label:'Under 3 months', max:90 },
+  { k:'1', label:'3 – 6 months',  max:182 },
+  { k:'2', label:'6 – 12 months', max:365 },
+  { k:'3', label:'1 – 2 years',    max:730 },
+  { k:'4', label:'2 – 5 years',    max:1826 },
+  { k:'5', label:'Over 5 years',   max:Infinity }
 ];
 
 /* ─── STATE ─── */
@@ -925,9 +1025,9 @@ let RAW = [], VIEWDATA = [], ORG_CHILD = {}, ORG_PARENT = {}, ORG_NODE = {}, DES
 let TAB = 'overview', GAUGE_SCOPE = 'dl', LWD_RANGE = 30;
 let SORT = { key:'name', dir:1 }, PAGE = 1, FILTERED = [];
 let ORG_MODE = 'drill', ORG_CUR = CONFIG.ROOT, ORG_TRAIL = [];
-let CMD_SEL = 0, CMD_HITS = [];
+let CMD_SEL = 0, CMD_HITS = [], FGS = new Set(), REP_Q = '30';
 
-/* ═══════════ TIỆN ÍCH ═══════════ */
+/* ═══════════ HELPERS ═══════════ */
 const $  = (s,r) => (r||document).querySelector(s);
 const $$ = (s,r) => Array.from((r||document).querySelectorAll(s));
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -940,15 +1040,15 @@ function parseDate(s){
   if(!isNaN(n)){ if(n<=1000) return null; const d=new Date(Math.round((n-25569)*86400000)); d.setHours(0,0,0,0); return isNaN(d)?null:d; }
   const d=new Date(s); if(isNaN(d)) return null; d.setHours(0,0,0,0); return d;
 }
-function fmtDate(d){ if(!d) return '—'; return d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtDate(d){ if(!d) return '—'; return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
 function dayDiff(a,b){ return Math.round((a-b)/86400000); }
 function fmtTenure(days){
   if(days==null) return '—';
-  if(days<31) return days+' ngày';
+  if(days<31) return days+'d';
   const m=Math.floor(days/30.44);
-  if(m<12) return m+' tháng';
+  if(m<12) return m+'m';
   const y=Math.floor(days/365.25), rm=Math.floor((days-y*365.25)/30.44);
-  return y+' năm'+(rm?' '+rm+' th':'');
+  return y+'y'+(rm?' '+rm+'m':'');
 }
 function initials(n){
   const p=String(n||'?').trim().split(/\s+/);
@@ -975,17 +1075,17 @@ function countUp(el,to,dur){
   const from = Number(el.dataset.count||0), d = dur||900, t0 = performance.now();
   el.dataset.count = to;
   const still = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches;
-  if(still){ el.textContent = to.toLocaleString('vi-VN'); return; }
+  if(still){ el.textContent = to.toLocaleString('en-US'); return; }
   (function step(now){
     const p = clamp((now-t0)/d,0,1), e = 1-Math.pow(1-p,4);
-    el.textContent = Math.round(from+(to-from)*e).toLocaleString('vi-VN');
+    el.textContent = Math.round(from+(to-from)*e).toLocaleString('en-US');
     if(p<1) requestAnimationFrame(step);
   })(t0);
-  setTimeout(()=>{ el.textContent = to.toLocaleString('vi-VN'); }, d+90);
+  setTimeout(()=>{ el.textContent = to.toLocaleString('en-US'); }, d+90);
 }
 function paint(fn){ requestAnimationFrame(()=>requestAnimationFrame(fn)); setTimeout(fn,70); }
 
-/* ═══════════ LÀM GIÀU DỮ LIỆU ═══════════ */
+/* ═══════════ DATA ENRICHMENT ═══════════ */
 function enrich(list){
   const T = today();
   const probMs = CONFIG.PROBATION_DAYS;
@@ -997,9 +1097,9 @@ function enrich(list){
     e.title   = String(e.title||'').trim();
     e._join   = parseDate(e.join);
     e._lwd    = parseDate(e.lwd);
-    /* check='TTI' là chuẩn cũ; file hiện tại dùng type='Permanent' */
+    /* check='TTI' is the legacy flag; this data file uses type='Permanent' */
     e._perm   = (e.check==='TTI') || (String(e.type||'').trim().toLowerCase()==='permanent');
-    e._vendor = e._perm ? 'TTI — Chính thức' : (String(e.type||'').trim() || 'Không rõ');
+    e._vendor = e._perm ? 'TTI — Permanent' : (String(e.type||'').trim() || 'Unknown');
     e._vkey   = e._perm ? '__tti' : vendorKey(e.type);
     e._left   = !!(e._lwd && e._lwd < T);
     e._upcoming = !!(e._lwd && e._lwd >= T);
@@ -1012,19 +1112,19 @@ function enrich(list){
     e._tb     = e._tenure==null ? '' : TENURE_BUCKETS.find(b=>e._tenure<b.max).k;
     e._hay    = (e.name+' '+e.id+' '+e.title+' '+e.sup+' '+e.leader+' '+e._vendor).toLowerCase();
   });
-  /* Chuẩn hoá tên nhà thầu: lấy cách viết phổ biến nhất làm tên chính */
+  /* Normalise vendor names, keeping the most common spelling as canonical */
   const bag = {};
   list.forEach(e=>{ if(e._perm) return; (bag[e._vkey]=bag[e._vkey]||{})[e._vendor]=(bag[e._vkey][e._vendor]||0)+1; });
   const canon = {};
   Object.keys(bag).forEach(k=>{
     canon[k] = Object.entries(bag[k]).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))[0][0];
   });
-  list.forEach(e=>{ e._vendorC = e._perm ? 'TTI — Chính thức' : (canon[e._vkey] || e._vendor);
+  list.forEach(e=>{ e._vendorC = e._perm ? 'TTI — Permanent' : (canon[e._vkey] || e._vendor);
                     e._hay += ' ' + e._vendorC.toLowerCase(); });
   return list;
 }
 
-/* ═══════════ BỘ LỌC URL (Power BI) ═══════════ */
+/* ═══════════ URL FILTERS (Power BI) ═══════════ */
 function urlFilters(){
   const p = new URLSearchParams(location.search);
   const sp = k => p.has(k) ? p.get(k).split(',').map(s=>decodeURIComponent(s.trim())).filter(Boolean) : null;
@@ -1045,14 +1145,14 @@ function applyURL(){
   else bar.style.display='none';
 }
 
-/* ═══════════ ĐIỀU CHUYỂN (lưu cục bộ) ═══════════ */
+/* ═══════════ TRANSFERS (stored locally) ═══════════ */
 const TF_KEY = 'hr_transfers_v1';
 const tfLoad = () => { try{ return JSON.parse(localStorage.getItem(TF_KEY)||'{}'); }catch(_){ return {}; } };
 const tfSave = m => localStorage.setItem(TF_KEY,JSON.stringify(m));
 function tfApply(d){ const m=tfLoad(); d.forEach(e=>{ if(m[String(e.id)]) e.sup=m[String(e.id)]; }); return d; }
 function tfSync(){ $('#btn-undo').style.display = Object.keys(tfLoad()).length ? 'grid' : 'none'; }
 
-/* ═══════════ CÂY TỔ CHỨC (4 cấp, có tổ trưởng) ═══════════ */
+/* ═══════════ ORG TREE (4 levels, team leaders included) ═══════════ */
 function buildTree(){
   ORG_CHILD={}; ORG_PARENT={}; DESC={};
   const byName={};
@@ -1069,7 +1169,7 @@ function buildTree(){
     if(p === e.name) p = null;
     pref[e.name] = p || null;
   });
-  /* Phá vòng lặp: nếu chuỗi quản lý quay về chính mình thì rơi về supervisor */
+  /* Break cycles: if a reporting chain loops back, fall back to the supervisor */
   const walkCycle = n => {
     const seen=new Set([n]); let cur=pref[n], g=0;
     while(cur && g++<80){ if(seen.has(cur)) return true; seen.add(cur); cur=pref[cur]; }
@@ -1085,6 +1185,16 @@ function buildTree(){
   });
   Object.keys(ORG_CHILD).forEach(k=>ORG_CHILD[k].sort((a,b)=>countDesc(b.name)-countDesc(a.name)));
   ORG_NODE = byName;
+  markFGs();
+}
+const FGS_ROOT = 'Nguyễn Thị Kim Chi';
+function markFGs(){
+  FGS = new Set();
+  (function walk(n){
+    (ORG_CHILD[n]||[]).forEach(c=>{ if(!FGS.has(c.name)){ FGS.add(c.name); walk(c.name); } });
+  })(FGS_ROOT);
+  /* manager code is the fallback when a name is missing from the tree */
+  RAW.forEach(e=>{ e._fgs = FGS.has(e.name) || String(e.manager||'').indexOf('FGs')===0; });
 }
 function countDesc(n){
   if(DESC[n]!=null) return DESC[n];
@@ -1099,7 +1209,7 @@ function chainOf(name){
   return out;
 }
 
-/* ═══════════ TỔNG HỢP SỐ LIỆU ═══════════ */
+/* ═══════════ AGGREGATION ═══════════ */
 function summarize(){
   const T = today(), D = VIEWDATA;
   const active = D.filter(e=>e._active);
@@ -1135,12 +1245,13 @@ function summarize(){
   });
   const vendors = Object.values(vMap).sort((a,b)=>b.total-a.total);
 
-  /* 12 tháng gần nhất */
+  /* trailing 12 months */
   const months = [];
   for(let i=11;i>=0;i--){
     const d = new Date(T.getFullYear(), T.getMonth()-i, 1);
     months.push({ y:d.getFullYear(), m:d.getMonth(), key:d.getFullYear()+'-'+d.getMonth(), in:0, out:0,
-                  lbl:'T'+(d.getMonth()+1), full:'Tháng '+(d.getMonth()+1)+'/'+d.getFullYear() });
+                  lbl:d.toLocaleDateString('en-GB',{month:'short'}),
+                  full:d.toLocaleDateString('en-GB',{month:'long',year:'numeric'}) });
   }
   const mIdx = {}; months.forEach((m,i)=>mIdx[m.key]=i);
   D.forEach(e=>{
@@ -1163,52 +1274,52 @@ function summarize(){
   };
 }
 
-/* ═══════════ VIEW · TỔNG QUAN ═══════════ */
+/* ═══════════ VIEW · OVERVIEW ═══════════ */
 function renderOverview(S){
   const T = S.T;
-  $('#hero-date').textContent = 'Cập nhật ' + T.toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  $('#hero-date').textContent = 'Updated ' + T.toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
   countUp($('#hero-total'), S.active.length);
-  $('#hero-cap').innerHTML = '<b>'+S.active.length+'</b> người đang làm việc · '
-    + S.perm.length + ' chính thức · ' + S.out.length + ' thuê ngoài'
-    + (S.left.length ? ' · <span style="color:var(--txt3)">'+S.left.length+' đã nghỉ trong dữ liệu</span>' : '');
+  $('#hero-cap').innerHTML = '<b>'+S.active.length+'</b> people currently working · '
+    + S.perm.length + ' permanent · ' + S.out.length + ' outsourced'
+    + (S.left.length ? ' · <span style="color:var(--txt3)">'+S.left.length+' already left in the data</span>' : '');
 
   const net = S.joinedThisMonth.length - S.leftThisMonth.length;
   $('#hero-delta').innerHTML =
-    '<div class="delta-row"><span class="tag t-lime">Vào tháng này</span><span class="num" style="color:var(--lime)">+'+S.joinedThisMonth.length+'</span></div>'
-   +'<div class="delta-row"><span class="tag t-hivis">Nghỉ tháng này</span><span class="num" style="color:var(--hivis)">−'+S.leftThisMonth.length+'</span></div>'
-   +'<div class="delta-row"><span class="tag t-mute">Thực tăng</span><span class="num" style="color:'+(net>=0?'var(--ok)':'var(--alert)')+'">'+(net>=0?'+':'−')+Math.abs(net)+'</span></div>';
+    '<div class="delta-row"><span class="tag t-lime">Joined this month</span><span class="num" style="color:var(--lime)">+'+S.joinedThisMonth.length+'</span></div>'
+   +'<div class="delta-row"><span class="tag t-hivis">Left this month</span><span class="num" style="color:var(--hivis)">−'+S.leftThisMonth.length+'</span></div>'
+   +'<div class="delta-row"><span class="tag t-mute">Net change</span><span class="num" style="color:'+(net>=0?'var(--ok)':'var(--alert)')+'">'+(net>=0?'+':'−')+Math.abs(net)+'</span></div>';
 
-  /* Thanh tải quân số */
+  /* Headcount capacity bar */
   const tot = S.active.length || 1;
   const pP = S.perm.length/tot*100, pO = 100-pP;
   paint(()=>{
     const a=$('#cap-perm'), b=$('#cap-out');
     a.style.width=pP+'%'; b.style.width=pO+'%';
-    $('#cap-perm-t').textContent = 'Chính thức ' + S.perm.length;
-    $('#cap-out-t').textContent  = 'Thuê ngoài ' + S.out.length;
+    $('#cap-perm-t').textContent = 'Permanent ' + S.perm.length;
+    $('#cap-out-t').textContent  = 'Outsourced ' + S.out.length;
     setTimeout(()=>{ a.classList.add('show'); b.classList.add('show'); },380);
   });
   $('#cap-legend').innerHTML =
-     '<span class="cap-leg"><i style="background:#CFE84A"></i>Chính thức <b>'+Math.round(pP)+'%</b></span>'
-    +'<span class="cap-leg"><i style="background:#3ED0E8"></i>Thuê ngoài <b>'+Math.round(pO)+'%</b> · '+S.vendors.length+' nhà thầu</span>'
+     '<span class="cap-leg"><i style="background:#CFE84A"></i>Permanent <b>'+Math.round(pP)+'%</b></span>'
+    +'<span class="cap-leg"><i style="background:#3ED0E8"></i>Outsourced <b>'+Math.round(pO)+'%</b> · '+S.vendors.length+' vendors</span>'
     + Object.keys(S.buMap).sort().map(bu=>'<span class="cap-leg"><i style="background:'+(BU_COLOR[bu]||'#5B6878')+'"></i>'+esc(bu)+' <b>'+S.buMap[bu].total+'</b></span>').join('');
 
   renderGauge(S);
 
   /* Chip KPI */
   const chips = [
-    { c:'var(--lime)',  cs:'var(--lime-s)',  ic:'👥', l:'Đang làm việc', v:S.active.length,
-      s:S.dl.length+' Shift Keeper · '+(S.active.length-S.dl.length)+' gián tiếp', tab:'people', flt:{status:'active'} },
-    { c:'var(--sig)',   cs:'var(--sig-s)',   ic:'🏭', l:'Thuê ngoài', v:S.out.length,
-      s:'qua '+S.vendors.length+' nhà thầu', tab:'vendor' },
-    { c:'var(--hivis)', cs:'var(--hivis-s)', ic:'⚠️', l:'Sắp nghỉ 30 ngày', v:S.soon.length,
-      s:S.upcoming.length+' người đã có ngày nghỉ', tab:'move' },
-    { c:'var(--ok)',    cs:'var(--ok-s)',    ic:'🌱', l:'Mới vào 60 ngày', v:S.fresh.length,
-      s:'đang trong thời gian thử việc', tab:'people', flt:{status:'new'} },
-    { c:'var(--grape)', cs:'var(--grape-s)', ic:'🧭', l:'Tổ trưởng', v:new Set(S.active.map(e=>e.leader).filter(Boolean)).size,
-      s:S.sups.length+' supervisor · '+Object.keys(S.mgrMap).length+' manager', tab:'org' },
-    { c:'var(--txt2)',  cs:'var(--rail)',    ic:'📈', l:'Thâm niên TB', v:Math.round(S.active.reduce((a,e)=>a+(e._tenure||0),0)/(S.active.length||1)/30.44),
-      s:'tháng · trung vị '+Math.round(medianTenure(S.active)/30.44)+' tháng', tab:'tenure', unit:'th' }
+    { c:'var(--lime)',  cs:'var(--lime-s)',  ic:'👥', l:'Active', v:S.active.length,
+      s:S.dl.length+' Shift Keeper · '+(S.active.length-S.dl.length)+' indirect', tab:'people', flt:{status:'active'} },
+    { c:'var(--sig)',   cs:'var(--sig-s)',   ic:'🏭', l:'Outsourced', v:S.out.length,
+      s:'across '+S.vendors.length+' vendors', tab:'vendor' },
+    { c:'var(--hivis)', cs:'var(--hivis-s)', ic:'⚠️', l:'Leaving in 30d', v:S.soon.length,
+      s:S.upcoming.length+' people already have a last working day', tab:'move' },
+    { c:'var(--ok)',    cs:'var(--ok-s)',    ic:'🌱', l:'New in 60d', v:S.fresh.length,
+      s:'still within the probation window', tab:'people', flt:{status:'new'} },
+    { c:'var(--grape)', cs:'var(--grape-s)', ic:'🧭', l:'Team Leader', v:new Set(S.active.map(e=>e.leader).filter(Boolean)).size,
+      s:S.sups.length+' supervisors · '+Object.keys(S.mgrMap).length+' manager', tab:'org' },
+    { c:'var(--txt2)',  cs:'var(--rail)',    ic:'📈', l:'Avg tenure', v:Math.round(S.active.reduce((a,e)=>a+(e._tenure||0),0)/(S.active.length||1)/30.44),
+      s:'months · median '+Math.round(medianTenure(S.active)/30.44)+' months', tab:'tenure', unit:'mo' }
   ];
   const spark = S.months.map(m=>m.in);
   const mx = Math.max(1,...spark);
@@ -1216,7 +1327,7 @@ function renderOverview(S){
     '<div class="card chip '+(c.tab?'act':'')+'" style="--i:'+i+';--c:'+c.c+';--cs:'+c.cs+'"'
     + (c.tab?' data-goto="'+c.tab+'"'+(c.flt?" data-flt='"+JSON.stringify(c.flt)+"'":''):'') + '>'
     + '<div class="chip-top"><span class="chip-lbl">'+c.l+'</span><span class="chip-ico">'+c.ic+'</span></div>'
-    + '<div class="chip-val">'+c.v.toLocaleString('vi-VN')+(c.unit?'<span style="font-size:15px;color:var(--txt3)"> '+c.unit+'</span>':'')+'</div>'
+    + '<div class="chip-val">'+c.v.toLocaleString('en-US')+(c.unit?'<span style="font-size:15px;color:var(--txt3)"> '+c.unit+'</span>':'')+'</div>'
     + '<div class="chip-sub">'+esc(c.s)+'</div>'
     + (i===0 ? '<div class="spark">'+spark.map(v=>'<i style="height:'+Math.max(8,v/mx*100)+'%"></i>').join('')+'</div>' : '')
     + '</div>').join('');
@@ -1240,14 +1351,14 @@ function renderGauge(S){
   const permN = isDl ? S.dlPerm.length : S.perm.length;
   const pctv = isDl ? S.permPctDl : S.permPctAll;
   const tgt = CONFIG.PERM_TARGET;
-  $('#gauge-scope-lbl').textContent = (isDl?'Chỉ Warehouse Shift Keeper':'Toàn bộ nhân sự') + ' · mục tiêu ' + tgt + '%';
+  $('#gauge-scope-lbl').textContent = (isDl?'Warehouse Shift Keeper only':'All employees') + ' · target ' + tgt + '%';
   countUp($('#gauge-val'), Math.round(pctv));
   $('#gauge-target-lbl').textContent = tgt + '%';
 
   const need = Math.max(0, Math.ceil((tgt/100*pool.length - permN)/(1 - tgt/100)));
   $('#gauge-gap').innerHTML = pctv >= tgt
-    ? '<span style="color:var(--ok)">Đạt · vượt '+(Math.round((pctv-tgt)*10)/10)+' điểm</span>'
-    : '<span style="color:var(--hivis)">Cần chuyển thêm '+need+' người</span>';
+    ? '<span style="color:var(--ok)">On target · +'+(Math.round((pctv-tgt)*10)/10)+' pts</span>'
+    : '<span style="color:var(--hivis)">Convert '+need+' more people</span>';
 
   const LEN = 282.74;
   paint(()=>{ $('#gauge-fill').style.strokeDashoffset = LEN*(1-clamp(pctv,0,100)/100); });
@@ -1260,35 +1371,35 @@ function renderGauge(S){
 function renderFlow(S){
   const mx = Math.max(1, ...S.months.map(m=>Math.max(m.in,m.out)));
   const totIn = S.months.reduce((a,m)=>a+m.in,0), totOut = S.months.reduce((a,m)=>a+m.out,0);
-  $('#flow-sub').textContent = totIn+' người vào · '+totOut+' người nghỉ trong 12 tháng';
+  $('#flow-sub').textContent = totIn+' joined · '+totOut+' left in the last 12 months';
   $('#flow-bars').innerHTML = S.months.map(m=>
     '<div class="flow-col">'
     + '<div class="fh top"><div class="flow-in" data-h="'+(m.in/mx*100)+'"></div></div>'
     + '<div class="fh bot"><div class="flow-out" data-h="'+(m.out/mx*100)+'"></div></div>'
     + '<div class="flow-x">'+m.lbl+'</div>'
-    + '<div class="flow-tip">'+m.full+' · vào <b style="color:var(--lime)">'+m.in+'</b> · nghỉ <b style="color:var(--hivis)">'+m.out+'</b></div>'
+    + '<div class="flow-tip">'+m.full+' · in <b style="color:var(--lime)">'+m.in+'</b> · out <b style="color:var(--hivis)">'+m.out+'</b></div>'
     + '</div>').join('');
   paint(()=>$$('#flow-bars [data-h]').forEach(el=>{ el.style.height = el.dataset.h+'%'; }));
 }
 
 function renderAlerts(S){
   const A = [];
-  if(S.soon.length) A.push({ ic:'⚠️', c:'var(--hivis)', bg:'var(--hivis-s)', t:S.soon.length+' người nghỉ trong 30 ngày tới',
-    d:'Sớm nhất: '+(S.soon.map(e=>e.name).slice(0,2).join(', ')||'—'), n:S.soon.length, goto:'move' });
+  if(S.soon.length) A.push({ ic:'⚠️', c:'var(--hivis)', bg:'var(--hivis-s)', t:S.soon.length+' people leaving within 30 days',
+    d:'Earliest: '+(S.soon.map(e=>e.name).slice(0,2).join(', ')||'—'), n:S.soon.length, goto:'move' });
   const prob = S.active.filter(e=>e._probEnd && dayDiff(e._probEnd,S.T)>=0 && dayDiff(e._probEnd,S.T)<=30);
-  if(prob.length) A.push({ ic:'📝', c:'var(--sig)', bg:'var(--sig-s)', t:prob.length+' người hết thử việc trong 30 ngày',
-    d:'Cần chốt đánh giá và quyết định ký tiếp', n:prob.length, goto:'tenure' });
+  if(prob.length) A.push({ ic:'📝', c:'var(--sig)', bg:'var(--sig-s)', t:prob.length+' people finish probation within 30 days',
+    d:'Reviews and contract decisions are due', n:prob.length, goto:'tenure' });
   const gapDl = CONFIG.PERM_TARGET - S.permPctDl;
-  if(gapDl > 0) A.push({ ic:'🎯', c:'var(--lime)', bg:'var(--lime-s)', t:'Tỷ lệ chính thức còn thiếu '+(Math.round(gapDl*10)/10)+' điểm',
-    d:'Khối Shift Keeper: '+S.dlPerm.length+'/'+S.dl.length+' là nhân sự chính thức', n:'', goto:'vendor' });
+  if(gapDl > 0) A.push({ ic:'🎯', c:'var(--lime)', bg:'var(--lime-s)', t:'Permanent ratio is short by '+(Math.round(gapDl*10)/10)+' pts',
+    d:'Shift Keeper population: '+S.dlPerm.length+'/'+S.dl.length+' are permanent staff', n:'', goto:'vendor' });
   const heavy = S.sups.filter(s=>s.total>100);
-  if(heavy.length) A.push({ ic:'📦', c:'var(--grape)', bg:'var(--grape-s)', t:heavy.length+' supervisor quản lý trên 100 người',
+  if(heavy.length) A.push({ ic:'📦', c:'var(--grape)', bg:'var(--grape-s)', t:heavy.length+' supervisors manage more than 100 people',
     d:heavy.map(s=>s.name+' ('+s.total+')').join(' · '), n:'', goto:'org' });
   const dup = S.vendors.filter(v=>v.spellings.size>1);
-  if(dup.length) A.push({ ic:'🔤', c:'var(--alert)', bg:'var(--alert-s)', t:dup.length+' nhà thầu bị ghi sai chính tả',
-    d:'Cùng một nhà thầu nhưng nhập nhiều cách viết khác nhau', n:'', goto:'vendor' });
-  if(S.noLeader) A.push({ ic:'🧭', c:'var(--txt2)', bg:'var(--rail)', t:S.noLeader+' người chưa gán tổ trưởng',
-    d:'Thiếu dữ liệu ở cột leader', n:S.noLeader, goto:'people' });
+  if(dup.length) A.push({ ic:'🔤', c:'var(--alert)', bg:'var(--alert-s)', t:dup.length+' vendors have inconsistent spelling',
+    d:'The same vendor is entered under several different spellings', n:'', goto:'vendor' });
+  if(S.noLeader) A.push({ ic:'🧭', c:'var(--txt2)', bg:'var(--rail)', t:S.noLeader+' people have no team leader assigned',
+    d:'The leader column is empty for them', n:S.noLeader, goto:'people' });
 
   $('#alerts').innerHTML = A.length ? A.map(a=>
     '<div class="alert-item" data-goto="'+a.goto+'">'
@@ -1296,7 +1407,7 @@ function renderAlerts(S){
     + '<div class="alert-body"><div class="alert-t">'+esc(a.t)+'</div><div class="alert-d">'+esc(a.d)+'</div></div>'
     + (a.n!=='' ? '<div class="alert-n" style="color:'+a.c+'">'+a.n+'</div>' : '')
     + '</div>').join('')
-    : '<div class="empty"><i>✓</i>Không có việc nào cần xử lý gấp</div>';
+    : '<div class="empty"><i>✓</i>Nothing needs urgent attention</div>';
 }
 
 function renderSupRank(S){
@@ -1322,7 +1433,7 @@ function renderSplit(S){
   $('#split-bu').innerHTML = rows.map(r=>
     '<div class="split-row"><div class="split-top">'
     + '<span class="split-k"><i style="background:'+r.c+'"></i>'+esc(r.k)+'</span>'
-    + '<span class="split-v"><b>'+r.total+'</b>'+Math.round(r.perm/r.total*100)+'% chính thức</span></div>'
+    + '<span class="split-v"><b>'+r.total+'</b>'+Math.round(r.perm/r.total*100)+'% permanent</span></div>'
     + '<div class="split-track"><div class="split-fill" data-w="'+(r.total/mx*100)+'" style="background:'+r.c+'"></div></div></div>').join('');
   paint(()=>$$('#split-bu [data-w]').forEach(el=>{ el.style.width = el.dataset.w+'%'; }));
 }
@@ -1330,15 +1441,15 @@ function renderSplit(S){
 <script>
 'use strict';
 
-/* ═══════════ VIEW · NHÂN SỰ ═══════════ */
+/* ═══════════ VIEW · PEOPLE ═══════════ */
 function fillSelects(S){
   const keep = (sel,val) => { if(val) sel.value = val; };
   const bu = $('#f-bu'), sup = $('#f-sup'), ld = $('#f-leader');
   const b0=bu.value, s0=sup.value, l0=ld.value;
-  bu.innerHTML  = '<option value="">Mọi BU</option>' + [...new Set(VIEWDATA.map(e=>e.bu))].filter(Boolean).sort()
+  bu.innerHTML  = '<option value="">All BUs</option>' + [...new Set(VIEWDATA.map(e=>e.bu))].filter(Boolean).sort()
                     .map(v=>'<option>'+esc(v)+'</option>').join('');
-  sup.innerHTML = '<option value="">Mọi Supervisor</option>' + S.sups.map(s=>'<option>'+esc(s.name)+'</option>').join('');
-  ld.innerHTML  = '<option value="">Mọi tổ trưởng</option>' + [...new Set(VIEWDATA.map(e=>e.leader).filter(Boolean))].sort()
+  sup.innerHTML = '<option value="">All supervisors</option>' + S.sups.map(s=>'<option>'+esc(s.name)+'</option>').join('');
+  ld.innerHTML  = '<option value="">All team leaders</option>' + [...new Set(VIEWDATA.map(e=>e.leader).filter(Boolean))].sort()
                     .map(v=>'<option>'+esc(v)+'</option>').join('');
   keep(bu,b0); keep(sup,s0); keep(ld,l0);
   $('#f-total').textContent = VIEWDATA.length;
@@ -1377,10 +1488,10 @@ function peopleFilter(){
   renderPeople();
 }
 function statusTag(e){
-  if(e._left)     return '<span class="tag t-alert">Đã nghỉ '+fmtDate(e._lwd)+'</span>';
-  if(e._upcoming) return '<span class="tag t-hivis">Nghỉ sau '+e._dLwd+' ngày</span>';
-  if(e._new)      return '<span class="tag t-ok">Thử việc</span>';
-  return '<span class="tag t-mute">Đang làm việc</span>';
+  if(e._left)     return '<span class="tag t-alert">Left '+fmtDate(e._lwd)+'</span>';
+  if(e._upcoming) return '<span class="tag t-hivis">Leaves in '+e._dLwd+' days</span>';
+  if(e._new)      return '<span class="tag t-ok">Probation</span>';
+  return '<span class="tag t-mute">Active</span>';
 }
 function renderPeople(){
   const n = FILTERED.length, pages = Math.max(1,Math.ceil(n/CONFIG.PAGE_SIZE));
@@ -1392,12 +1503,12 @@ function renderPeople(){
     + '<td><div class="cell-name">'+ava(e.name,e.bu)+'<div><div class="nm">'+esc(e.name)+'</div><div class="tt">'+esc(e.title)+'</div></div></div></td>'
     + '<td><span class="tag" style="background:'+(BU_COLOR[e.bu]||'#333')+'22;color:'+(BU_COLOR[e.bu]||'#888')+';border:1px solid '+(BU_COLOR[e.bu]||'#888')+'44">'+esc(e.bu)+'</span></td>'
     + '<td>'+esc(e.sup)+'</td>'
-    + '<td style="color:'+(e.leader?'var(--txt2)':'var(--txt3)')+'">'+esc(e.leader||'— chưa gán —')+'</td>'
-    + '<td>'+(e._perm ? '<span class="tag t-lime">Chính thức</span>' : '<span class="tag t-sig">'+esc(e._vendorC)+'</span>')+'</td>'
+    + '<td style="color:'+(e.leader?'var(--txt2)':'var(--txt3)')+'">'+esc(e.leader||'— not assigned —')+'</td>'
+    + '<td>'+(e._perm ? '<span class="tag t-lime">Permanent</span>' : '<span class="tag t-sig">'+esc(e._vendorC)+'</span>')+'</td>'
     + '<td class="num" style="font-size:11.5px">'+fmtDate(e._join)+'</td>'
     + '<td style="color:var(--txt2)">'+fmtTenure(e._tenure)+'</td>'
     + '<td>'+statusTag(e)+'</td></tr>').join('')
-    : '<tr><td colspan="9"><div class="empty"><i>🔍</i>Không tìm thấy nhân viên nào khớp bộ lọc</div></td></tr>';
+    : '<tr><td colspan="9"><div class="empty"><i>🔍</i>No employee matches these filters</div></td></tr>';
 
   let p = '';
   if(pages>1){
@@ -1412,13 +1523,13 @@ function renderPeople(){
   $('#pager').innerHTML = p;
 }
 
-/* ═══════════ VIEW · SƠ ĐỒ TỔ CHỨC ═══════════ */
+/* ═══════════ VIEW · ORG CHART ═══════════ */
 function tierOf(e){
   const t = String(e.title||'').toLowerCase();
   if(t.includes('director')) return { l:'Director', c:'#FF9F43' };
   if(t.includes('manager'))  return { l:'Manager',  c:'#9B8CFF' };
   if(t.includes('supervisor'))return{ l:'Supervisor',c:'#3ED0E8' };
-  if(t.includes('leader'))   return { l:'Tổ trưởng', c:'#BED62F' };
+  if(t.includes('leader'))   return { l:'Team Leader', c:'#BED62F' };
   if(t.includes('clerk'))    return { l:'Clerk',     c:'#3ED598' };
   return { l:'Shift Keeper', c:'#5B6878' };
 }
@@ -1434,10 +1545,10 @@ function renderOrg(){
 function renderOrgSearch(q){
   $('#org-drill').style.display='block'; $('#org-tree').style.display='none';
   const hits = RAW.filter(e=>e.name.toLowerCase().includes(q)||e.title.toLowerCase().includes(q)).slice(0,60);
-  $('#crumbs').innerHTML = '<span style="font-size:12px;color:var(--hivis)">Kết quả cho “'+esc(q)+'” — '+hits.length+' người</span>';
+  $('#crumbs').innerHTML = '<span style="font-size:12px;color:var(--hivis)">Results for “'+esc(q)+'” — '+hits.length+' more people</span>';
   $('#org-drill').innerHTML = hits.length
     ? '<div class="node-grid">'+hits.map(e=>nodeCard(e)).join('')+'</div>'
-    : '<div class="card"><div class="empty"><i>🔍</i>Không tìm thấy ai khớp từ khoá</div></div>';
+    : '<div class="card"><div class="empty"><i>🔍</i>Nobody matches that search</div></div>';
 }
 function nodeCard(e){
   const kids = ORG_CHILD[e.name]||[], dc = countDesc(e.name), t = tierOf(e);
@@ -1448,19 +1559,19 @@ function nodeCard(e){
     + (kids.length ? '<span class="node-arrow">›</span>' : '') + '</div>'
     + (kids.length
         ? '<div class="node-stats">'
-          + '<div class="node-st"><b>'+dc+'</b><i>Tổng HC</i></div>'
-          + '<div class="node-st"><b>'+kids.length+'</b><i>Trực tiếp</i></div>'
-          + '<div class="node-st"><b style="color:'+t.c+';font-size:10px;padding-top:3px">'+t.l+'</b><i>Cấp</i></div></div>'
+          + '<div class="node-st"><b>'+dc+'</b><i>Total HC</i></div>'
+          + '<div class="node-st"><b>'+kids.length+'</b><i>Direct</i></div>'
+          + '<div class="node-st"><b style="color:'+t.c+';font-size:10px;padding-top:3px">'+t.l+'</b><i>Level</i></div></div>'
           + (bd ? '<div class="node-bd">'+bd+'</div>' : '')
         : '<div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">'
           + '<span class="tag t-mute">'+esc(e.bu)+'</span>'
-          + (e._perm?'<span class="tag t-lime">Chính thức</span>':'<span class="tag t-sig">Thuê ngoài</span>')
+          + (e._perm?'<span class="tag t-lime">Permanent</span>':'<span class="tag t-sig">Outsourced</span>')
           + (e._lwd?'<span class="tag t-alert">'+fmtDate(e._lwd)+'</span>':'')+'</div>')
     + '</div>';
 }
 function renderDrill(){
   const e = nodeOf(ORG_CUR), kids = ORG_CHILD[ORG_CUR]||[], dc = countDesc(ORG_CUR), t = tierOf(e);
-  $('#crumbs').innerHTML = ['<span class="crumb" data-crumb="-1">Toàn công ty</span>']
+  $('#crumbs').innerHTML = ['<span class="crumb" data-crumb="-1">Whole company</span>']
     .concat(ORG_TRAIL.map((n,i)=>'<span class="crumb-sep">›</span><span class="crumb" data-crumb="'+i+'">'+esc(n.split(' ').slice(-2).join(' '))+'</span>'))
     .concat('<span class="crumb-sep">›</span><span class="crumb on">'+esc(ORG_CUR)+'</span>').join('');
 
@@ -1471,33 +1582,33 @@ function renderDrill(){
     + '<div class="fc-title">'+esc(e.title)+'<span class="tag" style="background:'+t.c+'22;color:'+t.c+';border:1px solid '+t.c+'55">'+t.l+'</span>'
     + (e.bu?'<span class="tag t-mute">'+esc(e.bu)+'</span>':'')+'</div></div>'
     + '<div class="fc-stats">'
-      + '<div class="fc-stat"><span>'+dc+'</span><em>Tổng quân số</em></div>'
-      + '<div class="fc-stat"><span>'+kids.length+'</span><em>Báo cáo trực tiếp</em></div>'
-      + '<div class="fc-stat"><span style="color:var(--lime)">'+(team.length?Math.round(permN/team.length*100)+'%':'—')+'</span><em>Chính thức</em></div>'
-      + '<div class="fc-stat"><span style="color:var(--hivis)">'+RAW.filter(e2=>e2.sup===ORG_CUR&&e2._upcoming).length+'</span><em>Sắp nghỉ</em></div>'
+      + '<div class="fc-stat"><span>'+dc+'</span><em>Total headcount</em></div>'
+      + '<div class="fc-stat"><span>'+kids.length+'</span><em>Direct reports</em></div>'
+      + '<div class="fc-stat"><span style="color:var(--lime)">'+(team.length?Math.round(permN/team.length*100)+'%':'—')+'</span><em>Permanent</em></div>'
+      + '<div class="fc-stat"><span style="color:var(--hivis)">'+RAW.filter(e2=>e2.sup===ORG_CUR&&e2._upcoming).length+'</span><em>Leaving</em></div>'
     + '</div>'
-    + (ORG_TRAIL.length ? '<button class="btn sm" data-crumb="'+(ORG_TRAIL.length-1)+'">← Quay lại</button>' : '')
-    + '<button class="btn sm" data-emp-name="'+esc(e.name)+'">Hồ sơ</button></div>';
+    + (ORG_TRAIL.length ? '<button class="btn sm" data-crumb="'+(ORG_TRAIL.length-1)+'">← Back</button>' : '')
+    + '<button class="btn sm" data-emp-name="'+esc(e.name)+'">Profile</button></div>';
 
   if(!kids.length){
     const own = RAW.filter(e2=>e2.leader===ORG_CUR || e2.sup===ORG_CUR);
     html += own.length
-      ? '<div class="tier-lbl"><b style="color:var(--lime)">Nhân sự trực thuộc</b><i>'+own.length+' người</i><span class="rule"></span></div>'
+      ? '<div class="tier-lbl"><b style="color:var(--lime)">Direct staff</b><i>'+own.length+' people</i><span class="rule"></span></div>'
         + '<div class="node-grid">'+own.slice(0,60).map(x=>nodeCard(x)).join('')+'</div>'
-      : '<div class="card"><div class="empty"><i>📭</i>Không có nhân sự trực thuộc</div></div>';
+      : '<div class="card"><div class="empty"><i>📭</i>No direct staff under this person</div></div>';
     $('#org-drill').innerHTML = html; return;
   }
   const groups = {};
   kids.forEach(k=>{ const g=tierOf(k); (groups[g.l]=groups[g.l]||{c:g.c,list:[]}).list.push(k); });
-  ['Director','Manager','Supervisor','Tổ trưởng','Clerk','Shift Keeper'].forEach(g=>{
+  ['Director','Manager','Supervisor','Team Leader','Clerk','Shift Keeper'].forEach(g=>{
     if(!groups[g]) return;
-    html += '<div class="tier-lbl"><b style="color:'+groups[g].c+'">'+g+'</b><i>'+groups[g].list.length+' người</i><span class="rule"></span></div>'
+    html += '<div class="tier-lbl"><b style="color:'+groups[g].c+'">'+g+'</b><i>'+groups[g].list.length+' people</i><span class="rule"></span></div>'
           + '<div class="node-grid">'+groups[g].list.slice(0,90).map(x=>nodeCard(x)).join('')+'</div>';
   });
   $('#org-drill').innerHTML = html;
 }
 function renderTree(){
-  $('#crumbs').innerHTML = '<span style="font-size:12px;color:var(--txt3)">Sơ đồ tổng thể tới cấp tổ trưởng · bấm vào một ô để đi sâu</span>';
+  $('#crumbs').innerHTML = '<span style="font-size:12px;color:var(--txt3)">Full chart down to team leader level. Click any card to drill in.</span>';
   $('#org-tree').innerHTML = '<div class="card tree-scroll"><div class="tree"><ul>'+treeLi(CONFIG.ROOT,0)+'</ul></div></div>';
   paint(fixTree);
 }
@@ -1528,17 +1639,17 @@ function goNode(name){
   renderOrg(); window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* ═══════════ VIEW · BIẾN ĐỘNG ═══════════ */
+/* ═══════════ VIEW · MOVEMENT ═══════════ */
 function renderMove(S){
   $('#cnt-move').textContent = S.soon.length;
   const y1 = new Date(S.T.getFullYear(),S.T.getMonth()-11,1);
   const leavers = S.D.filter(e=>e._lwd && e._lwd>=y1);
   const fresh90 = S.active.filter(e=>e._tenure!=null && e._tenure<=90);
   const chips = [
-    { c:'var(--hivis)', cs:'var(--hivis-s)', ic:'📤', l:'Đã có ngày nghỉ', v:S.upcoming.length+S.left.length, s:S.upcoming.length+' sắp nghỉ · '+S.left.length+' đã nghỉ' },
-    { c:'var(--alert)', cs:'var(--alert-s)', ic:'📉', l:'Nghỉ 12 tháng', v:leavers.length, s:'tỷ lệ '+(Math.round(leavers.length/(S.active.length||1)*1000)/10)+'% quân số' },
-    { c:'var(--lime)',  cs:'var(--lime-s)',  ic:'📥', l:'Vào 12 tháng', v:S.months.reduce((a,m)=>a+m.in,0), s:'trung bình '+Math.round(S.months.reduce((a,m)=>a+m.in,0)/12)+' người/tháng' },
-    { c:'var(--ok)',    cs:'var(--ok-s)',    ic:'🌱', l:'Vào 90 ngày', v:fresh90.length, s:'chiếm '+(Math.round(fresh90.length/(S.active.length||1)*1000)/10)+'% quân số hiện tại' }
+    { c:'var(--hivis)', cs:'var(--hivis-s)', ic:'📤', l:'Has a leaving date', v:S.upcoming.length+S.left.length, s:S.upcoming.length+' leaving soon · '+S.left.length+' already left' },
+    { c:'var(--alert)', cs:'var(--alert-s)', ic:'📉', l:'Leavers · 12 months', v:leavers.length, s:''+(Math.round(leavers.length/(S.active.length||1)*1000)/10)+'% of headcount' },
+    { c:'var(--lime)',  cs:'var(--lime-s)',  ic:'📥', l:'Joined · 12 months', v:S.months.reduce((a,m)=>a+m.in,0), s:'average '+Math.round(S.months.reduce((a,m)=>a+m.in,0)/12)+' per month' },
+    { c:'var(--ok)',    cs:'var(--ok-s)',    ic:'🌱', l:'Joined · 90 days', v:fresh90.length, s:''+(Math.round(fresh90.length/(S.active.length||1)*1000)/10)+'% of current headcount' }
   ];
   $('#move-chips').innerHTML = chips.map((c,i)=>
     '<div class="card chip" style="--i:'+i+';--c:'+c.c+';--cs:'+c.cs+'">'
@@ -1551,11 +1662,11 @@ function renderMove(S){
     + '<td class="num" style="color:var(--txt3)">'+esc(e.id)+'</td>'
     + '<td><div class="cell-name">'+ava(e.name,e.bu)+'<div><div class="nm">'+esc(e.name)+'</div><div class="tt">'+esc(e.title)+'</div></div></div></td>'
     + '<td>'+esc(e.sup)+'</td><td style="color:var(--txt3)">'+esc(e.leader||'—')+'</td>'
-    + '<td>'+(e._perm?'<span class="tag t-lime">Chính thức</span>':'<span class="tag t-sig">'+esc(e._vendorC)+'</span>')+'</td>'
+    + '<td>'+(e._perm?'<span class="tag t-lime">Permanent</span>':'<span class="tag t-sig">'+esc(e._vendorC)+'</span>')+'</td>'
     + '<td class="num">'+fmtDate(e._lwd)+'</td>'
-    + '<td><span class="tag '+(e._dLwd<=7?'t-alert':'t-hivis')+'">'+e._dLwd+' ngày</span></td>'
+    + '<td><span class="tag '+(e._dLwd<=7?'t-alert':'t-hivis')+'">'+e._dLwd+' days</span></td>'
     + '<td style="color:var(--txt2)">'+fmtTenure(e._tenure)+'</td></tr>').join('')
-    : '<tr><td colspan="8"><div class="empty"><i>✓</i>Không có ai nghỉ trong '+LWD_RANGE+' ngày tới</div></td></tr>';
+    : '<tr><td colspan="8"><div class="empty"><i>✓</i>Nobody is leaving in the next '+LWD_RANGE+' days</div></td></tr>';
 
   const turn = {};
   leavers.forEach(e=>{ turn[e.sup]=(turn[e.sup]||0)+1; });
@@ -1575,35 +1686,35 @@ function renderMove(S){
     '<div class="rank-row" data-sup="'+esc(r[0])+'"><div class="rank-name">'+esc(r[0])+'</div>'
     + '<div class="rank-track"><div class="rank-fill p" data-w="'+(r[1]/nmx*100)+'"></div></div>'
     + '<div class="rank-val"><b>'+r[1]+'</b></div></div>').join('')
-    : '<div class="empty"><i>—</i>Chưa có người vào mới trong 90 ngày</div>';
+    : '<div class="empty"><i>—</i>No new joiner in the last 90 days</div>';
   paint(()=>$$('#v-move [data-w]').forEach(el=>{ el.style.width = el.dataset.w+'%'; }));
 }
 
-/* ═══════════ VIEW · NHÀ THẦU ═══════════ */
+/* ═══════════ VIEW · VENDORS ═══════════ */
 function renderVendor(S){
   $('#cnt-vendor').textContent = S.vendors.length;
   const dup = S.vendors.filter(v=>v.spellings.size>1);
   const totalSpell = S.vendors.reduce((a,v)=>a+v.spellings.size,0);
   $('#vendor-dq').innerHTML = dup.length
-    ? '<b style="color:var(--hivis)">'+totalSpell+' cách viết</b> trong dữ liệu chỉ tương ứng <b style="color:var(--lime)">'+S.vendors.length+' nhà thầu thật</b>. Dashboard đã tự gộp, nhưng nên sửa lại ở file nguồn.'
-    : 'Tên nhà thầu trong dữ liệu đã đồng nhất — không phát hiện trùng lặp.';
+    ? '<b style="color:var(--hivis)">'+totalSpell+' spellings</b> in the data map to only <b style="color:var(--lime)">'+S.vendors.length+' real vendors</b>. The dashboard merges them automatically, but the source file should be corrected.'
+    : 'Vendor names are consistent across the data. No duplicates found.';
   const mx = Math.max(1,...S.vendors.map(v=>v.total));
   $('#vendor-grid').innerHTML = S.vendors.map((v,i)=>
     '<div class="card vcard" style="--i:'+i+'" data-vendor="'+esc(v.name)+'">'
     + '<div class="vhead">'+ava(v.name,null)
     + '<div style="min-width:0"><div class="vname">'+esc(v.name)+'</div>'
-    + '<div class="vsub">'+v.sups.size+' supervisor · '+v.dl+' shift keeper</div></div>'
+    + '<div class="vsub">'+v.sups.size+' supervisors · '+v.dl+' shift keepers</div></div>'
     + '<div class="vbig" style="color:var(--sig)">'+v.total+'</div></div>'
     + '<div class="split-track" style="margin-bottom:10px"><div class="split-fill" data-w="'+(v.total/mx*100)+'" style="background:linear-gradient(90deg,#1FA5BC,#3ED0E8)"></div></div>'
     + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
       + Object.entries(v.bu).sort((a,b)=>b[1]-a[1]).map(([k,n])=>'<span class="tag t-mute">'+esc(k)+' '+n+'</span>').join('')
-      + '<span class="tag t-mute">'+(Math.round(v.total/(S.out.length||1)*1000)/10)+'% khối thuê ngoài</span>'
-      + (v.spellings.size>1 ? '<span class="tag t-alert">'+v.spellings.size+' cách viết</span>' : '')
+      + '<span class="tag t-mute">'+(Math.round(v.total/(S.out.length||1)*1000)/10)+'% of outsourced</span>'
+      + (v.spellings.size>1 ? '<span class="tag t-alert">'+v.spellings.size+' spellings</span>' : '')
     + '</div></div>').join('');
   paint(()=>$$('#vendor-grid [data-w]').forEach(el=>{ el.style.width = el.dataset.w+'%'; }));
 }
 
-/* ═══════════ VIEW · THÂM NIÊN ═══════════ */
+/* ═══════════ VIEW · TENURE ═══════════ */
 function renderTenure(S){
   const mx = Math.max(1,...S.tenure.map(t=>t.n));
   $('#rank-tenure').innerHTML = S.tenure.map(t=>
@@ -1624,8 +1735,8 @@ function renderTenure(S){
     + '<td><div class="cell-name">'+ava(e.name,e.bu)+'<div><div class="nm">'+esc(e.name)+'</div><div class="tt">'+esc(e.title)+'</div></div></div></td>'
     + '<td>'+esc(e.sup)+'</td><td style="color:var(--txt3)">'+esc(e.leader||'—')+'</td>'
     + '<td class="num">'+fmtDate(e._join)+'</td><td class="num">'+fmtDate(e._probEnd)+'</td>'
-    + '<td><span class="tag t-ok">'+dayDiff(e._probEnd,S.T)+' ngày</span></td></tr>').join('')
-    : '<tr><td colspan="7"><div class="empty"><i>—</i>Không có ai hết thử việc trong 30 ngày tới</div></td></tr>';
+    + '<td><span class="tag t-ok">'+dayDiff(e._probEnd,S.T)+' days</span></td></tr>').join('')
+    : '<tr><td colspan="7"><div class="empty"><i>—</i>Nobody finishes probation in the next 30 days</div></td></tr>';
 
   const anniv = S.active.filter(e=>e._join && e._join.getMonth()===S.T.getMonth() && e._join.getFullYear()<S.T.getFullYear())
                   .sort((a,b)=>a._join.getDate()-b._join.getDate());
@@ -1634,12 +1745,126 @@ function renderTenure(S){
     return '<tr data-emp="'+esc(e.id)+'"><td class="num" style="color:var(--txt3)">'+esc(e.id)+'</td>'
     + '<td><div class="cell-name">'+ava(e.name,e.bu)+'<div><div class="nm">'+esc(e.name)+'</div><div class="tt">'+esc(e.title)+'</div></div></div></td>'
     + '<td>'+esc(e.sup)+'</td><td class="num">'+fmtDate(e._join)+'</td>'
-    + '<td><span class="tag '+(yrs>=5?'t-lime':'t-mute')+'">'+yrs+' năm</span></td></tr>';
-  }).join('') : '<tr><td colspan="5"><div class="empty"><i>—</i>Tháng này không có kỷ niệm ngày vào</div></td></tr>';
+    + '<td><span class="tag '+(yrs>=5?'t-lime':'t-mute')+'">'+yrs+' years</span></td></tr>';
+  }).join('') : '<tr><td colspan="5"><div class="empty"><i>—</i>No work anniversary falls in this month</div></td></tr>';
   paint(()=>$$('#v-tenure [data-w]').forEach(el=>{ el.style.width = el.dataset.w+'%'; }));
 }
 
-/* ═══════════ DRAWER HỒ SƠ ═══════════ */
+/* ═══════════ VIEW · REPORT ═══════════ */
+function dOnly(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+function toISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function shortD(d){ return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}); }
+function longD(d){ return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}); }
+
+function setRange(q){
+  const T = today(); let from, to = T;
+  if(q==='mtd')       from = new Date(T.getFullYear(),T.getMonth(),1);
+  else if(q==='last'){ from = new Date(T.getFullYear(),T.getMonth()-1,1); to = new Date(T.getFullYear(),T.getMonth(),0); }
+  else if(q==='ytd')  from = new Date(T.getFullYear(),0,1);
+  else                from = new Date(T.getTime()-30*86400000);
+  REP_Q = q;
+  $('#r-from').value = toISO(from); $('#r-to').value = toISO(to);
+  $$('#r-quick button').forEach(b=>b.classList.toggle('on', b.dataset.q===q));
+  renderReport();
+}
+function repRange(){
+  const a = $('#r-from').value, b = $('#r-to').value, T = today();
+  let from = a ? dOnly(a+'T00:00:00') : new Date(T.getTime()-30*86400000);
+  let to   = b ? dOnly(b+'T00:00:00') : T;
+  if(from > to){ const t=from; from=to; to=t; }
+  return { from, to };
+}
+function repTitle(e){
+  return e._dl ? e.title + ' — ' + (e._fgs ? 'FGs' : 'RMA') : e.title;
+}
+function buildReport(from,to){
+  const rows = {};
+  VIEWDATA.forEach(e=>{
+    const j = e._join || new Date(1900,0,1), l = e._lwd;
+    if(j > to) return;                       // not on board yet within the window
+    const opening = j <= from && (!l || l >= from);
+    const hired   = j > from;                // and j <= to, guaranteed above
+    if(!opening && !hired) return;           // already gone before the window
+    const k = repTitle(e);
+    const r = rows[k] = rows[k] || { title:k, base:0, hires:0, res:[] };
+    opening ? r.base++ : r.hires++;
+    if(l && l >= from) r.res.push(e);
+  });
+  return Object.values(rows).sort((a,b)=>a.title.localeCompare(b.title));
+}
+function renderReport(){
+  const { from, to } = repRange();
+  const list = buildReport(from, to);
+  $('#rh-base').innerHTML = 'HC at<small>' + longD(from) + '</small>';
+  $('#rh-new').innerHTML  = 'New hire on board<small>' + shortD(from) + ' → ' + shortD(to) + '</small>';
+  $('#rh-res').innerHTML  = 'Resignation submitted<small>from ' + shortD(from) + '</small>';
+  $('#rh-act').innerHTML  = 'Active if excluded<small>at ' + longD(to) + '</small>';
+
+  const cell = n => n ? '<span class="rep-n">' + n + '</span>' : '<span class="rep-zero">—</span>';
+  $('#tb-report').innerHTML = list.length ? list.map((r,i)=>{
+    const total = r.base + r.hires, act = total - r.res.length;
+    const m = r.title.match(/^(.*) — (FGs|RMA)$/);
+    const label = m
+      ? esc(m[1]) + '<span class="rep-split ' + (m[2]==='FGs'?'rep-fg':'rep-rma') + '">' + m[2] + '</span>'
+      : esc(r.title);
+    const names = r.res.sort((a,b)=>a._lwd-b._lwd)
+      .map(e=>'<span title="' + esc(e.id + ' · ' + e.sup) + '">' + esc(e.name) + ' · ' + shortD(e._lwd) + '</span>').join('');
+    return '<tr style="animation-delay:' + Math.min(i*22,400) + 'ms">'
+      + '<td class="rep-t">' + label + '</td>'
+      + '<td class="numcol">' + cell(r.base) + '</td>'
+      + '<td class="numcol" style="color:var(--lime)">' + cell(r.hires) + '</td>'
+      + '<td class="numcol">' + cell(total) + '</td>'
+      + '<td class="numcol" style="color:var(--hivis)">' + cell(r.res.length) + '</td>'
+      + '<td class="numcol" style="color:var(--ok)">' + cell(act) + '</td>'
+      + '<td><div class="res-names">' + (names || '<span class="rep-zero">—</span>') + '</div></td></tr>';
+  }).join('') : '<tr><td colspan="7"><div class="empty"><i>📅</i>No headcount falls inside this date range</div></td></tr>';
+
+  const B = list.reduce((a,r)=>a+r.base,0), H = list.reduce((a,r)=>a+r.hires,0);
+  const R = list.reduce((a,r)=>a+r.res.length,0);
+  $('#tf-report').innerHTML = '<tr><td>Total</td><td>' + B + '</td><td>' + H + '</td><td>' + (B+H)
+    + '</td><td>' + R + '</td><td>' + (B+H-R) + '</td><td></td></tr>';
+  $('#r-note').innerHTML = '<b>' + list.length + '</b> title rows · ' + (B+H) + ' HC · ' + R + ' resignations';
+}
+function exportReport(){
+  const { from, to } = repRange();
+  const rows = buildReport(from, to).map(r=>({
+    'Title': r.title,
+    ['HC at ' + longD(from)]: r.base,
+    ['New hire ' + shortD(from) + '-' + shortD(to)]: r.hires,
+    'Total HC': r.base + r.hires,
+    ['Resignation from ' + shortD(from)]: r.res.length,
+    ['Active at ' + longD(to) + ' if excluded']: r.base + r.hires - r.res.length,
+    'Details resignation': r.res.map(e=>e.name + ' - LWD ' + shortD(e._lwd)).join('; ')
+  }));
+  const B = rows.reduce((a,r)=>a+r[Object.keys(r)[1]],0);
+  const k = Object.keys(rows[0]||{});
+  if(rows.length) rows.push({ [k[0]]:'TOTAL', [k[1]]:B,
+    [k[2]]:rows.reduce((a,r)=>a+r[k[2]],0), [k[3]]:rows.reduce((a,r)=>a+r[k[3]],0),
+    [k[4]]:rows.reduce((a,r)=>a+r[k[4]],0), [k[5]]:rows.reduce((a,r)=>a+r[k[5]],0), [k[6]]:'' });
+  const name = 'Headcount_by_title_' + toISO(from) + '_to_' + toISO(to);
+  const go = () => { try{
+      const ws = XLSX.utils.json_to_sheet(rows), wb = XLSX.utils.book_new();
+      ws['!cols'] = [{wch:42},{wch:14},{wch:16},{wch:11},{wch:18},{wch:20},{wch:60}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Headcount by title');
+      XLSX.writeFile(wb, name + '.xlsx'); toast('Downloaded ' + rows.length + ' rows (Excel)');
+    }catch(_){ csvOf(rows, name); } };
+  if(window.XLSX) return go();
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+  s.onload = go; s.onerror = () => csvOf(rows, name);
+  document.head.appendChild(s);
+}
+function csvOf(rows,name){
+  if(!rows.length){ toast('Nothing to export'); return; }
+  const head = Object.keys(rows[0]);
+  const csv = '\uFEFF' + [head.join(',')].concat(rows.map(r=>head.map(k=>{
+    const v = String(r[k]==null?'':r[k]); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
+  }).join(','))).join('\n');
+  download(new Blob([csv],{type:'text/csv;charset=utf-8'}), name + '.csv');
+  toast('Downloaded ' + rows.length + ' rows (CSV)');
+}
+
+/* ═══════════ PROFILE DRAWER ═══════════ */
 let DR_EMP = null;
 function openEmp(idOrName){
   const e = RAW.find(x=>x.id===String(idOrName)) || RAW.find(x=>x.name===idOrName) || ORG_NODE[idOrName];
@@ -1652,40 +1877,40 @@ function openEmp(idOrName){
     + '<div class="dr-tags">'
     + '<span class="tag" style="background:'+t.c+'22;color:'+t.c+';border:1px solid '+t.c+'55">'+t.l+'</span>'
     + '<span class="tag t-mute">'+esc(e.bu||'—')+'</span>'
-    + (e._perm ? '<span class="tag t-lime">Chính thức</span>' : '<span class="tag t-sig">'+esc(e._vendorC||'Thuê ngoài')+'</span>')
-    + (e._lwd ? '<span class="tag '+(e._left?'t-alert':'t-hivis')+'">'+(e._left?'Đã nghỉ ':'Nghỉ ngày ')+fmtDate(e._lwd)+'</span>' : '')
+    + (e._perm ? '<span class="tag t-lime">Permanent</span>' : '<span class="tag t-sig">'+esc(e._vendorC||'Outsourced')+'</span>')
+    + (e._lwd ? '<span class="tag '+(e._left?'t-alert':'t-hivis')+'">'+(e._left?'Left ':'Leaving ')+fmtDate(e._lwd)+'</span>' : '')
     + '</div>';
 
   const chain = chainOf(e.name);
   $('#dr-body').innerHTML =
     '<dl class="dl">'
-    + '<dt>Mã nhân viên</dt><dd class="num">'+esc(e.id)+'</dd>'
-    + '<dt>Ngày vào</dt><dd class="num">'+fmtDate(e._join)+'</dd>'
-    + '<dt>Thâm niên</dt><dd>'+fmtTenure(e._tenure)+'</dd>'
-    + '<dt>Loại hợp đồng</dt><dd>'+esc(e._perm?'Chính thức (TTI)':e._vendorC||'—')+'</dd>'
+    + '<dt>Employee ID</dt><dd class="num">'+esc(e.id)+'</dd>'
+    + '<dt>Join date</dt><dd class="num">'+fmtDate(e._join)+'</dd>'
+    + '<dt>Tenure</dt><dd>'+fmtTenure(e._tenure)+'</dd>'
+    + '<dt>Contract</dt><dd>'+esc(e._perm?'Permanent (TTI)':e._vendorC||'—')+'</dd>'
     + '<dt>Manager</dt><dd>'+esc(e.manager||'—')+'</dd>'
     + '<dt>Supervisor</dt><dd>'+esc(e.sup||'—')+'</dd>'
-    + '<dt>Tổ trưởng</dt><dd>'+esc(e.leader||'— chưa gán —')+'</dd>'
-    + (e._probEnd && e._new ? '<dt>Hết thử việc</dt><dd class="num">'+fmtDate(e._probEnd)+'</dd>' : '')
+    + '<dt>Team Leader</dt><dd>'+esc(e.leader||'— not assigned —')+'</dd>'
+    + (e._probEnd && e._new ? '<dt>Probation ends</dt><dd class="num">'+fmtDate(e._probEnd)+'</dd>' : '')
     + '</dl>'
-    + '<div class="dr-sec">Tuyến báo cáo</div><div class="chain">'
+    + '<div class="dr-sec">Reporting line</div><div class="chain">'
     + chain.map(n=>{ const p=nodeOf(n); return '<div class="chain-node" data-emp-name="'+esc(n)+'">'
         + ava(n,p.bu) + '<div><div class="cn">'+esc(n)+'</div><div class="ct">'+esc(p.title||'—')+'</div></div></div>'
         + '<div class="chain-link"></div>'; }).join('')
     + '<div class="chain-node self">'+ava(e.name,e.bu)
     + '<div><div class="cn">'+esc(e.name)+'</div><div class="ct">'+esc(e.title)+'</div></div></div>'
     + '</div>'
-    + (countDesc(e.name) ? '<div class="dr-sec">Quản lý '+countDesc(e.name)+' người</div>'
-        + '<button class="btn sm" data-node="'+esc(e.name)+'">Mở trong sơ đồ tổ chức</button>' : '')
-    + '<div class="dr-sec">Điều chuyển supervisor</div>'
+    + (countDesc(e.name) ? '<div class="dr-sec">Manages '+countDesc(e.name)+' people</div>'
+        + '<button class="btn sm" data-node="'+esc(e.name)+'">Open in org chart</button>' : '')
+    + '<div class="dr-sec">Transfer to another supervisor</div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap">'
-    + '<select class="inp" id="dr-sup" style="flex:1;min-width:170px"><option value="">— Chọn supervisor mới —</option>'
+    + '<select class="inp" id="dr-sup" style="flex:1;min-width:170px"><option value="">— Pick a new supervisor —</option>'
     + [...new Set(RAW.map(x=>x.sup))].filter(s=>s&&s!==e.sup).sort().map(s=>'<option>'+esc(s)+'</option>').join('')
-    + '</select><button class="btn lime sm" id="dr-move">Xác nhận</button></div>'
-    + '<div style="font-size:11px;color:var(--txt3);margin-top:8px">Thay đổi chỉ lưu trên máy này để mô phỏng phương án, không ghi vào file gốc.</div>';
+    + '</select><button class="btn lime sm" id="dr-move">Confirm</button></div>'
+    + '<div style="font-size:11px;color:var(--txt3);margin-top:8px">Changes are stored on this device only, to model a scenario. The source file is never modified.</div>';
 
-  $('#dr-foot').innerHTML = '<button class="btn ghost sm" id="dr-x">Đóng</button>'
-    + '<button class="btn sm" style="margin-left:auto" data-node="'+esc(e.sup||e.name)+'">Xem tổ của '+esc((e.sup||'').split(' ').slice(-1)[0]||'—')+'</button>';
+  $('#dr-foot').innerHTML = '<button class="btn ghost sm" id="dr-x">Close</button>'
+    + '<button class="btn sm" style="margin-left:auto" data-node="'+esc(e.sup||e.name)+'">View team of '+esc((e.sup||'').split(' ').slice(-1)[0]||'—')+'</button>';
   $('#drawer').classList.add('on'); $('#scrim').classList.add('on');
   $('#drawer').setAttribute('aria-hidden','false');
 }
@@ -1704,7 +1929,7 @@ function cmdSearch(q){
     '<div class="cmd-item'+(i===0?' sel':'')+'" data-ci="'+i+'">'+ava(e.name,e.bu)
     + '<div><div class="cn">'+esc(e.name)+'</div><div class="cs">'+esc(e.title)+' · '+esc(e.sup)+'</div></div>'
     + '<span class="ck">'+esc(e.id)+'</span></div>').join('')
-    : '<div class="cmd-empty">Không tìm thấy ai khớp “'+esc(q)+'”</div>';
+    : '<div class="cmd-empty">Nobody matches “'+esc(q)+'”</div>';
 }
 function cmdMove(d){
   if(!CMD_HITS.length) return;
@@ -1713,15 +1938,15 @@ function cmdMove(d){
   const el = $$('.cmd-item')[CMD_SEL]; if(el) el.scrollIntoView({block:'nearest'});
 }
 
-/* ═══════════ XUẤT DỮ LIỆU ═══════════ */
+/* ═══════════ EXPORT ═══════════ */
 function rowsFor(list){
   return list.map(e=>({
-    'Mã NV':e.id, 'Họ tên':e.name, 'BU':e.bu, 'Manager':e.manager, 'Supervisor':e.sup,
-    'Tổ trưởng':e.leader||'', 'Chức danh':e.title,
-    'Phân loại':e._perm?'Chính thức':'Thuê ngoài', 'Nhà thầu':e._perm?'':e._vendorC,
-    'Ngày vào':e._join?fmtDate(e._join):'', 'Thâm niên (ngày)':e._tenure==null?'':e._tenure,
-    'Ngày nghỉ':e._lwd?fmtDate(e._lwd):'',
-    'Trạng thái':e._left?'Đã nghỉ':e._upcoming?'Sắp nghỉ':'Đang làm việc'
+    'Employee ID':e.id, 'Full name':e.name, 'BU':e.bu, 'Manager':e.manager, 'Supervisor':e.sup,
+    'Team Leader':e.leader||'', 'Job title':e.title,
+    'Category':e._perm?'Permanent':'Outsourced', 'Vendors':e._perm?'':e._vendorC,
+    'Join date':e._join?fmtDate(e._join):'', 'Tenure (days)':e._tenure==null?'':e._tenure,
+    'Leaving date':e._lwd?fmtDate(e._lwd):'',
+    'Status':e._left?'Left':e._upcoming?'Leaving':'Active'
   }));
 }
 function download(blob,name){
@@ -1729,32 +1954,32 @@ function download(blob,name){
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 function exportCSV(list,name){
-  const rows = rowsFor(list); if(!rows.length){ toast('Không có dòng nào để xuất'); return; }
+  const rows = rowsFor(list); if(!rows.length){ toast('Nothing to export'); return; }
   const head = Object.keys(rows[0]);
   const csv = '\uFEFF' + [head.join(',')].concat(rows.map(r=>head.map(k=>{
     const v=String(r[k]==null?'':r[k]); return /[",\n]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v;
   }).join(','))).join('\n');
   download(new Blob([csv],{type:'text/csv;charset=utf-8'}), name+'.csv');
-  toast('Đã tải '+rows.length+' dòng (CSV)');
+  toast('Downloaded '+rows.length+' rows (CSV)');
 }
 function exportXLSX(list,name){
   const go = () => {
     try{
       const ws = XLSX.utils.json_to_sheet(rowsFor(list)), wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Nhân sự');
+      XLSX.utils.book_append_sheet(wb, ws, 'People');
       XLSX.writeFile(wb, name+'.xlsx');
-      toast('Đã tải '+list.length+' dòng (Excel)');
+      toast('Downloaded '+list.length+' rows (Excel)');
     }catch(_){ exportCSV(list,name); }
   };
   if(window.XLSX) return go();
   const s = document.createElement('script');
   s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
   s.onload = go;
-  s.onerror = () => exportCSV(list,name);   /* mạng nội bộ chặn CDN thì rơi về CSV */
+  s.onerror = () => exportCSV(list,name);   /* fall back to CSV when an intranet blocks the CDN */
   document.head.appendChild(s);
 }
 
-/* ═══════════ ĐIỀU PHỐI ═══════════ */
+/* ═══════════ ORCHESTRATION ═══════════ */
 function switchTab(tab,flt){
   TAB = tab;
   $$('.tab').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
@@ -1777,11 +2002,12 @@ function renderAll(){
   renderMove(S);
   renderVendor(S);
   renderTenure(S);
+  if(!$('#r-from').value) setRange(REP_Q); else renderReport();
   tfSync();
 }
 function loadData(first){
   $('#boot').classList.add('on');
-  $('#boot-t').textContent = 'Đang nạp dữ liệu nhân sự';
+  $('#boot-t').textContent = 'Loading employee data';
   fetch(CONFIG.DATA_URL + '?t=' + Date.now())
     .then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
     .then(d=>{
@@ -1789,16 +2015,16 @@ function loadData(first){
       buildTree();
       $('#boot').classList.remove('on');
       try{ renderAll(); }
-      catch(e){ console.error(e); toast('Lỗi dựng giao diện: ' + e.message); }
-      if(first) toast('Đã nạp ' + RAW.length + ' hồ sơ nhân sự');
+      catch(e){ console.error(e); toast('Interface error: ' + e.message); }
+      if(first) toast('Loaded ' + RAW.length + ' employee records');
     })
     .catch(err=>{
-      $('#boot-t').innerHTML = 'Không đọc được <b>'+esc(CONFIG.DATA_URL)+'</b> — '+esc(err.message)
-        + '<br><span style="text-transform:none;letter-spacing:0">Đặt file dữ liệu cùng thư mục và mở trang bằng web server, không mở trực tiếp bằng file://</span>';
+      $('#boot-t').innerHTML = 'Could not read <b>'+esc(CONFIG.DATA_URL)+'</b> — '+esc(err.message)
+        + '<br><span style="text-transform:none;letter-spacing:0">Place the data file in the same folder and open this page through a web server, not directly via file://</span>';
     });
 }
 
-/* ═══════════ ĐĂNG NHẬP ═══════════ */
+/* ═══════════ SIGN IN ═══════════ */
 function enterApp(user){
   sessionStorage.setItem('hr_user', user);
   $('#login').style.display = 'none';
@@ -1815,7 +2041,7 @@ function doLogin(){
   enterApp(hit.u);
 }
 
-/* ═══════════ SỰ KIỆN ═══════════ */
+/* ═══════════ EVENTS ═══════════ */
 document.addEventListener('click', ev=>{
   const t = ev.target;
   const hit = sel => t.closest(sel);
@@ -1823,11 +2049,13 @@ document.addEventListener('click', ev=>{
   if(hit('#btn-login')) return doLogin();
   if(hit('#btn-logout')){ sessionStorage.removeItem('hr_user'); location.reload(); return; }
   if(hit('#btn-refresh')){ const b=hit('#btn-refresh'); b.classList.add('spin'); loadData(); setTimeout(()=>b.classList.remove('spin'),900); return; }
-  if(hit('#btn-export')) return exportXLSX(VIEWDATA, 'Nhan_su_RYOBI_'+new Date().toISOString().slice(0,10));
-  if(hit('#f-export'))   return exportXLSX(FILTERED, 'Nhan_su_loc_'+new Date().toISOString().slice(0,10));
+  if(hit('#btn-export')) return exportXLSX(VIEWDATA, 'People_RYOBI_'+new Date().toISOString().slice(0,10));
+  if(hit('#f-export'))   return exportXLSX(FILTERED, 'People_filtered_'+new Date().toISOString().slice(0,10));
+  if(hit('#r-export'))   return exportReport();
+  const qr = hit('#r-quick button'); if(qr) return setRange(qr.dataset.q);
   if(hit('#btn-undo')){
-    if(!confirm('Hoàn tác toàn bộ điều chuyển đã lưu trên máy này?')) return;
-    localStorage.removeItem(TF_KEY); loadData(); toast('Đã hoàn tác điều chuyển'); return;
+    if(!confirm('Undo every transfer saved on this device?')) return;
+    localStorage.removeItem(TF_KEY); loadData(); toast('Transfers undone'); return;
   }
   if(hit('#btn-cmd')) return cmdOpen();
   if(t.closest('#cmd') && !t.closest('.cmd-box')) return cmdClose();
@@ -1877,9 +2105,9 @@ document.addEventListener('click', ev=>{
   if(hit('#f-clear')){ ['q','bu','sup','leader','type','status','tenure'].forEach(k=>$('#f-'+k).value=''); peopleFilter(); return; }
   if(hit('#vendor-dq-btn')){
     const dups = window.__S.vendors.filter(v=>v.spellings.size>1);
-    alert(dups.length ? 'Các nhà thầu đang bị nhập nhiều cách viết:\n\n'
+    alert(dups.length ? 'Vendors entered under multiple spellings:\n\n'
       + dups.map(v=>'• '+v.name+'  →  '+[...v.spellings].join('  |  ')).join('\n')
-      : 'Không có nhà thầu nào bị trùng cách viết.');
+      : 'No vendor is affected by inconsistent spelling.');
     return;
   }
 });
@@ -1887,9 +2115,14 @@ document.addEventListener('input', ev=>{
   const id = ev.target.id;
   if(id==='cmd-in') return cmdSearch(ev.target.value);
   if(id==='org-q')  return renderOrg();
+  if(id==='r-from' || id==='r-to'){ $$('#r-quick button').forEach(b=>b.classList.remove('on')); return renderReport(); }
   if(id && id.indexOf('f-')===0) return peopleFilter();
 });
-document.addEventListener('change', ev=>{ if(ev.target.id && ev.target.id.indexOf('f-')===0) peopleFilter(); });
+document.addEventListener('change', ev=>{
+  const id = ev.target.id;
+  if(id && id.indexOf('f-')===0) peopleFilter();
+  if(id==='r-from' || id==='r-to') renderReport();
+});
 document.addEventListener('keydown', ev=>{
   if((ev.ctrlKey||ev.metaKey) && ev.key.toLowerCase()==='k'){ ev.preventDefault(); $('#app').classList.contains('on') && cmdOpen(); return; }
   if(ev.key==='Escape'){ if($('#cmd').classList.contains('on')) cmdClose(); else closeDrawer(); return; }
@@ -1903,7 +2136,18 @@ document.addEventListener('keydown', ev=>{
 });
 window.addEventListener('resize', ()=>{ if(TAB==='org' && ORG_MODE==='tree') fixTree(); });
 
-/* ═══════════ KHỞI ĐỘNG ═══════════ */
+/* ═══════════ BOOT ═══════════ */
+(function motes(){
+  const box = $('#motes'); if(!box) return;
+  let s = '';
+  for(let i=0;i<16;i++){
+    s += '<i style="left:'+(Math.random()*100).toFixed(1)+'%;'
+       + 'animation-duration:'+(14+Math.random()*16).toFixed(1)+'s;'
+       + 'animation-delay:-'+(Math.random()*22).toFixed(1)+'s;'
+       + 'transform:scale('+(0.6+Math.random()*1.5).toFixed(2)+')"></i>';
+  }
+  box.innerHTML = s;
+})();
 (function boot(){
   const f = urlFilters();
   if(f.embed){
