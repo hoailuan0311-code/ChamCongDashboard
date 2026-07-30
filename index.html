@@ -850,7 +850,7 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 #rDetailModal{ position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px); padding:18px; }
 #rDetailModal.open{ display:flex; animation:rFade .2s ease; }
 @keyframes rFade{ from{opacity:0;} to{opacity:1;} }
-#rDetailModal .rdetail-card{ background:var(--box); border:1px solid var(--box-border); border-radius:18px; width:100%; max-width:1120px; max-height:90vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 60px rgba(0,0,0,.45); animation:rDetailPop .3s cubic-bezier(.2,.9,.3,1.2); }
+#rDetailModal .rdetail-card{ background:var(--box); border:1px solid var(--box-border); border-radius:18px; width:100%; max-width:1560px; max-height:94vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 18px 60px rgba(0,0,0,.45); animation:rDetailPop .3s cubic-bezier(.2,.9,.3,1.2); }
 @keyframes rDetailPop{ from{ transform:scale(.94) translateY(14px); opacity:0; } to{ transform:scale(1) translateY(0); opacity:1; } }
 #rDetailModal .rdetail-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:15px 20px; color:#fff; font-weight:800; font-size:15px; }
 #rDetailModal .rdetail-head.leave{ background:linear-gradient(135deg,#11998e,#38ef7d); }
@@ -873,6 +873,33 @@ tbody tr:hover { background: rgba(79,172,254,0.04); }
 .rdetail-table .rt-app{ background:rgba(46,204,113,.18); color:#27ae60; border:1px solid rgba(46,204,113,.35); }
 .rdetail-table .rt-pend{ background:rgba(255,213,0,.18); color:#e6ac00; border:1px solid rgba(255,213,0,.4); }
 .rdetail-table .rt-other{ background:rgba(255,107,107,.18); color:#e53e3e; border:1px solid rgba(255,107,107,.35); }
+/* ----- head tools: tabs + search ----- */
+#rDetailModal .rdetail-head{ flex-wrap:wrap; }
+#rDetailModal .rdetail-tools{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+#rDetailModal .rd-tabs{ display:flex; gap:4px; background:rgba(255,255,255,.18); padding:3px; border-radius:11px; }
+#rDetailModal .rd-tab{ border:none; cursor:pointer; font-family:"Be Vietnam Pro",sans-serif; font-size:11.5px; font-weight:800; color:rgba(255,255,255,.92); background:transparent; padding:5px 11px; border-radius:8px; transition:background .18s, color .18s, transform .12s; white-space:nowrap; }
+#rDetailModal .rd-tab:hover{ background:rgba(255,255,255,.2); }
+#rDetailModal .rd-tab.active{ background:#fff; color:#1c2b3a; box-shadow:0 3px 10px rgba(0,0,0,.18); }
+#rDetailModal .rd-tab:active{ transform:scale(.95); }
+#rDetailModal .rd-tab .rd-tabn{ opacity:.72; font-weight:700; margin-left:3px; }
+#rDetailModal .rd-search{ border:none; outline:none; font-family:"Be Vietnam Pro",sans-serif; font-size:12px; font-weight:600; color:#fff; background:rgba(255,255,255,.2); padding:7px 12px; border-radius:10px; width:210px; transition:background .18s, width .2s; }
+#rDetailModal .rd-search::placeholder{ color:rgba(255,255,255,.8); font-weight:600; }
+#rDetailModal .rd-search:focus{ background:rgba(255,255,255,.32); width:250px; }
+
+/* ----- footer phan trang ----- */
+#rDetailModal .rdetail-foot{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:10px 16px; background:var(--kpi-bg); border-top:1px solid var(--box-border); }
+#rDetailModal .rd-info{ font-size:12px; font-weight:700; color:var(--text-muted); white-space:nowrap; }
+#rDetailModal .rd-info b{ color:var(--text); }
+#rDetailModal .rd-pager{ display:flex; align-items:center; gap:5px; flex-wrap:wrap; justify-content:center; }
+#rDetailModal .rd-pg{ min-width:32px; height:32px; padding:0 9px; border:1px solid var(--box-border); background:var(--box); color:var(--text); font-family:"Be Vietnam Pro",sans-serif; font-size:12.5px; font-weight:700; border-radius:9px; cursor:pointer; transition:transform .12s, background .18s, color .18s, box-shadow .18s; }
+#rDetailModal .rd-pg:hover:not(:disabled):not(.active){ background:rgba(79,172,254,.14); transform:translateY(-1px); }
+#rDetailModal .rd-pg:active:not(:disabled){ transform:scale(.94); }
+#rDetailModal .rd-pg.active{ background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border-color:transparent; box-shadow:0 5px 14px rgba(102,126,234,.4); cursor:default; }
+#rDetailModal .rd-pg:disabled{ opacity:.38; cursor:not-allowed; }
+#rDetailModal .rd-dots{ color:var(--text-muted); font-weight:800; padding:0 2px; }
+#rDetailModal .rd-size{ display:flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--text-muted); white-space:nowrap; }
+#rDetailModal .rd-size select{ font-family:"Be Vietnam Pro",sans-serif; font-size:12px; font-weight:700; color:var(--text); background:var(--box); border:1px solid var(--box-border); border-radius:9px; padding:6px 9px; cursor:pointer; }
+@media(max-width:700px){ #rDetailModal .rd-search{ width:100%; } #rDetailModal .rd-info,#rDetailModal .rd-size{ font-size:11px; } }
 @media(max-width:700px){ #rDetailModal .rdetail-card{ max-width:100%; max-height:94vh; } }
 
 /* ===================== AUDIO ===================== */
@@ -1162,10 +1189,31 @@ audio { display: none; }
     <div class="rdetail-card">
         <div id="rDetailHead" class="rdetail-head">
             <span id="rDetailTitle">Chi tiết</span>
-            <button id="rDetailClose" class="rdetail-close" aria-label="Đóng">&times;</button>
+            <div class="rdetail-tools">
+                <input id="rDetailSearch" class="rd-search" type="search" placeholder="🔍 Tìm MSNV / họ tên / team…" autocomplete="off">
+                <div class="rd-tabs" id="rDetailTabs">
+                    <button class="rd-tab active" data-f="all">Tất cả<span class="rd-tabn" data-n="all"></span></button>
+                    <button class="rd-tab" data-f="pend">Chờ duyệt<span class="rd-tabn" data-n="pend"></span></button>
+                    <button class="rd-tab" data-f="app">Đã duyệt<span class="rd-tabn" data-n="app"></span></button>
+                    <button class="rd-tab" data-f="other">Rejected<span class="rd-tabn" data-n="other"></span></button>
+                </div>
+                <button id="rDetailClose" class="rdetail-close" aria-label="Đóng">&times;</button>
+            </div>
         </div>
         <div class="rdetail-body">
-            <div class="rdetail-scroll"><table class="rdetail-table" id="rDetailTable"></table></div>
+            <div class="rdetail-scroll" id="rDetailScroll"><table class="rdetail-table" id="rDetailTable"></table></div>
+        </div>
+        <div class="rdetail-foot">
+            <div class="rd-info" id="rDetailInfo">—</div>
+            <div class="rd-pager" id="rDetailPager"></div>
+            <div class="rd-size">
+                <span>Dòng/trang</span>
+                <select id="rDetailPageSize">
+                    <option value="50" selected>50</option>
+                    <option value="100">100</option>
+                    <option value="200">200</option>
+                </select>
+            </div>
         </div>
     </div>
 </div>
@@ -1642,45 +1690,149 @@ function setupRespObservers(){
     document.querySelectorAll("#respReports .rgrow").forEach(el=>_rGrowIO.observe(el));
 }
 
-/* ---- DETAILS MODAL (bảng đầy đủ kiểu Excel) ---- */
+/* ---- DETAILS MODAL (bảng Excel) – PHÂN TRANG, MẶC ĐỊNH 50 DÒNG/TRANG ---- */
 function _rStatusBadge(s){ const st=_rStatus(s); const cls=st==="app"?"rt-app":st==="pend"?"rt-pend":"rt-other"; const txt=st==="app"?"Đã duyệt":st==="pend"?"Chờ duyệt":"Rejected"; return `<span class="rt-badge ${cls}">${txt}</span>`; }
-function buildLeaveTable(data){
-    const rows=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
+
+/* rows = mảng ĐÃ sort + ĐÃ cắt trang;  off = số thứ tự bắt đầu của trang */
+function buildLeaveTable(rows, off){
+    off = off || 0;
     const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại phép</th><th>Từ ngày</th><th>Đến ngày</th><th>Số ngày</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
     const body=rows.map((d,i)=>{ const f=_rNum(d.OffFrom),t=_rNum(d.OffTo); const days=(f&&t&&t>=f)?(t-f+1):(f?1:0);
-        return `<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
+        return `<tr style="animation-delay:${(Math.min(i,30)*0.015).toFixed(3)}s"><td class="rt-idx">${off+i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.OffFrom)}</td><td>${_rDate(d.OffTo)}</td><td style="text-align:center">${days}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`;
     }).join("");
     return head+`<tbody>${body}</tbody>`;
 }
-function buildMissTable(data){
-    const rows=[...data].sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
+function buildMissTable(rows, off){
+    off = off || 0;
     const head=`<thead><tr><th>#</th><th>Trạng thái</th><th>MSNV</th><th>Họ tên</th><th>Team</th><th>Loại lỗi</th><th>Ngày lỗi</th><th>Lý do</th><th>Chi tiết</th><th>Leader duyệt</th><th>Sup duyệt</th><th>Gửi lúc</th></tr></thead>`;
-    const body=rows.map((d,i)=>`<tr style="animation-delay:${(Math.min(i,40)*0.02).toFixed(2)}s"><td class="rt-idx">${i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.MDate)}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td class="wrap">${_rEsc(d.Details)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`).join("");
+    const body=rows.map((d,i)=>`<tr style="animation-delay:${(Math.min(i,30)*0.015).toFixed(3)}s"><td class="rt-idx">${off+i+1}</td><td>${_rStatusBadge(d.Status)}</td><td>${_rEsc(d.MSNV)}</td><td>${_rEsc(d.FullName)}</td><td>${_rEsc(d.Team)}</td><td>${_rEsc(d.Type)}</td><td>${_rDate(d.MDate)}</td><td class="wrap">${_rEsc(d.Reason)||'—'}</td><td class="wrap">${_rEsc(d.Details)||'—'}</td><td>${_rEsc(d.LeaderApp)||'—'}</td><td>${_rEsc(d.SupApp)||'—'}</td><td>${_rDateTime(d["Thời điểm Submit"])}</td></tr>`).join("");
     return head+`<tbody>${body}</tbody>`;
 }
+
 const _rdMeta = {
-    leave:{ title:"🌴 Chi tiết Đơn Nghỉ phép", cls:"leave", build:(arr)=>buildLeaveTable(arr), data:()=>leaveData },
-    miss: { title:"⏰ Chi tiết Đơn báo MISSING", cls:"miss",  build:(arr)=>buildMissTable(arr),  data:()=>missData }
+    leave:{ title:"🌴 Chi tiết Đơn Nghỉ phép", cls:"leave", build:(arr,off)=>buildLeaveTable(arr,off), data:()=>leaveData },
+    miss: { title:"⏰ Chi tiết Đơn báo MISSING", cls:"miss",  build:(arr,off)=>buildMissTable(arr,off),  data:()=>missData }
 };
-const rdModal = document.getElementById("rDetailModal");
-function openRDetail(kind, filter){
-    const m=_rdMeta[kind]; if(!m) return;
-    filter = filter || "all";
-    let arr = m.data();
-    if(filter==="pend")      arr = arr.filter(d=>_rStatus(d.Status)==="pend");
-    else if(filter==="app")  arr = arr.filter(d=>_rStatus(d.Status)==="app");
-    const fLabel = filter==="pend" ? " · Chờ duyệt" : filter==="app" ? " · Đã duyệt" : "";
-    document.getElementById("rDetailTitle").textContent = m.title + fLabel + "  (" + arr.length + " đơn)";
-    document.getElementById("rDetailHead").className = "rdetail-head " + m.cls;
-    document.getElementById("rDetailTable").innerHTML = arr.length ? m.build(arr) : '<tbody><tr><td style="padding:24px;color:var(--text-muted)">Chưa có dữ liệu.</td></tr></tbody>';
-    rdModal.classList.add("open");
-    document.body.style.overflow = "hidden";
+
+const rdModal    = document.getElementById("rDetailModal");
+const rdTitleEl  = document.getElementById("rDetailTitle");
+const rdHeadEl   = document.getElementById("rDetailHead");
+const rdTableEl  = document.getElementById("rDetailTable");
+const rdScrollEl = document.getElementById("rDetailScroll");
+const rdInfoEl   = document.getElementById("rDetailInfo");
+const rdPagerEl  = document.getElementById("rDetailPager");
+const rdTabsEl   = document.getElementById("rDetailTabs");
+const rdSearchEl = document.getElementById("rDetailSearch");
+const rdSizeEl   = document.getElementById("rDetailPageSize");
+
+const RD_PAGE_SIZE_DEFAULT = 50;
+const rdState = { kind:"leave", filter:"all", page:1, size:RD_PAGE_SIZE_DEFAULT, q:"", rows:[], counts:{all:0,pend:0,app:0,other:0} };
+const _rdFilterLabel = { all:"", pend:" · Chờ duyệt", app:" · Đã duyệt", other:" · Rejected" };
+
+function _rdSearchText(d){
+    return [d.MSNV,d.FullName,d.Team,d.Type,d.Reason,d.Details,d.LeaderApp,d.SupApp]
+        .map(v=>(v==null?"":String(v))).join(" ").toLowerCase();
 }
-function closeRDetail(){ rdModal.classList.remove("open"); document.body.style.overflow = ""; }
-document.querySelectorAll("#respReports .rdetail-btn").forEach(b=>b.addEventListener("click",()=>openRDetail(b.dataset.kind, b.dataset.filter)));
+
+/* Lọc + tìm kiếm + sort → nạp vào rdState.rows (chỉ chạy khi đổi kind/filter/search) */
+function _rdCompute(){
+    const m=_rdMeta[rdState.kind]; if(!m) return;
+    const all=(m.data()||[]);
+    const c={all:all.length,pend:0,app:0,other:0};
+    all.forEach(d=>{ const st=_rStatus(d.Status); c[st]=(c[st]||0)+1; });
+    rdState.counts=c;
+
+    let arr = rdState.filter==="all" ? all.slice() : all.filter(d=>_rStatus(d.Status)===rdState.filter);
+    const q=(rdState.q||"").trim().toLowerCase();
+    if(q) arr=arr.filter(d=>_rdSearchText(d).includes(q));
+    arr.sort((a,b)=>_rNum(b["Thời điểm Submit"])-_rNum(a["Thời điểm Submit"]));
+    rdState.rows=arr;
+}
+
+/* Nút phân trang: «  ‹  1 … 4 5 [6] 7 8 … 20  ›  » */
+function _rdBuildPager(pages){
+    const cur=rdState.page;
+    if(pages<=1){ rdPagerEl.innerHTML = pages===1 ? '<button class="rd-pg active">1</button>' : ""; return; }
+    const btn=(label,page,opt)=>{ opt=opt||{};
+        return `<button class="rd-pg${opt.active?" active":""}" data-p="${page}"${opt.dis?" disabled":""}${opt.title?` title="${opt.title}"`:""}>${label}</button>`;
+    };
+    let h="";
+    h+=btn("«",1,{dis:cur===1,title:"Trang đầu"});
+    h+=btn("‹",cur-1,{dis:cur===1,title:"Trang trước"});
+    const nums=new Set([1,pages]);
+    for(let p=cur-2;p<=cur+2;p++) if(p>=1&&p<=pages) nums.add(p);
+    let prev=0;
+    [...nums].sort((a,b)=>a-b).forEach(p=>{
+        if(prev && p-prev>1) h+='<span class="rd-dots">…</span>';
+        h+=btn(p,p,{active:p===cur}); prev=p;
+    });
+    h+=btn("›",cur+1,{dis:cur===pages,title:"Trang sau"});
+    h+=btn("»",pages,{dis:cur===pages,title:"Trang cuối"});
+    rdPagerEl.innerHTML=h;
+}
+
+/* Render đúng 1 trang */
+function renderRDetail(){
+    const m=_rdMeta[rdState.kind]; if(!m) return;
+    const total=rdState.rows.length, size=rdState.size;
+    const pages=Math.max(1,Math.ceil(total/size));
+    rdState.page=Math.min(Math.max(1,rdState.page),pages);
+    const start=(rdState.page-1)*size;
+    const slice=rdState.rows.slice(start,start+size);
+
+    rdTitleEl.textContent = m.title + (_rdFilterLabel[rdState.filter]||"") + "  (" + total + " đơn)";
+    rdHeadEl.className = "rdetail-head " + m.cls;
+    rdTableEl.innerHTML = slice.length ? m.build(slice,start)
+        : '<tbody><tr><td style="padding:26px;color:var(--text-muted)">Không có dữ liệu phù hợp.</td></tr></tbody>';
+    if(rdScrollEl) rdScrollEl.scrollTop=0;
+
+    rdInfoEl.innerHTML = total
+        ? `Hiển thị <b>${start+1}–${Math.min(start+size,total)}</b> / <b>${total}</b> dòng · Trang <b>${rdState.page}</b>/<b>${pages}</b>`
+        : "Không có dòng nào";
+    _rdBuildPager(pages);
+    rdTabsEl.querySelectorAll(".rd-tab").forEach(t=>{
+        t.classList.toggle("active", t.dataset.f===rdState.filter);
+        const n=t.querySelector(".rd-tabn"); if(n) n.textContent=" ("+(rdState.counts[t.dataset.f]||0)+")";
+    });
+}
+
+function _rdGoPage(p){ rdState.page=p; renderRDetail(); }
+function _rdReload(){ rdState.page=1; _rdCompute(); renderRDetail(); }
+
+function openRDetail(kind, filter){
+    if(!_rdMeta[kind]) return;
+    rdState.kind=kind;
+    rdState.filter=(filter==="pend"||filter==="app"||filter==="other")?filter:"all";
+    rdState.q=""; rdSearchEl.value="";
+    rdState.size=parseInt(rdSizeEl.value,10)||RD_PAGE_SIZE_DEFAULT;
+    rdState.page=1;
+    _rdCompute(); renderRDetail();
+    rdModal.classList.add("open");
+    document.body.style.overflow="hidden";
+}
+function closeRDetail(){ rdModal.classList.remove("open"); document.body.style.overflow=""; }
+
+/* ---- events ---- */
+document.querySelectorAll("#respReports .rdetail-btn").forEach(b=>b.addEventListener("click",()=>openRDetail(b.dataset.kind,b.dataset.filter)));
 document.getElementById("rDetailClose").addEventListener("click", closeRDetail);
 rdModal.addEventListener("click", e=>{ if(e.target===rdModal) closeRDetail(); });
-document.addEventListener("keydown", e=>{ if(e.key==="Escape" && rdModal.classList.contains("open")) closeRDetail(); });
+rdTabsEl.addEventListener("click", e=>{ const b=e.target.closest(".rd-tab"); if(!b) return; rdState.filter=b.dataset.f; _rdReload(); });
+rdPagerEl.addEventListener("click", e=>{ const b=e.target.closest(".rd-pg"); if(!b||b.disabled||!b.dataset.p) return; _rdGoPage(parseInt(b.dataset.p,10)); });
+rdSizeEl.addEventListener("change", ()=>{ rdState.size=parseInt(rdSizeEl.value,10)||RD_PAGE_SIZE_DEFAULT; rdState.page=1; renderRDetail(); });
+let _rdSearchTimer=null;
+rdSearchEl.addEventListener("input", ()=>{ clearTimeout(_rdSearchTimer); _rdSearchTimer=setTimeout(()=>{ rdState.q=rdSearchEl.value; _rdReload(); }, 220); });
+
+document.addEventListener("keydown", e=>{
+    if(!rdModal.classList.contains("open")) return;
+    if(e.key==="Escape"){ closeRDetail(); return; }
+    const t=e.target && e.target.tagName;
+    if(t==="INPUT"||t==="TEXTAREA"||t==="SELECT") return;
+    const pages=Math.max(1,Math.ceil(rdState.rows.length/rdState.size));
+    if(e.key==="ArrowRight" && rdState.page<pages){ e.preventDefault(); _rdGoPage(rdState.page+1); }
+    else if(e.key==="ArrowLeft" && rdState.page>1){ e.preventDefault(); _rdGoPage(rdState.page-1); }
+    else if(e.key==="Home"){ e.preventDefault(); _rdGoPage(1); }
+    else if(e.key==="End"){ e.preventDefault(); _rdGoPage(pages); }
+});
 
 /* ============ BUTTONS ============ */
 // Helper: chua dang nhap -> mo popup, dang nhap xong tu chay lai; roi thi chay luon
