@@ -1062,6 +1062,263 @@ audio { display: none; }
 
 <body>
 
+<!-- ===================== [SUNSET] THÔNG BÁO NGỪNG HOẠT ĐỘNG + TỰ KHOÁ TRANG ===================== -->
+<!-- Muốn MỞ LẠI TRANG sau này: đặt SUNSET_CONFIG.enabled = false (hoặc dời hạn ở phần deadline) -->
+<style id="sunsetStyle">
+@keyframes sunsetFadeIn { from { opacity:0 } to { opacity:1 } }
+@keyframes sunsetPopIn  { from { opacity:0; transform: translateY(24px) scale(.96) } to { opacity:1; transform:translateY(0) scale(1) } }
+@keyframes sunsetGlow   { 0%,100% { background-position: 0% 50% } 50% { background-position: 100% 50% } }
+@keyframes sunsetPulse  { 0%,100% { transform: scale(1); opacity:.85 } 50% { transform: scale(1.06); opacity:1 } }
+@keyframes sunsetFloat  { from { transform: translateY(0) rotate(0deg); opacity:0 } 10% { opacity:.6 } to { transform: translateY(-120vh) rotate(360deg); opacity:0 } }
+
+#sunsetMask {
+    position: fixed; inset: 0; z-index: 999998;
+    background: rgba(8,10,18,.72);
+    backdrop-filter: blur(9px); -webkit-backdrop-filter: blur(9px);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; animation: sunsetFadeIn .45s ease both;
+    overflow: auto;
+}
+#sunsetMask.show { display: flex; }
+
+.sunset-card {
+    position: relative;
+    width: min(660px, 100%);
+    border-radius: 22px;
+    padding: 2px;
+    background: linear-gradient(120deg,#4facfe,#00f2fe,#43e97b,#f6d365,#fda085,#4facfe);
+    background-size: 300% 300%;
+    animation: sunsetGlow 9s ease infinite, sunsetPopIn .55s cubic-bezier(.2,.9,.3,1.2) both;
+    box-shadow: 0 30px 80px rgba(0,0,0,.45);
+    margin: auto;
+}
+.sunset-inner {
+    border-radius: 20px;
+    background: #ffffff;
+    color: #1b2430;
+    padding: 30px 30px 24px;
+    font-family: "Be Vietnam Pro", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+    .sunset-inner { background: #161a24; color: #eaeef7; }
+}
+
+.sunset-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    font-size: 12px; font-weight: 800; letter-spacing:.6px; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 999px; color:#fff;
+    background: linear-gradient(90deg,#fda085,#f6416c);
+    animation: sunsetPulse 2.4s ease-in-out infinite;
+}
+.sunset-title {
+    margin: 16px 0 6px; font-size: 25px; font-weight: 800; line-height:1.25;
+    background: linear-gradient(90deg,#4facfe 0%,#00f2fe 45%,#43e97b 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sunset-body { font-size: 14.5px; line-height: 1.75; }
+.sunset-body p { margin: 10px 0; }
+.sunset-hi { font-weight: 800; color:#f6416c; }
+
+.sunset-contact {
+    margin-top: 14px; border-radius: 14px; padding: 14px 16px;
+    background: rgba(79,172,254,.10);
+    border: 1px dashed rgba(79,172,254,.55);
+}
+.sunset-contact b { display:block; margin-bottom: 6px; font-size: 13px; letter-spacing:.3px; }
+.sunset-contact ul { margin: 6px 0 0; padding-left: 20px; }
+.sunset-contact li { margin: 4px 0; }
+
+.sunset-count {
+    margin-top: 16px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+}
+.sunset-count .cell {
+    min-width: 74px; text-align:center; padding: 10px 8px; border-radius: 12px;
+    background: linear-gradient(160deg, rgba(79,172,254,.16), rgba(67,233,123,.16));
+    border: 1px solid rgba(79,172,254,.25);
+}
+.sunset-count .num { display:block; font-size: 22px; font-weight: 800; line-height:1; }
+.sunset-count .lbl { display:block; font-size: 10.5px; text-transform: uppercase; letter-spacing:.6px; opacity:.7; margin-top:5px; }
+
+.sunset-actions { margin-top: 22px; display:flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.sunset-btn {
+    border: 0; cursor: pointer; padding: 11px 20px; border-radius: 12px;
+    font-family: inherit; font-size: 13.5px; font-weight: 700; color:#fff;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    box-shadow: 0 8px 20px rgba(79,172,254,.35);
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.sunset-btn:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 12px 26px rgba(79,172,254,.45); }
+.sunset-btn.ghost {
+    background: transparent; color: inherit; box-shadow:none;
+    border: 1px solid rgba(128,128,128,.35); font-weight:600;
+}
+.sunset-sign { margin-top: 16px; font-size: 13px; opacity:.75; font-style: italic; text-align: right; }
+
+/* Lớp khoá trang sau hạn */
+#sunsetLock { z-index: 999999; background: radial-gradient(1200px 600px at 50% 10%, #17233a 0%, #080a12 70%); backdrop-filter:none; -webkit-backdrop-filter:none; }
+#sunsetLock .sunset-inner { background: #0f1420; color:#e9eefb; }
+.sunset-spark { position: fixed; bottom:-40px; font-size: 18px; pointer-events:none; animation: sunsetFloat linear infinite; }
+body.sunset-locked > *:not(#sunsetLock):not(.sunset-spark):not(script):not(style) { display: none !important; }
+body.sunset-locked { overflow: hidden !important; }
+</style>
+
+<!-- Modal thông báo (trước hạn) -->
+<div id="sunsetMask" role="dialog" aria-modal="true" aria-labelledby="sunsetTitle">
+  <div class="sunset-card">
+    <div class="sunset-inner">
+      <span class="sunset-badge">📢 Thông báo quan trọng</span>
+      <h2 class="sunset-title" id="sunsetTitle">Trang sẽ ngừng hoạt động từ 16:00 – 20/08/2026</h2>
+      <div class="sunset-body">
+        <p>Xin chào cả nhà 👋</p>
+        <p>Sau một chặng đường đồng hành, <b>Dashboard Phản Hồi Chấm Công – Warehouse RYOBI</b> sẽ chính thức
+           <span class="sunset-hi">ngừng hoạt động vào lúc 16:00 ngày 20/08/2026</span>.</p>
+        <p>Cảm ơn tất cả anh chị em đã tin tưởng, sử dụng và góp ý cho trang trong suốt thời gian vừa qua.
+           Mỗi phản hồi của mọi người đều đã giúp công tác chấm công ngày một chính xác và nhanh hơn. ❤️</p>
+        <div class="sunset-contact">
+          <b>📌 Từ ngày 21/08/2026, mọi thắc mắc về Chấm Công vui lòng liên hệ:</b>
+          <ul>
+            <li>Chị <b>Lê Thị Hoài Nhi</b></li>
+            <li>Hoặc cấp trên của tôi – Chị <b>Taylor (Nguyễn Minh Thư)</b></li>
+          </ul>
+        </div>
+        <div class="sunset-count" id="sunsetCountdown"></div>
+      </div>
+      <div class="sunset-actions">
+        <button class="sunset-btn ghost" id="sunsetHideToday">Không hiện lại hôm nay</button>
+        <button class="sunset-btn" id="sunsetOk">Tôi đã hiểu</button>
+      </div>
+      <div class="sunset-sign">— Trân trọng cảm ơn & hẹn gặp lại 🌱</div>
+    </div>
+  </div>
+</div>
+
+<!-- Màn hình khoá (sau hạn) -->
+<div id="sunsetLock" class="sunset-mask-base" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto;">
+  <div class="sunset-card">
+    <div class="sunset-inner" style="text-align:center;">
+      <span class="sunset-badge" style="background:linear-gradient(90deg,#8e9eab,#4b6cb7)">🔒 Đã ngừng hoạt động</span>
+      <h2 class="sunset-title">Cảm ơn mọi người – Hẹn gặp lại!</h2>
+      <div class="sunset-body" style="text-align:left;">
+        <p><b>Dashboard Phản Hồi Chấm Công – Warehouse RYOBI</b> đã chính thức ngừng hoạt động
+           từ <span class="sunset-hi">16:00 ngày 20/08/2026</span>.</p>
+        <p>Xin chân thành cảm ơn tất cả anh chị em đã đồng hành và sử dụng trang trong suốt thời gian qua. 🙏</p>
+        <div class="sunset-contact">
+          <b>📌 Mọi thắc mắc về Chấm Công vui lòng liên hệ:</b>
+          <ul>
+            <li>Chị <b>Lê Thị Hoài Nhi</b></li>
+            <li>Hoặc chị <b>Taylor (Nguyễn Minh Thư)</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="sunset-sign" style="text-align:center;">— Warehouse RYOBI · Cris 🌱</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+    /* ============ BẢNG ĐIỀU KHIỂN – CHỈ CẦN SỬA Ở ĐÂY ============ */
+    const SUNSET_CONFIG = {
+        enabled: true,             // false = tắt toàn bộ (mở lại trang bình thường)
+        showNotice: true,          // true = hiện popup thông báo trước hạn
+        lockAfterDeadline: true,   // true = tự khoá trang sau hạn
+        // Hạn: 16:00 20/08/2026 giờ Việt Nam (UTC+7) -> 09:00 UTC cùng ngày
+        deadlineUTC: Date.UTC(2026, 7, 20, 9, 0, 0),
+        adminKey: "cris2026"       // mở khoá tạm: thêm ?unlock=cris2026 vào cuối URL
+    };
+    /* ============================================================= */
+
+    if (!SUNSET_CONFIG.enabled) return;
+
+    const now = () => Date.now();
+    const expired = () => now() >= SUNSET_CONFIG.deadlineUTC;
+
+    // Cho phép admin xem lại trang: ...index.html?unlock=cris2026
+    try {
+        const p = new URLSearchParams(location.search);
+        if (p.get("unlock") === SUNSET_CONFIG.adminKey) sessionStorage.setItem("sunsetUnlock", "1");
+    } catch (e) {}
+    const unlocked = (function () { try { return sessionStorage.getItem("sunsetUnlock") === "1"; } catch (e) { return false; } })();
+
+    function showLock() {
+        document.body.classList.add("sunset-locked");
+        const lock = document.getElementById("sunsetLock");
+        if (lock) lock.style.display = "flex";
+        // hiệu ứng lá bay nhẹ cho đỡ trống
+        const icons = ["🌱", "✨", "🍃", "💫", "❤️"];
+        for (let i = 0; i < 14; i++) {
+            const s = document.createElement("div");
+            s.className = "sunset-spark";
+            s.textContent = icons[i % icons.length];
+            s.style.left = Math.random() * 100 + "vw";
+            s.style.animationDuration = (9 + Math.random() * 9) + "s";
+            s.style.animationDelay = (Math.random() * 8) + "s";
+            document.body.appendChild(s);
+        }
+        // dừng nhạc theme nếu có
+        const m = document.getElementById("themeMusic"); if (m) { try { m.pause(); } catch (e) {} }
+    }
+
+    function renderCountdown() {
+        const box = document.getElementById("sunsetCountdown");
+        if (!box) return;
+        const tick = () => {
+            let d = SUNSET_CONFIG.deadlineUTC - now();
+            if (d <= 0) { location.reload(); return; }
+            const day = Math.floor(d / 86400000);
+            const hr  = Math.floor(d % 86400000 / 3600000);
+            const mi  = Math.floor(d % 3600000 / 60000);
+            const se  = Math.floor(d % 60000 / 1000);
+            box.innerHTML =
+                `<div class="cell"><span class="num">${day}</span><span class="lbl">Ngày</span></div>` +
+                `<div class="cell"><span class="num">${String(hr).padStart(2,"0")}</span><span class="lbl">Giờ</span></div>` +
+                `<div class="cell"><span class="num">${String(mi).padStart(2,"0")}</span><span class="lbl">Phút</span></div>` +
+                `<div class="cell"><span class="num">${String(se).padStart(2,"0")}</span><span class="lbl">Giây</span></div>`;
+        };
+        tick();
+        setInterval(tick, 1000);
+    }
+
+    function showNotice() {
+        let hideKey = "";
+        try {
+            hideKey = "sunsetHide_" + new Date().toISOString().slice(0, 10);
+            if (localStorage.getItem(hideKey) === "1") return;
+        } catch (e) {}
+        const mask = document.getElementById("sunsetMask");
+        if (!mask) return;
+        mask.classList.add("show");
+        renderCountdown();
+
+        const close = () => mask.classList.remove("show");
+        document.getElementById("sunsetOk").onclick = close;
+        document.getElementById("sunsetHideToday").onclick = function () {
+            try { localStorage.setItem(hideKey, "1"); } catch (e) {}
+            close();
+        };
+        mask.addEventListener("click", e => { if (e.target === mask) close(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+    }
+
+    function boot() {
+        if (expired()) {
+            if (SUNSET_CONFIG.lockAfterDeadline && !unlocked) showLock();
+            return;
+        }
+        if (SUNSET_CONFIG.showNotice) setTimeout(showNotice, 700);
+        // nếu người dùng mở trang xuyên qua mốc 16:00 thì tự khoá luôn
+        setInterval(() => {
+            if (expired() && SUNSET_CONFIG.lockAfterDeadline && !unlocked) showLock();
+        }, 30000);
+    }
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+    else boot();
+})();
+</script>
+<!-- ===================== [/SUNSET] ===================== -->
+
+
 <h1>Dashboard Phản Hồi Chấm Công – WAREHOUSE RYOBI</h1>
 <p style="text-align:center; color:var(--text-muted); font-size:13px; margin-top:4px;">🕓 Dữ liệu được cập nhật tự động ❤️🫶❤️</p>
 
