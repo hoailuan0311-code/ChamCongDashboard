@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Efficiency Warehouse RYOBI</title>
+<title>Làm tay hay dùng công cụ — Efficiency Warehouse RYOBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -300,6 +300,81 @@ tbody tr{transition:background .15s ease}
   .trk.in .endcap::after{animation:none}
 }
 
+
+/* ================= 3 GIAI DOAN ================= */
+.phases{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin-top:26px;
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.ph{padding:22px 20px;border-right:1px solid var(--line);background:var(--steel);
+  position:relative;transition:background .22s ease}
+.ph:last-child{border-right:none}
+.ph:hover{background:var(--steel-2)}
+.ph::before{content:"";position:absolute;left:0;right:0;top:0;height:3px}
+.ph.old::before{background:var(--paper-dim)}
+.ph.new::before{background:var(--amber)}
+.ph.tool::before{background:var(--signal)}
+.ph .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--paper-dim)}
+.ph.new .tag{color:var(--amber)}
+.ph.tool .tag{color:var(--signal)}
+.ph h3{font-family:'Archivo',sans-serif;font-size:19px;font-weight:900;
+  text-transform:uppercase;margin:6px 0 3px;letter-spacing:-.01em}
+.ph .when{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--paper-dim);
+  margin-bottom:14px}
+.ph .when b{color:var(--paper)}
+.ph ul{list-style:none;font-size:13px;color:var(--paper-dim)}
+.ph li{padding-left:16px;position:relative;margin-bottom:8px;line-height:1.5}
+.ph li::before{content:"";position:absolute;left:0;top:8px;width:6px;height:2px;
+  background:var(--line)}
+.ph.new li::before{background:var(--amber)}
+.ph.tool li::before{background:var(--signal)}
+.ph li b{color:var(--paper);font-weight:600}
+.ph .out{margin-top:16px;padding-top:13px;border-top:1px solid var(--line);
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+  text-transform:uppercase}
+.ph .out span{display:block;font-family:'Archivo';font-size:22px;font-weight:900;
+  letter-spacing:0;text-transform:none;margin-top:4px}
+.ph.old .out span{color:var(--alert)}
+.ph.new .out span{color:var(--alert)}
+.ph.tool .out span{color:var(--ok)}
+
+/* the ket doan cua giai doan 2 */
+.trap{margin-top:24px;border:1px solid var(--alert);border-radius:var(--r);overflow:hidden}
+.trap .hd{background:rgba(226,86,74,.14);color:var(--alert);padding:12px 18px;
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;
+  text-transform:uppercase}
+.trap .bd{padding:18px;background:var(--steel)}
+.tt{width:100%;border-collapse:collapse;font-size:13.5px}
+.tt th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--amber);border-bottom:1px solid var(--amber);
+  padding:8px 10px;text-align:center}
+.tt th:first-child{text-align:left}
+.tt td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:center}
+.tt td:first-child{text-align:left;color:var(--paper-dim)}
+.tt tr:last-child td{border-bottom:none}
+.yes{color:var(--ok);font-weight:700}
+.no{color:var(--alert);font-weight:700}
+.tt td.pick{background:rgba(37,194,199,.09)}
+
+/* bang doi chieu chi tiet */
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:16px}
+.cmp th{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;padding:9px 11px;border-bottom:1px solid var(--amber);
+  color:var(--amber);text-align:left}
+.cmp th.o{color:var(--paper-dim);border-bottom-color:var(--line)}
+.cmp th.nw{color:var(--signal);border-bottom-color:var(--signal)}
+.cmp td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp td.k{color:var(--paper-dim);width:210px}
+.cmp td.o{color:var(--paper-dim)}
+.cmp td.nw{color:var(--paper);background:rgba(37,194,199,.05)}
+.cmp tr:hover td{background:var(--steel)}
+.cmp tr:hover td.nw{background:rgba(37,194,199,.11)}
+
+@media(max-width:960px){
+  .phases{grid-template-columns:1fr}
+  .ph{border-right:none;border-bottom:1px solid var(--line)}
+  .cmp td.k{width:auto}
+}
+
 </style>
 </head>
 <body>
@@ -321,9 +396,120 @@ tbody tr{transition:background .15s ease}
   </div>
 </header>
 
+<!-- ===== 0. BA GIAI DOAN ===== -->
+<section>
+  <div class="shead"><span class="snum">01</span><h2>3 giai đoạn</h2></div>
+
+  <div class="phases">
+
+    <div class="ph old">
+      <div class="tag">Giai đoạn 1</div>
+      <h3>Cách cũ</h3>
+      <div class="when">Hạn nộp <b>8:40</b> &middot; ~80 dòng/ngày</div>
+      <ul>
+        <li>Mỗi dòng là <b>1 task gộp cả team</b> — không biết ai làm gì, ai mấy giờ, ai nghỉ</li>
+        <li>Team tụt hiệu suất thì <b>không truy được xuống cá nhân</b></li>
+        <li>HC <b>không cụ thể được</b>, vì cross-support miss thông tin</li>
+        <li>Đến 8:40 vẫn còn team chưa nộp — phải nhắn, gọi, nhắc lại <b>nhiều vòng</b></li>
+      </ul>
+      <div class="out">Báo cáo thực tế xong<span>10:00 – 10:30</span></div>
+    </div>
+
+    <div class="ph new">
+      <div class="tag">Giai đoạn 2</div>
+      <h3>Cách mới</h3>
+      <div class="when">Hạn nộp <b>9:00</b> &middot; ~700 dòng/ngày</div>
+      <ul>
+        <li>Mỗi dòng là <b>1 người × 1 task</b>, kèm số giờ — có bao nhiêu task thì bấy nhiêu dòng</li>
+        <li>Đối chiếu được <b>UPH từng team từng HC</b></li>
+        <li>Theo dõi được <b>người hỗ trợ chéo team</b></li>
+        <li>Áp dụng lại được cho <b>team mới, site mới</b> — chỉ đặt thêm Rule</li>
+      </ul>
+      <div class="out">Nếu làm tay thì xong<span>11:05</span></div>
+    </div>
+
+    <div class="ph tool">
+      <div class="tag">Giai đoạn 3</div>
+      <h3>Sử dụng tools</h3>
+      <div class="when">Hạn nộp <b>9:00</b> &middot; ~700 dòng/ngày</div>
+      <ul>
+        <li>Giữ nguyên toàn bộ <b>độ chi tiết</b> của cách mới</li>
+        <li><b>16 rule</b> tự chạy mỗi lần nộp, không cho phép bỏ qua</li>
+        <li>Lỗi bị chặn <b>ngay lúc Leader nộp</b>, không còn vòng gọi lại</li>
+        <li>Thêm team hay site mới <b>không làm chậm quy trình</b></li>
+      </ul>
+      <div class="out">Báo cáo xong<span>9:30 - 10:00</span></div>
+    </div>
+
+  </div>
+
+  <div class="trap">
+    <div class="hd">Điểm khó của giai đoạn 2</div>
+    <div class="bd">
+      <p style="font-size:13.5px;color:var(--paper-dim);margin-bottom:16px">
+        Cách mới cho dữ liệu tốt hơn hẳn, nhưng khối lượng tăng từ <b style="color:var(--paper)">80 lên 700 dòng</b> — gấp gần 9 lần. Nếu vẫn kiểm tra và tổng hợp bằng tay thì cách mới <b style="color:var(--alert)">còn trễ hơn cả cách cũ</b>.
+      </p>
+      <table class="tt">
+        <tr>
+          <th>&nbsp;</th>
+          <th>Cách cũ</th>
+          <th>Cách mới làm tay</th>
+          <th>Cách mới + công cụ</th>
+        </tr>
+        <tr>
+          <td>Chi tiết đến từng người</td>
+          <td class="no">Không</td>
+          <td class="yes">Có</td>
+          <td class="pick yes">Có</td>
+        </tr>
+        <tr>
+          <td>Kịp hạn báo cáo 10:00</td>
+          <td class="no">Không &middot; 10:00–10:30</td>
+          <td class="no">Không &middot; 11:05</td>
+          <td class="pick yes">Có &middot; <10:00</td>
+        </tr>
+      </table>
+      <p style="font-size:13.5px;color:var(--paper-dim);margin-top:16px">
+        Chọn cách cũ thì mất chất lượng dữ liệu. Chọn cách mới mà làm tay thì mất deadline.
+        <b style="color:var(--signal)">Công cụ là cách duy nhất giữ được cả hai.</b>
+      </p>
+    </div>
+  </div>
+
+  <h3 class="sec">Đối chiếu chi tiết</h3>
+
+  <div class="scroll">
+  <table class="cmp">
+    <thead>
+      <tr>
+        <th>Tiêu chí</th>
+        <th class="o">Cách cũ</th>
+        <th class="nw">Cách mới</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td class="k">Hạn nộp</td><td class="o">8:40</td><td class="nw">9:00</td></tr>
+      <tr><td class="k">Đơn vị một dòng</td><td class="o">1 task, gộp cả team</td><td class="nw">1 HC × 1 task hoặc 1 HC nhiều tasks</td></tr>
+      <tr><td class="k">Dòng dữ liệu / ngày</td><td class="o">~80</td><td class="nw">~700</td></tr>
+      <tr><td class="k">Biết ai làm việc gì</td><td class="o">Không</td><td class="nw">Có, đến từng đầu việc</td></tr>
+      <tr><td class="k">Giờ công theo từng người</td><td class="o">Không</td><td class="nw">Có, theo từng task</td></tr>
+      <tr><td class="k">Đối chiếu UPH</td><td class="o">Missing khi có HC Support</td><td class="nw">Chặn ngay khi thiếu người</td></tr>
+      <tr><td class="k">Hỗ trợ chéo team</td><td class="o">Missing 2 đầu</td><td class="nw">Ghi nhận cả hai chiều</td></tr>
+      <tr><td class="k">Kiểm tra dữ liệu</td><td class="o">Check manual</td><td class="nw">16 rule tự động</td></tr>
+      <tr><td class="k">Mở rộng team / site mới</td><td class="o">HC x UPH x Team</td><td class="nw">Thêm dòng vào Rule</td></tr>
+      <tr><td class="k">Báo cáo thực tế xong</td><td class="o">10:00 – 10:30</td><td class="nw"><10:00 &mdash; khi apply tools</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note tea">
+    <b>Phần còn lại của process này trả lời ba câu.</b> Kiểm tra những gì, vì sao phải kiểm, và làm tay khác công cụ ở chỗ nào.
+  </div>
+</section>
+
 <!-- ===== 1. HAI TIMELINE ===== -->
 <section>
-  <div class="shead"><span class="snum">01</span><h2>1 Lần input data như thế nào?</h2></div>
+  <div class="shead"><span class="snum">02</span><h2>1 Lần input data như thế nào?</h2></div>
   <p class="sub">Leader nhập data xong trước 9:00. Cris check từ 9:00.</p>
 
   <div class="tl">
@@ -382,7 +568,7 @@ tbody tr{transition:background .15s ease}
 
 <!-- ===== 2. BOC TACH ===== -->
 <section>
-  <div class="shead"><span class="snum">02</span><h2>125 phút đó gồm những gì</h2></div>
+  <div class="shead"><span class="snum">03</span><h2>125 phút đó gồm những gì</h2></div>
   <p class="sub">Ước lượng cho <b>một người thành thạo Excel</b> — biết dùng PivotTable, XLOOKUP, COUNTIF, và đã có sẵn file mẫu công thức từ hôm trước.</p>
 
   <div class="scroll">
@@ -447,7 +633,7 @@ tbody tr{transition:background .15s ease}
 
 <!-- ===== 3. NUT THAT ===== -->
 <section>
-  <div class="shead"><span class="snum">03</span><h2>SAVING</h2></div>
+  <div class="shead"><span class="snum">04</span><h2>SAVING</h2></div>
   <p class="sub">Đây là lý do làm tay không mở rộng được, sau này sẽ mở rộng thêm Team, Site.</p>
 
   <div class="flowpair">
@@ -481,7 +667,7 @@ tbody tr{transition:background .15s ease}
 
 <!-- ===== 4. CHOT ===== -->
 <section>
-  <div class="shead"><span class="snum">04</span><h2>16 steps check Rule. Nếu quên 1 rule?</h2></div>
+  <div class="shead"><span class="snum">05</span><h2>16 steps check Rule. Nếu quên 1 rule?</h2></div>
   <p class="sub">Mỗi ô là một step. Dòng đỏ là kết quả nếu step đó quên check.</p>
 
   <div class="rules">
@@ -503,7 +689,7 @@ tbody tr{transition:background .15s ease}
 
 <!-- ===== 5. GIA TRI ===== -->
 <section>
-  <div class="shead"><span class="snum">05</span><h2>Được gì</h2></div>
+  <div class="shead"><span class="snum">06</span><h2>Được gì</h2></div>
   <p class="sub">4 thay đổi tính được.</p>
 
   <div class="grid g4">
@@ -549,7 +735,7 @@ tbody tr{transition:background .15s ease}
 
 <!-- ===== 6. CONG BANG ===== -->
 <section style="border-bottom:none">
-  <div class="shead"><span class="snum">06</span><h2>SUMMARY</h2></div>
+  <div class="shead"><span class="snum">07</span><h2>SUMMARY</h2></div>
   <p class="sub">Mục tiêu phát triển Tool không phải làm nhanh. Mục tiêu là mọi dòng dữ liệu đi vào BI đều đã khớp Rule, không dòng nào lọt, không ngày nào ngoại lệ. Tốc độ chỉ là hệ quả đi kèm.</p>
 
   <div class="grid g2">
