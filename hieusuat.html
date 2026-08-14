@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Làm tay hay dùng công cụ — Efficiency Warehouse RYOBI</title>
+<title>Efficiency Warehouse RYOBI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -812,6 +812,326 @@ tbody tr{transition:background .15s ease}
 
   var trks = document.querySelectorAll('.trk');
   for (var b = 0; b < trks.length; b++) ioTrk.observe(trks[b]);
+})();
+</script>
+
+<!-- ============ NUT DICH VI <-> EN ============ -->
+<style>
+#langBtn{
+  position:fixed; right:22px; bottom:22px; z-index:9999;
+  display:flex; align-items:center; gap:9px;
+  padding:11px 16px 11px 13px;
+  background:var(--steel-2); color:var(--paper);
+  border:1px solid var(--line); border-radius:40px;
+  font-family:'IBM Plex Mono',monospace; font-size:12px;
+  letter-spacing:.1em; text-transform:uppercase; font-weight:500;
+  cursor:pointer; user-select:none;
+  box-shadow:0 6px 22px rgba(0,0,0,.45);
+  transition:transform .18s ease, border-color .18s ease,
+             background .18s ease, box-shadow .18s ease;
+}
+#langBtn:hover{
+  transform:translateY(-2px);
+  border-color:var(--signal);
+  background:var(--steel);
+  box-shadow:0 10px 26px rgba(0,0,0,.55);
+}
+#langBtn:active{transform:translateY(0)}
+#langBtn .globe{
+  width:20px; height:20px; flex:0 0 20px; border-radius:50%;
+  border:2px solid var(--signal); position:relative;
+}
+#langBtn .globe::before{
+  content:""; position:absolute; left:50%; top:-2px; bottom:-2px;
+  width:2px; margin-left:-1px; background:var(--signal); opacity:.7;
+}
+#langBtn .globe::after{
+  content:""; position:absolute; left:-2px; right:-2px; top:50%;
+  height:2px; margin-top:-1px; background:var(--signal); opacity:.7;
+}
+#langBtn .cur{color:var(--signal); font-weight:600}
+#langBtn .arrow{color:var(--paper-dim); font-size:11px}
+#langBtn.busy{pointer-events:none; opacity:.65}
+
+@media(max-width:600px){
+  #langBtn{right:14px; bottom:14px; padding:10px 13px 10px 11px; font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+  #langBtn{transition:none}
+}
+</style>
+
+<div id="langBtn" title="Switch language">
+  <span class="globe"></span>
+  <span><span class="cur">VI</span> <span class="arrow">&rarr;</span> EN</span>
+</div>
+
+<script>
+(function(){
+  /* ---------- TU DIEN VI -> EN ---------- */
+  var DICT = {
+"Khi nào??":"When??",
+"Data hiện tại hơn 500 công nhân với hơn 40 leader và 7 supervisor, dự kiến trung bình khoảng 700 dòng data 1 ngày.":"Current scope: over 500 workers, 40 leaders and 7 supervisors — roughly 700 data rows per day.",
+"Công nhân":"Workers",
+"Dòng dữ liệu / ngày":"Data rows / day",
+"Leader nộp trước":"Leaders submit by",
+
+"3 giai đoạn":"Three stages",
+"Giai đoạn 1":"Stage 1",
+"Giai đoạn 2":"Stage 2",
+"Giai đoạn 3":"Stage 3",
+"Cách cũ":"Old method",
+"Cách mới":"New method",
+"Sử dụng tools":"With the tool",
+"Hạn nộp":"Deadline",
+"· ~80 dòng/ngày":"· ~80 rows/day",
+"· ~700 dòng/ngày":"· ~700 rows/day",
+"Mỗi dòng là":"Each row is",
+"1 task gộp cả team":"one task, whole team combined",
+"— không biết ai làm gì, ai mấy giờ, ai nghỉ":"— no visibility on who did what, for how long, or who was off",
+"Team tụt hiệu suất thì":"When a team's efficiency drops,",
+"không truy được xuống cá nhân":"it cannot be traced to individuals",
+"không cụ thể được":"cannot be pinned down",
+", vì cross-support miss thông tin":", because cross-support data is missing",
+"Đến 8:40 vẫn còn team chưa nộp — phải nhắn, gọi, nhắc lại":"At 8:40 some teams still haven't submitted — texting, calling, reminding",
+"nhiều vòng":"round after round",
+"Báo cáo thực tế xong":"Report actually finished",
+"1 người × 1 task":"one person × one task",
+", kèm số giờ — có bao nhiêu task thì bấy nhiêu dòng":", with hours — as many rows as tasks",
+"Đối chiếu được":"Able to reconcile",
+"UPH từng team từng HC":"UPH per team and per HC",
+"Theo dõi được":"Able to track",
+"người hỗ trợ chéo team":"cross-team support staff",
+"Áp dụng lại được cho":"Reusable for",
+"team mới, site mới":"new teams, new sites",
+"— chỉ đặt thêm Rule":"— just add a Rule entry",
+"Nếu làm tay thì xong":"Done manually at",
+"Giữ nguyên toàn bộ":"Keeps all the",
+"độ chi tiết":"detail",
+"của cách mới":"of the new method",
+"16 rule":"16 rules",
+"tự chạy mỗi lần nộp, không cho phép bỏ qua":"run on every submission, with no option to skip",
+"Lỗi bị chặn":"Errors are blocked",
+"ngay lúc Leader nộp":"the moment the Leader submits",
+", không còn vòng gọi lại":", no more call-back rounds",
+"Thêm team hay site mới":"Adding a team or site",
+"không làm chậm quy trình":"does not slow the process",
+"Báo cáo xong":"Report finished",
+
+"Điểm khó của giai đoạn 2":"The problem with stage 2",
+"Cách mới cho dữ liệu tốt hơn hẳn, nhưng khối lượng tăng từ":"The new method gives far better data, but volume grows from",
+"80 lên 700 dòng":"80 to 700 rows",
+"— gấp gần 9 lần. Nếu vẫn kiểm tra và tổng hợp bằng tay thì cách mới":"— nearly 9×. Checked and consolidated by hand, the new method is",
+"còn trễ hơn cả cách cũ":"even later than the old one",
+"Cách mới làm tay":"New method, manual",
+"Cách mới + công cụ":"New method + tool",
+"Chi tiết đến từng người":"Detail down to each person",
+"Không":"No",
+"Có":"Yes",
+"Kịp hạn báo cáo 10:00":"Meets the 10:00 report deadline",
+"Không · 10:00–10:30":"No · 10:00–10:30",
+"Không · 11:05":"No · 11:05",
+"Có ·":"Yes ·",
+"Chọn cách cũ thì mất chất lượng dữ liệu. Chọn cách mới mà làm tay thì mất deadline.":"The old method costs data quality. The new method by hand costs the deadline.",
+"Công cụ là cách duy nhất giữ được cả hai.":"The tool is the only way to keep both.",
+
+"Đối chiếu chi tiết":"Detailed comparison",
+"Tiêu chí":"Criteria",
+"Đơn vị một dòng":"What one row means",
+"1 task, gộp cả team":"1 task, whole team combined",
+"1 HC × 1 task hoặc 1 HC nhiều tasks":"1 HC × 1 task, or 1 HC with several tasks",
+"Biết ai làm việc gì":"Know who did what",
+"Có, đến từng đầu việc":"Yes, down to each task",
+"Giờ công theo từng người":"Working hours per person",
+"Có, theo từng task":"Yes, per task",
+"Đối chiếu UPH":"UPH reconciliation",
+"Missing khi có HC Support":"Missing when HC support occurs",
+"Chặn ngay khi thiếu người":"Blocked as soon as someone is missing",
+"Hỗ trợ chéo team":"Cross-team support",
+"Missing 2 đầu":"Missing on both sides",
+"Ghi nhận cả hai chiều":"Recorded in both directions",
+"Kiểm tra dữ liệu":"Data checking",
+"Check manual":"Manual check",
+"16 rule tự động":"16 automated rules",
+"Mở rộng team / site mới":"Adding a new team / site",
+"Thêm dòng vào Rule":"Add a row to Rule",
+"Phần còn lại của process này trả lời ba câu.":"The rest of this document answers three questions.",
+"Kiểm tra những gì, vì sao phải kiểm, và làm tay khác công cụ ở chỗ nào.":"What is checked, why it must be checked, and how manual differs from the tool.",
+
+"1 Lần input data như thế nào?":"What one round of data entry looks like",
+"Leader nhập data xong trước 9:00. Cris check từ 9:00.":"Leaders finish entry before 9:00. Checking starts at 9:00.",
+"40 Leader":"40 Leaders",
+"Nhập & nộp file":"Enter & submit file",
+"Khung giờ này không đổi. Khác biệt ở chỗ không phải Leader nào cũng kiểm lại 100% data của mình trước khi gửi.":"This window does not change. The difference: not every Leader re-checks 100% of their data before sending.",
+"Sau 9:00":"After 9:00",
+"Kiểm tra & tổng hợp — 125′":"Check & consolidate — 125′",
+"Chờ sửa lỗi":"Waiting for fixes",
+"Xong sớm nhất khoảng":"Earliest finish around",
+". Chưa tính vòng gọi lại Leader để sửa số sai — mỗi vòng thêm 20–40 phút.":". Not counting call-back rounds to fix wrong numbers — 20–40 minutes each.",
+"Dùng tools":"With tools",
+"Xong lúc 9:30 · combine data, đẩy data lên BI":"Done at 9:30 · combine data, push to BI",
+"Không có vòng sửa lỗi, nếu lỗi xuất hiện sẽ bị chặn ngay vì đã set tools check 16 rule liên tục.":"No fix rounds — errors are blocked on the spot because the tool runs all 16 rules every time.",
+"Leader nhập liệu":"Leader data entry",
+"Xử lý thủ công":"Manual processing",
+"Chờ Leader sửa":"Waiting for Leader fixes",
+"Thời gian không phải vấn đề lớn nhất.":"Time is not the biggest problem.",
+"Vấn đề là báo cáo ra lúc 11:05 thì ca sáng đã trôi qua — không còn kịp điều chỉnh gì cho ngày hôm đó. Số liệu trở thành ghi chép lịch sử thay vì công cụ điều hành.":"The problem is that a report at 11:05 arrives after the morning shift has passed — too late to adjust anything that day. The numbers become a historical record instead of a management tool.",
+
+"125 phút đó gồm những gì":"What those 125 minutes consist of",
+"Ước lượng cho":"Estimated for",
+"một người thành thạo Excel":"someone fluent in Excel",
+"— biết dùng PivotTable, XLOOKUP, COUNTIF, và đã có sẵn file mẫu công thức từ hôm trước.":"— using PivotTable, XLOOKUP and COUNTIF, with formula templates ready from the previous day.",
+"Cách nhanh nhất bằng Excel":"Fastest way in Excel",
+"Gom 40 file về một bảng":"Merge 40 files into one table",
+"Chuẩn hóa tên Leader và Sup — bỏ dấu, thống nhất cách viết":"Standardise Leader and Sup names — strip accents, unify spelling",
+"Find & Replace thủ công":"Manual Find & Replace",
+"Điền Manager theo mã nhân viên":"Fill Manager by employee ID",
+"Đối chiếu UPH 40 team, check xem ai chưa submit":"Reconcile UPH across 40 teams, find who hasn't submitted",
+"Pivot count + COUNTIF ngược":"Pivot count + reverse COUNTIF",
+"Kiểm ngày làm việc và ca":"Check working date and shift",
+"Cộng giờ theo từng người, max 12h và min 4h":"Sum hours per person, max 12h and min 4h",
+"SUMIFS + lọc điều kiện":"SUMIFS + conditional filter",
+"Check sản lượng: không âm, không trống khi có giờ công":"Check output: not negative, not blank when hours exist",
+"Lọc + Conditional Format":"Filter + Conditional Format",
+"Đối chiếu Job detail với danh mục 48 mục":"Match Job detail against the 48-item catalogue",
+"Check UPH theo cặp Supervisor + Job detail":"Check UPH by Supervisor + Job detail pair",
+"Quy đổi WKT sang giờ thực tế theo bảng ca":"Convert WKT to actual hours using the shift table",
+"Tính Target, Earned Hour, Efficiency":"Compute Target, Earned Hour and Efficiency",
+"Công thức kéo xuống":"Fill-down formula",
+"Xử lý người hỗ trợ team khác, Sup, Area, tra lại UPH":"Handle cross-team support: Leader, Sup, Area, re-lookup UPH",
+"Gần như phải làm tay":"Almost entirely manual",
+"Summary data và gửi báo cáo về lại Sup của team đó":"Summarise and send the report back to each team's Sup",
+"Pivot + soạn mail":"Pivot + compose mail",
+"Tổng cộng":"Total",
+"Bảng này đã trừ hết phần làm bằng Excel.":"This table already credits everything Excel can do.",
+"Những việc XLOOKUP hay Pivot xử lý được đều có thể dùng lại hôm sau. Phần còn lại tốn nhiều thời gian là vì bản chất phải nhìn từng trường hợp: đối chiếu UPH chỉ ra":"Anything XLOOKUP or Pivot handles can be reused the next day. What remains is slow because each case must be looked at individually: UPH reconciliation has to show",
+"ai":"who",
+"chưa submit chứ không chỉ đếm số, và người hỗ trợ team khác thì mỗi dòng tính khác nhau.":"hasn't submitted, not just a count — and cross-team support is calculated differently on every row.",
+"Việc nhiều thời gian nhất":"Most time-consuming task",
+"Dựng bảng tổng hợp và soạn mail. Pivot ra số nhanh, nhưng định dạng cho người khác đọc được thì vẫn tốn thời gian mỗi ngày.":"Building the summary and composing the mail. Pivot produces numbers fast, but formatting it to be readable still costs time every day.",
+"Việc Excel giúp ít nhất":"Where Excel helps least",
+"Hỗ trợ chéo team. Phải đổi Leader, Sup, Area rồi tra lại định mức theo team nhận - không có công thức nào làm trọn gói.":"Cross-team support. Leader, Sup and Area must be changed, then the standard re-looked-up for the receiving team — no single formula covers it.",
+"Mỗi tháng, tính 22 ngày làm việc. Bằng khoảng 6 ngày công.":"Per month, based on 22 working days. About 6 man-days.",
+
+"Đây là lý do làm tay không mở rộng được, sau này sẽ mở rộng thêm Team, Site.":"This is why manual work does not scale — more teams and sites are coming.",
+"Làm tay — dồn về một điểm":"Manual — everything funnels to one point",
+"40 file · ~700 dòng":"40 files · ~700 rows",
+"1 người · 125 phút":"1 person · 125 minutes",
+"Tools — 16 rules check liên tục":"Tools — 16 rules checked every time",
+"40 team submit là 40 lần kiểm tra 16 rules, mỗi lần khoảng 2 phút":"40 team submissions = 40 runs of 16 rules, about 2 minutes each",
+"1 người · 20 phút done":"1 person · done in 20 minutes",
+"Ai sai thì người đó sửa ngay tại chỗ trước 9:00. Thêm team hay thêm site không làm quy trình chậm đi.":"Whoever made the error fixes it on the spot before 9:00. Adding teams or sites does not slow the process down.",
+
+"16 steps check Rule. Nếu quên 1 rule?":"16 rule checks. What if one is missed?",
+"Mỗi ô là một step. Dòng đỏ là kết quả nếu step đó quên check.":"Each box is one step. The red line is what happens if that step is skipped.",
+"Không bỏ trống cột bắt buộc":"No blank required columns",
+"Dòng rỗng lọt vào báo cáo":"Empty rows reach the report",
+"Leader và Sup có thật":"Leader and Sup must exist",
+"Sản lượng gán nhầm tổ":"Output assigned to the wrong team",
+"Cả file cùng một ngày":"Whole file on one date",
+"Số liệu hai ngày trộn nhau":"Two days of data mixed together",
+"Submit trước 15h00":"No submission before 15:00",
+"Data không đúng khi chưa hết ca":"Data is wrong before the shift ends",
+"Ca Day / Night / OFF":"Shift Day / Night / OFF",
+"Không tách được hiệu suất theo ca":"Efficiency cannot be split by shift",
+"Giờ công 0 hoặc 4–12":"Hours: 0, or 4–12",
+"Một người 13 giờ trong một ngày":"One person logging 13 hours in a day",
+"Job detail trong danh mục":"Job detail in the catalogue",
+"Không tra được UPH":"UPH cannot be looked up",
+"Sản lượng hợp lệ":"Valid output",
+"Có giờ công mà không có output":"Hours logged with no output",
+"Hỗ trợ chéo team hợp lệ":"Valid cross-team support",
+"Team này thiếu, team kia dư HC":"One team short, the other over on HC",
+"Tra được định mức UPH":"UPH standard must be found",
+"Hiệu suất tính ra bằng 0":"Efficiency computes to zero",
+"Một người một Leader":"One person, one Leader",
+"Thiếu người mà không ai biết":"Missing people that nobody notices",
+"CẢ 16 STEPs":"ALL 16 STEPS",
+"Tools tự check khi submit":"The tool checks on every submission",
+"Không có ngoại lệ":"No exceptions",
+
+"Được gì":"What it delivers",
+"4 thay đổi tính được.":"Four measurable changes.",
+"Báo cáo sẵn sàng":"Report ready",
+"Thay vì 11:05. Số liệu về kịp lúc còn điều chỉnh được cho ca đang chạy.":"Instead of 11:05. Numbers arrive while the running shift can still be adjusted.",
+"Chạy ontime":"Rules checked",
+"Mọi dòng, mọi lần nộp, không phụ thuộc hôm đó có gấp hay không.":"Every row, every submission, regardless of how rushed the day is.",
+"Nhân lực thu về":"Time recovered",
+"Mỗi tháng. Chuyển từ gõ và dò sang phân tích và cải tiến.":"Per month. Shifting from typing and cross-checking to analysis and improvement.",
+"Quy mô":"Scale",
+"Thêm team, thêm site — thời gian xử lý gần như không đổi.":"More teams, more sites — processing time stays almost the same.",
+"3 thứ làm tay không làm được, do tốn nhiều thời gian":"Three things manual work cannot deliver, because they take too long",
+"Leader thấy số của mình ngay":"Leaders see their own numbers instantly",
+"Bấm nộp là hiện hiệu suất tổ mình, ngay trong khung deadline 9:00. Làm tay thì phải chờ báo cáo tổng lúc 11:05.":"One click shows their team's efficiency, inside the 9:00 window. Manually they wait for the consolidated report at 11:05.",
+"Truy vết đầy đủ":"Full traceability",
+"Mỗi dòng lưu ai nộp, lúc nào, team gốc là ai. Số nào sai truy ngược được đến tận người nhập.":"Every row records who submitted, when, and the original team. Any wrong number traces back to the person who entered it.",
+"UPH sửa một chỗ":"UPH edited in one place",
+"Sửa UPH trong sheet Rule, lần nộp kế tiếp áp dụng ngay cho toàn bộ 40 team. Không phải báo lại từng người.":"Edit UPH in the Rule sheet and the next submission applies it across all 40 teams. Nobody has to be notified.",
+
+"Mục tiêu phát triển Tool không phải làm nhanh. Mục tiêu là mọi dòng dữ liệu đi vào BI đều đã khớp Rule, không dòng nào lọt, không ngày nào ngoại lệ. Tốc độ chỉ là hệ quả đi kèm.":"The tool was not built for speed. It was built so that every row entering BI already conforms to Rule — no row slips through, no day is an exception. Speed is only a by-product.",
+"Kiểm tra những gì":"What is checked",
+"16 steps, mỗi step gắn với một rule cụ thể.":"16 steps, each tied to one specific rule.",
+"Chặn trước hay phát hiện sau":"Prevent up front, or detect afterwards",
+"Cùng một lỗi, cùng người mắc. Khác nhau ở chỗ lỗi được bắt lúc Leader còn đang ngồi trước máy tính thay vì đang ở KHO phải chạy lên resubmit.":"Same error, same person. The difference is whether it is caught while the Leader is still at the computer, or after they are back in the warehouse and have to come up and resubmit.",
+"Chỉ cần training 1 lần cho site mới":"One training session per new site",
+"40 Leader cần khoảng 30 phút để nắm template và cách đọc bảng lỗi. Sau đó gần như không cần hỗ trợ thêm.":"40 Leaders need about 30 minutes to learn the template and read the error panel. After that, almost no support is needed.",
+"Thời gian dư so với manual":"Time freed versus manual",
+"Thời gian dư so với làm tay dùng để bảo trì tools, nghiên cứu và phát triển":"Time freed from manual work goes into maintaining the tool, research and development",
+"Về các con số.":"About these numbers.",
+"Thời gian làm tay là ước lượng cho một người thành thạo Excel, đã có sẵn file công thức mẫu, xử lý 40 file và khoảng 700 dòng qua 16 chốt kiểm tra. Thời gian của công cụ là số đo thực tế khi chạy thử.":"Manual times are estimates for someone fluent in Excel with formula templates ready, processing 40 files and about 700 rows through 16 checks. Tool times are measured from actual test runs."
+  };
+
+  /* ---------- thu thap text node ---------- */
+  var nodes = [], orig = [];
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(n){
+      var p = n.parentNode;
+      if (!p) return NodeFilter.FILTER_REJECT;
+      var tag = p.nodeName;
+      if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+      if (p.id === 'langBtn' || p.closest && p.closest('#langBtn'))
+        return NodeFilter.FILTER_REJECT;
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var nd;
+  while ((nd = walker.nextNode())) { nodes.push(nd); orig.push(nd.nodeValue); }
+
+  /* ---------- doi ngon ngu ---------- */
+  var isEN = false;
+
+  function apply(toEN){
+    for (var i = 0; i < nodes.length; i++){
+      if (!toEN){ nodes[i].nodeValue = orig[i]; continue; }
+      var raw = orig[i];
+      var key = raw.trim();
+      var en = DICT[key];
+      if (en === undefined) continue;
+      var lead = raw.slice(0, raw.indexOf(key));
+      var tail = raw.slice(raw.indexOf(key) + key.length);
+      nodes[i].nodeValue = lead + en + tail;
+    }
+    document.documentElement.lang = toEN ? 'en' : 'vi';
+  }
+
+  var btn = document.getElementById('langBtn');
+  function paint(){
+    btn.innerHTML = '<span class="globe"></span><span><span class="cur">' +
+      (isEN ? 'EN' : 'VI') + '</span> <span class="arrow">&rarr;</span> ' +
+      (isEN ? 'VI' : 'EN') + '</span>';
+    btn.title = isEN ? 'Chuyển sang tiếng Việt' : 'Switch to English';
+  }
+
+  btn.addEventListener('click', function(){
+    isEN = !isEN;
+    btn.classList.add('busy');
+    apply(isEN);
+    paint();
+    setTimeout(function(){ btn.classList.remove('busy'); }, 120);
+  });
+
+  paint();
 })();
 </script>
 
