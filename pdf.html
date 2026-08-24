@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PDF tool</title>
+<title>PDF sang Hình Ảnh - Cris</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@4.2.1/dist/jspdf.umd.min.js"></script>
@@ -10378,12 +10378,40 @@ window.__ZX_READY = (function () {
     color: #fff; font-size: 13px; font-weight: 800;
   }
   .pic-empty-hint { font-size: 13px; color: #888; margin-top: 8px; }
+
+  /* ===================== USER TAG (ghi log) ===================== */
+  .user-tag {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    font-size: 13.5px;
+  }
+  .user-tag input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: #222;
+    background: transparent;
+  }
+  .user-tag input::placeholder { color: #aaa; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Rename ASN from PDF</h1>
-  <div class="sub">Công cụ chuyển đổi PDF sang hình ảnh &amp; gộp hình ảnh thành PDF. Vui lòng liên hệ Cris nếu xãy ra lỗi.</div>
+  <div class="sub">Công cụ chuyển đổi PDF sang hình ảnh &amp; gộp hình ảnh thành PDF, xử lý hoàn toàn ngay trên trình duyệt của bạn.</div>
+
+  <div class="user-tag" id="userTag">
+    <span>👤</span>
+    <input type="text" id="userNameInput" placeholder="Nhập tên hoặc MSNV của bạn (để ghi vào báo cáo sử dụng)">
+  </div>
 
   <div class="tabbar" id="tabbar">
     <button class="tab-btn active" data-tab="rename">1. Rename ASN (PDF)</button>
@@ -10969,6 +10997,9 @@ convertBtn.addEventListener('click', async () => {
     resultCount.textContent = `${total} ảnh đã sẵn sàng`;
     topActions.style.display = 'flex';
     refreshToggleLabel();
+
+    const modeLabels = { basic: '1: Chỉ chuyển ảnh', asn: '2: QR — A4', carbon: '3: QR — Giấy than', promax: '4: QR — PRO MAX' };
+    logUsage('Rename ASN', `Chế độ: ${modeLabels[mode] || mode} | File: ${currentFile.name} | Số trang: ${total}` + (isAsnMode ? ` | Đọc được QR: ${asnFound}/${total}` : ''));
   } catch (err) {
     console.error(err);
     status.textContent = 'Có lỗi xảy ra khi xử lý file PDF: ' + err.message;
@@ -11199,6 +11230,7 @@ makePdfBtn.addEventListener('click', async () => {
     }
     doc.save('gop-anh-thanh-pdf.pdf');
     picsStatus.textContent = `Đã tạo xong file PDF gồm ${picItems.length} trang.`;
+    logUsage('PIC to PDF', `Số ảnh gộp: ${picItems.length}`);
   } catch (err) {
     console.error('[PIC to PDF] Lỗi:', err);
     picsStatus.textContent = 'Có lỗi khi tạo PDF: ' + (err.message || err) + ' — mở Console (F12) để xem chi tiết.';
@@ -11209,6 +11241,41 @@ makePdfBtn.addEventListener('click', async () => {
     makePdfBtn.textContent = origText;
   }
 });
+
+/* ==================== GHI LOG SỬ DỤNG → GOOGLE SHEET ====================
+   1. Tạo 1 Google Sheet mới, vào Extensions > Apps Script, dán code trong
+      file "Code.gs" (Cris đã nhận riêng kèm hướng dẫn), bấm Deploy > New deployment > Web app.
+   2. Copy URL deploy được (dạng https://script.google.com/macros/s/.../exec)
+      rồi dán thay vào dòng LOG_WEBHOOK_URL ngay dưới đây.
+   3. Nếu chưa dán URL thật, tool vẫn chạy bình thường — chỉ là không ghi log. */
+const LOG_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwYlliL8o678iy1gfu04JTHw_66-T_k6sVPRwM1PGYAgpX0uHYiTDnVopkl5f8_eglU/exec';
+
+const userNameInput = document.getElementById('userNameInput');
+userNameInput.value = localStorage.getItem('pdf2pic_userName') || '';
+userNameInput.addEventListener('input', () => {
+  localStorage.setItem('pdf2pic_userName', userNameInput.value.trim());
+});
+
+function logUsage(feature, detail) {
+  try {
+    // Dòng dưới đây chỉ để KIỂM TRA xem LOG_WEBHOOK_URL (ở trên) đã có link thật chưa — không cần sửa gì ở đây cả.
+    if (!LOG_WEBHOOK_URL || LOG_WEBHOOK_URL.indexOf('https://script.google.com/macros/') !== 0) return;
+    const payload = {
+      time: new Date().toISOString(),
+      user: (userNameInput.value || '').trim() || '(chưa nhập tên)',
+      feature,
+      detail
+    };
+    fetch(LOG_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script Web App không cần đọc phản hồi, tránh vướng CORS preflight
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    }).catch(() => {}); // ghi log lỗi thì bỏ qua, không ảnh hưởng tool chính
+  } catch (e) {
+    console.error('[Log] Lỗi ghi log:', e);
+  }
+}
 </script>
 </body>
 </html>
